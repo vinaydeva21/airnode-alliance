@@ -21,17 +21,15 @@ import {
   MOCK_TRANSACTIONS, 
   DEFAULT_WALLET_ASSETS,
   truncateAddress,
-  generateMockAddress
 } from "./wallet/WalletData";
+import { useWeb3 } from "@/contexts/Web3Context";
 
 interface WalletConnectProps {
   className?: string;
 }
 
 const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
-  const [connected, setConnected] = useState(false);
-  const [walletAddress, setWalletAddress] = useState("");
-  const [selectedWallet, setSelectedWallet] = useState("");
+  const { web3State, connect, disconnect } = useWeb3();
   const [stakeDialogOpen, setStakeDialogOpen] = useState(false);
   const [transactionHistoryOpen, setTransactionHistoryOpen] = useState(false);
   const [myAssetsDialogOpen, setMyAssetsDialogOpen] = useState(false);
@@ -40,31 +38,23 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
   const [authTab, setAuthTab] = useState<"login" | "signup">("login");
   const [connecting, setConnecting] = useState(false);
 
-  const handleConnect = (walletId: string) => {
+  const handleConnect = async (walletId: string) => {
     setConnecting(true);
     
-    // Simulate connection delay
-    setTimeout(() => {
-      const mockAddress = generateMockAddress();
-      setWalletAddress(mockAddress);
-      setConnected(true);
-      setSelectedWallet(walletId);
-      setConnecting(false);
-      
-      toast.success(`Connected to ${MOCK_WALLETS.find(w => w.id === walletId)?.name}`, {
-        description: `Address: ${truncateAddress(mockAddress)}`,
-      });
-      
+    try {
+      // Connect to the wallet using Web3Context
+      await connect();
       setWalletSelectionOpen(false);
-    }, 1500);
+    } catch (error) {
+      console.error("Error connecting to wallet:", error);
+      toast.error("Failed to connect to wallet");
+    } finally {
+      setConnecting(false);
+    }
   };
 
   const handleDisconnect = () => {
-    setWalletAddress("");
-    setConnected(false);
-    setSelectedWallet("");
-    
-    toast.info("Wallet disconnected");
+    disconnect();
   };
 
   const handleAuthSuccess = () => {
@@ -73,7 +63,7 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
 
   return (
     <div className={className}>
-      {!connected ? (
+      {!web3State.connected ? (
         <div className="flex gap-2">
           <Button
             variant="outline"
@@ -106,8 +96,8 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
         </div>
       ) : (
         <WalletDropdownMenu
-          walletName={MOCK_WALLETS.find(w => w.id === selectedWallet)?.name || "Wallet"}
-          address={truncateAddress(walletAddress)}
+          walletName={"Web3 Wallet"}
+          address={truncateAddress(web3State.account || "")}
           anaBalance={DEFAULT_WALLET_ASSETS.tokens.ana}
           stakedAna={DEFAULT_WALLET_ASSETS.tokens.anaStaked}
           pendingRewards={DEFAULT_WALLET_ASSETS.tokens.usdc}
