@@ -22,7 +22,7 @@ export const RainbowKitWrapper: React.FC<RainbowKitWrapperProps> = ({
     appName: 'AirNode Alliance',
   });
 
-  // Create wagmi config
+  // Create wagmi config - in v2 we need to include chains as an array
   const wagmiConfig = createConfig({
     chains,
     transports: {
@@ -36,7 +36,7 @@ export const RainbowKitWrapper: React.FC<RainbowKitWrapperProps> = ({
 
   return (
     <WagmiProvider config={wagmiConfig}>
-      <RainbowKitProvider chains={chains}>
+      <RainbowKitProvider>
         {children}
       </RainbowKitProvider>
     </WagmiProvider>
