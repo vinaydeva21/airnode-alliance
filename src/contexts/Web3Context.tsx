@@ -3,6 +3,8 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Web3State, ContractInteractions } from '@/types/blockchain';
 import { toast } from 'sonner';
 import { ethers } from 'ethers';
+import { useAccount, useConnect, useDisconnect } from 'wagmi';
+import { InjectedConnector } from 'wagmi/connectors/injected';
 
 interface Web3ContextType {
   web3State: Web3State;
@@ -21,6 +23,10 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
   });
   const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null);
   const [walletType, setWalletType] = useState<string | null>(null);
+  
+  const { address, chainId, isConnected } = useAccount();
+  const { connectAsync } = useConnect();
+  const { disconnectAsync } = useDisconnect();
 
   // Check if an EVM wallet is installed
   const checkIfEvmWalletIsInstalled = () => {
@@ -35,6 +41,17 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
   const checkIfYoroiIsInstalled = () => {
     return window.cardano && window.cardano.yoroi !== undefined;
   };
+
+  // Update web3State when wagmi account changes
+  useEffect(() => {
+    if (isConnected && address) {
+      setWeb3State({
+        account: address,
+        chainId: chainId,
+        connected: true
+      });
+    }
+  }, [address, chainId, isConnected]);
 
   // Initialize provider and listen for account changes
   useEffect(() => {
@@ -86,8 +103,33 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setWalletType(walletId);
       
+      // Handle WalletConnect via RainbowKit
+      if (walletId === "walletconnect") {
+        try {
+          await disconnectAsync();
+          const result = await connectAsync();
+          
+          if (result.account) {
+            setWeb3State({
+              account: result.account,
+              chainId: result.chainId,
+              connected: true
+            });
+            
+            toast.success("WalletConnect connected", {
+              description: `Address: ${result.account.substring(0, 6)}...${result.account.substring(result.account.length - 4)}`
+            });
+          }
+          return;
+        } catch (error) {
+          console.error('WalletConnect error:', error);
+          toast.error("Failed to connect with WalletConnect");
+          return;
+        }
+      }
+      
       // Handle EVM-based wallets
-      if (walletId === "metamask" || walletId === "walletconnect" || walletId === "wmc") {
+      if (walletId === "metamask" || walletId === "wmc") {
         if (!checkIfEvmWalletIsInstalled()) {
           toast.error("Please install MetaMask or another web3 wallet");
           return;
@@ -179,14 +221,23 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const disconnect = () => {
-    setWeb3State({
-      account: null,
-      chainId: null,
-      connected: false
-    });
-    setWalletType(null);
-    toast.info("Disconnected from wallet");
+  const disconnect = async () => {
+    try {
+      if (isConnected) {
+        await disconnectAsync();
+      }
+      
+      setWeb3State({
+        account: null,
+        chainId: null,
+        connected: false
+      });
+      setWalletType(null);
+      toast.info("Disconnected from wallet");
+    } catch (error) {
+      console.error('Disconnect error:', error);
+      toast.error("Failed to disconnect wallet");
+    }
   };
 
   // Define contract interactions with the connected wallet

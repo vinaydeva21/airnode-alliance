@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from "@/components/ui/button";
 import { WalletInfo } from "./WalletData";
 import { toast } from "sonner";
+import { useWeb3 } from "@/contexts/Web3Context";
 
 interface WalletSelectionDialogProps {
   open: boolean;
@@ -48,6 +49,8 @@ interface WalletOptionProps {
 }
 
 const WalletOption: React.FC<WalletOptionProps> = ({ wallet, onConnect }) => {
+  const { web3State } = useWeb3();
+  
   const getWalletIcon = (id: string) => {
     switch (id) {
       case "metamask":
@@ -86,6 +89,10 @@ const WalletOption: React.FC<WalletOptionProps> = ({ wallet, onConnect }) => {
           toast.info("Yoroi wallet not found. Redirecting to download page...");
           window.open("https://yoroi-wallet.com/", "_blank");
         }
+        break;
+      case "walletconnect":
+        // Use RainbowKit for WalletConnect
+        onConnect(wallet.id);
         break;
       default:
         // For other wallets, proceed as normal
