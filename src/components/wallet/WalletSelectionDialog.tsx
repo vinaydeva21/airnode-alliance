@@ -1,10 +1,10 @@
-
 import React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { WalletInfo } from "./WalletData";
 import { toast } from "sonner";
 import { useWeb3 } from "@/contexts/Web3Context";
+import { useConnectModal } from '@rainbow-me/rainbowkit';
 
 interface WalletSelectionDialogProps {
   open: boolean;
@@ -19,6 +19,8 @@ export const WalletSelectionDialog: React.FC<WalletSelectionDialogProps> = ({
   wallets,
   onConnect
 }) => {
+  const { openConnectModal } = useConnectModal();
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-ana-darkblue border-ana-purple/30 text-white max-w-sm">
@@ -30,6 +32,24 @@ export const WalletSelectionDialog: React.FC<WalletSelectionDialogProps> = ({
         </DialogHeader>
         
         <div className="py-4 flex flex-col gap-3">
+          <button
+            onClick={() => {
+              if (openConnectModal) {
+                openConnectModal();
+                onOpenChange(false);
+              } else {
+                toast.error("Rainbow Kit connection not available");
+              }
+            }}
+            className="flex items-center justify-between p-3 rounded-lg border border-ana-purple/20 hover:bg-ana-purple/20 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <div className="text-2xl">🌈</div>
+              <span className="font-medium">Rainbow Kit</span>
+            </div>
+            <div className="text-ana-purple">Connect</div>
+          </button>
+          
           {wallets.map((wallet) => (
             <WalletOption 
               key={wallet.id}
@@ -89,10 +109,6 @@ const WalletOption: React.FC<WalletOptionProps> = ({ wallet, onConnect }) => {
           toast.info("Yoroi wallet not found. Redirecting to download page...");
           window.open("https://yoroi-wallet.com/", "_blank");
         }
-        break;
-      case "walletconnect":
-        // Use RainbowKit for WalletConnect
-        onConnect(wallet.id);
         break;
       default:
         // For other wallets, proceed as normal
