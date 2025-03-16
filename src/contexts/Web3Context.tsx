@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Web3State, ContractInteractions } from '@/types/blockchain';
 import { toast } from 'sonner';
@@ -23,7 +24,7 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
   const [walletType, setWalletType] = useState<string | null>(null);
   
   const { address, chainId, isConnected } = useAccount();
-  const { connectAsync } = useConnect();
+  const { connectAsync, connectors } = useConnect();
   const { disconnectAsync } = useDisconnect();
 
   const checkIfEvmWalletIsInstalled = () => {
@@ -96,7 +97,15 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
             await disconnectAsync();
           }
           
-          const result = await connectAsync({ connector: connectAsync.connectors.find(c => c.id === 'walletConnect') });
+          // Find the WalletConnect connector
+          const walletConnectConnector = connectors.find(c => c.id === 'walletConnect');
+          
+          if (!walletConnectConnector) {
+            toast.error("WalletConnect connector not found");
+            return;
+          }
+          
+          const result = await connectAsync({ connector: walletConnectConnector });
           
           if (result.accounts && result.accounts.length > 0) {
             setWeb3State({
