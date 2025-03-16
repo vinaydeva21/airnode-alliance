@@ -1,8 +1,7 @@
 
-import { RainbowKitProvider, connectorsForWallets, getDefaultWallets } from '@rainbow-me/rainbowkit';
-import { configureChains, createConfig, WagmiConfig } from 'wagmi';
+import { RainbowKitProvider, getDefaultWallets } from '@rainbow-me/rainbowkit';
+import { http, createConfig, WagmiProvider } from 'wagmi';
 import { mainnet, polygon, optimism, arbitrum } from 'wagmi/chains';
-import { publicProvider } from 'wagmi/providers/public';
 import '@rainbow-me/rainbowkit/styles.css';
 
 interface RainbowKitWrapperProps {
@@ -14,32 +13,33 @@ export const RainbowKitWrapper: React.FC<RainbowKitWrapperProps> = ({
   children,
   projectId = "0b7502f59a16b5cc689348f2c3bc8c26" // Use default project ID
 }) => {
-  const { chains, publicClient } = configureChains(
-    [mainnet, polygon, optimism, arbitrum],
-    [publicProvider()]
-  );
+  // Define all chains we want to support
+  const chains = [mainnet, polygon, optimism, arbitrum];
   
-  const { wallets } = getDefaultWallets({
-    appName: 'AirNode Alliance',
+  // Get connectors for wallets from RainbowKit
+  const { connectors } = getDefaultWallets({
     projectId,
+    appName: 'AirNode Alliance',
     chains
   });
-  
-  const connectors = connectorsForWallets([
-    ...wallets,
-  ]);
 
+  // Create wagmi config
   const wagmiConfig = createConfig({
-    autoConnect: true,
-    connectors,
-    publicClient
+    chains,
+    transports: {
+      [mainnet.id]: http(),
+      [polygon.id]: http(),
+      [optimism.id]: http(),
+      [arbitrum.id]: http(),
+    },
+    connectors
   });
 
   return (
-    <WagmiConfig config={wagmiConfig}>
-      <RainbowKitProvider chains={chains}>
+    <WagmiProvider config={wagmiConfig}>
+      <RainbowKitProvider>
         {children}
       </RainbowKitProvider>
-    </WagmiConfig>
+    </WagmiProvider>
   );
 };

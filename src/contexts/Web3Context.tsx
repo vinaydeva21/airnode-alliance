@@ -1,10 +1,8 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Web3State, ContractInteractions } from '@/types/blockchain';
 import { toast } from 'sonner';
 import { ethers } from 'ethers';
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
-import { InjectedConnector } from 'wagmi/connectors/injected';
 
 interface Web3ContextType {
   web3State: Web3State;
@@ -106,18 +104,21 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
       // Handle WalletConnect via RainbowKit
       if (walletId === "walletconnect") {
         try {
-          await disconnectAsync();
+          if (isConnected) {
+            await disconnectAsync();
+          }
+          
           const result = await connectAsync();
           
-          if (result.account) {
+          if (result.accounts && result.accounts.length > 0) {
             setWeb3State({
-              account: result.account,
+              account: result.accounts[0],
               chainId: result.chainId,
               connected: true
             });
             
             toast.success("WalletConnect connected", {
-              description: `Address: ${result.account.substring(0, 6)}...${result.account.substring(result.account.length - 4)}`
+              description: `Address: ${result.accounts[0].substring(0, 6)}...${result.accounts[0].substring(result.accounts[0].length - 4)}`
             });
           }
           return;
@@ -377,7 +378,6 @@ export const useWeb3 = () => {
   return context;
 };
 
-// Add type definitions for the window object
 declare global {
   interface Window {
     ethereum?: {
