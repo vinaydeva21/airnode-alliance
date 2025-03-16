@@ -38,6 +38,7 @@ export interface WalletInfo {
 // Mock data
 export const MOCK_WALLETS: WalletInfo[] = [
   { id: "metamask", name: "MetaMask" },
+  { id: "nami", name: "Nami Wallet" },
   { id: "yoroi", name: "Yoroi Wallet" },
   { id: "wmc", name: "World Mobile Wallet" },
   { id: "walletconnect", name: "WalletConnect" },

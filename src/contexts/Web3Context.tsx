@@ -7,7 +7,7 @@ import { ethers } from 'ethers';
 interface Web3ContextType {
   web3State: Web3State;
   contracts: ContractInteractions | null;
-  connect: () => Promise<void>;
+  connect: (walletId: string) => Promise<void>;
   disconnect: () => void;
 }
 
@@ -20,16 +20,26 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
     connected: false
   });
   const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null);
+  const [walletType, setWalletType] = useState<string | null>(null);
 
-  // Check if the user has MetaMask installed
-  const checkIfWalletIsInstalled = () => {
+  // Check if an EVM wallet is installed
+  const checkIfEvmWalletIsInstalled = () => {
     return window.ethereum !== undefined;
+  };
+
+  // Check if Cardano wallets are installed
+  const checkIfNamiIsInstalled = () => {
+    return window.cardano && window.cardano.nami !== undefined;
+  };
+
+  const checkIfYoroiIsInstalled = () => {
+    return window.cardano && window.cardano.yoroi !== undefined;
   };
 
   // Initialize provider and listen for account changes
   useEffect(() => {
     const initProvider = async () => {
-      if (checkIfWalletIsInstalled()) {
+      if (checkIfEvmWalletIsInstalled()) {
         const ethersProvider = new ethers.BrowserProvider(window.ethereum);
         setProvider(ethersProvider);
 
@@ -72,38 +82,96 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
-  const connect = async () => {
+  const connect = async (walletId: string) => {
     try {
-      if (!checkIfWalletIsInstalled()) {
-        toast.error("Please install MetaMask or another web3 wallet");
-        return;
-      }
-
-      if (!provider) {
-        const ethersProvider = new ethers.BrowserProvider(window.ethereum);
-        setProvider(ethersProvider);
-      }
-
-      // Request account access
-      const accounts = await window.ethereum.request({ 
-        method: 'eth_requestAccounts' 
-      });
+      setWalletType(walletId);
       
-      // Get current chain ID
-      const chainIdHex = await window.ethereum.request({ 
-        method: 'eth_chainId' 
-      });
-      const chainId = parseInt(chainIdHex, 16);
+      // Handle EVM-based wallets
+      if (walletId === "metamask" || walletId === "walletconnect" || walletId === "wmc") {
+        if (!checkIfEvmWalletIsInstalled()) {
+          toast.error("Please install MetaMask or another web3 wallet");
+          return;
+        }
 
-      if (accounts.length > 0) {
-        setWeb3State({
-          account: accounts[0],
-          chainId: chainId,
-          connected: true
+        if (!provider) {
+          const ethersProvider = new ethers.BrowserProvider(window.ethereum);
+          setProvider(ethersProvider);
+        }
+
+        // Request account access
+        const accounts = await window.ethereum.request({ 
+          method: 'eth_requestAccounts' 
         });
-        toast.success("Wallet connected", {
-          description: `Address: ${accounts[0].substring(0, 6)}...${accounts[0].substring(accounts[0].length - 4)}`
+        
+        // Get current chain ID
+        const chainIdHex = await window.ethereum.request({ 
+          method: 'eth_chainId' 
         });
+        const chainId = parseInt(chainIdHex, 16);
+
+        if (accounts.length > 0) {
+          setWeb3State({
+            account: accounts[0],
+            chainId: chainId,
+            connected: true
+          });
+          toast.success("Wallet connected", {
+            description: `Address: ${accounts[0].substring(0, 6)}...${accounts[0].substring(accounts[0].length - 4)}`
+          });
+        }
+      } 
+      // Handle Cardano-based wallets
+      else if (walletId === "nami") {
+        if (!checkIfNamiIsInstalled()) {
+          toast.error("Nami wallet not installed");
+          return;
+        }
+        
+        try {
+          // Request Nami wallet connection
+          const namiAPI = await window.cardano.nami.enable();
+          const address = await namiAPI.getChangeAddress();
+          const addressHex = Buffer.from(address, 'hex').toString('hex');
+          
+          setWeb3State({
+            account: addressHex,
+            chainId: null, // Cardano doesn't use chainId the same way
+            connected: true
+          });
+          
+          toast.success("Nami wallet connected", {
+            description: `Address: ${addressHex.substring(0, 6)}...${addressHex.substring(addressHex.length - 4)}`
+          });
+        } catch (error) {
+          console.error('Nami connection error:', error);
+          toast.error("Failed to connect to Nami wallet");
+        }
+      }
+      else if (walletId === "yoroi") {
+        if (!checkIfYoroiIsInstalled()) {
+          toast.error("Yoroi wallet not installed");
+          return;
+        }
+        
+        try {
+          // Request Yoroi wallet connection
+          const yoroiAPI = await window.cardano.yoroi.enable();
+          const address = await yoroiAPI.getChangeAddress();
+          const addressHex = Buffer.from(address, 'hex').toString('hex');
+          
+          setWeb3State({
+            account: addressHex,
+            chainId: null, // Cardano doesn't use chainId the same way
+            connected: true
+          });
+          
+          toast.success("Yoroi wallet connected", {
+            description: `Address: ${addressHex.substring(0, 6)}...${addressHex.substring(addressHex.length - 4)}`
+          });
+        } catch (error) {
+          console.error('Yoroi connection error:', error);
+          toast.error("Failed to connect to Yoroi wallet");
+        }
       }
     } catch (error) {
       console.error('Failed to connect:', error);
@@ -117,6 +185,7 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
       chainId: null,
       connected: false
     });
+    setWalletType(null);
     toast.info("Disconnected from wallet");
   };
 
@@ -257,7 +326,7 @@ export const useWeb3 = () => {
   return context;
 };
 
-// Add type definitions for the window.ethereum object
+// Add type definitions for the window object
 declare global {
   interface Window {
     ethereum?: {
@@ -266,6 +335,16 @@ declare global {
       on: (eventName: string, callback: (...args: any[]) => void) => void;
       removeListener: (eventName: string, callback: (...args: any[]) => void) => void;
       selectedAddress?: string;
+    };
+    cardano?: {
+      nami?: {
+        enable: () => Promise<any>;
+        isEnabled: () => Promise<boolean>;
+      };
+      yoroi?: {
+        enable: () => Promise<any>;
+        isEnabled: () => Promise<boolean>;
+      };
     };
   }
 }

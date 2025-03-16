@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { User, Wallet, ChevronRight } from "lucide-react";
@@ -43,7 +42,7 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
     
     try {
       // Connect to the wallet using Web3Context
-      await connect();
+      await connect(walletId);
       setWalletSelectionOpen(false);
     } catch (error) {
       console.error("Error connecting to wallet:", error);

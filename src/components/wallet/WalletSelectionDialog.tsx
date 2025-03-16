@@ -3,6 +3,7 @@ import React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { WalletInfo } from "./WalletData";
+import { toast } from "sonner";
 
 interface WalletSelectionDialogProps {
   open: boolean;
@@ -51,6 +52,8 @@ const WalletOption: React.FC<WalletOptionProps> = ({ wallet, onConnect }) => {
     switch (id) {
       case "metamask":
         return "🦊";
+      case "nami":
+        return "💧";
       case "yoroi":
         return "🔷";
       case "wmc":
@@ -62,9 +65,38 @@ const WalletOption: React.FC<WalletOptionProps> = ({ wallet, onConnect }) => {
     }
   };
 
+  const handleWalletClick = () => {
+    switch (wallet.id) {
+      case "nami":
+        // Check if Nami wallet is installed
+        if (window.cardano && window.cardano.nami) {
+          onConnect(wallet.id);
+        } else {
+          // Redirect to Nami wallet website
+          toast.info("Nami wallet not found. Redirecting to download page...");
+          window.open("https://namiwallet.io/", "_blank");
+        }
+        break;
+      case "yoroi":
+        // Check if Yoroi wallet is installed
+        if (window.cardano && window.cardano.yoroi) {
+          onConnect(wallet.id);
+        } else {
+          // Redirect to Yoroi wallet website
+          toast.info("Yoroi wallet not found. Redirecting to download page...");
+          window.open("https://yoroi-wallet.com/", "_blank");
+        }
+        break;
+      default:
+        // For other wallets, proceed as normal
+        onConnect(wallet.id);
+        break;
+    }
+  };
+
   return (
     <button
-      onClick={() => onConnect(wallet.id)}
+      onClick={handleWalletClick}
       className="flex items-center justify-between p-3 rounded-lg border border-ana-purple/20 hover:bg-ana-purple/20 transition-colors"
     >
       <div className="flex items-center gap-3">
