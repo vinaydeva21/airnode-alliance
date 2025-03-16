@@ -20,12 +20,12 @@ export const RainbowKitWrapper: React.FC<RainbowKitWrapperProps> = ({
   const { connectors } = getDefaultWallets({
     projectId,
     appName: 'AirNode Alliance',
-    chains
+    // In RainbowKit v2, chains is no longer directly passed here
   });
 
   // Create wagmi config
   const wagmiConfig = createConfig({
-    chains,
+    // In wagmi v2, chains are specified per transport
     transports: {
       [mainnet.id]: http(),
       [polygon.id]: http(),
