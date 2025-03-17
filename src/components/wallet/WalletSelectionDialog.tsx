@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -75,14 +76,10 @@ const WalletOption: React.FC<WalletOptionProps> = ({ wallet, onConnect }) => {
     switch (id) {
       case "metamask":
         return "🦊";
-      case "nami":
-        return "💧";
       case "yoroi":
         return "🔷";
       case "wmc":
         return "🌐";
-      case "walletconnect":
-        return "🔗";
       default:
         return "💼";
     }
@@ -90,16 +87,6 @@ const WalletOption: React.FC<WalletOptionProps> = ({ wallet, onConnect }) => {
 
   const handleWalletClick = () => {
     switch (wallet.id) {
-      case "nami":
-        // Check if Nami wallet is installed
-        if (window.cardano && window.cardano.nami) {
-          onConnect(wallet.id);
-        } else {
-          // Redirect to Nami wallet website
-          toast.info("Nami wallet not found. Redirecting to download page...");
-          window.open("https://namiwallet.io/", "_blank");
-        }
-        break;
       case "yoroi":
         // Check if Yoroi wallet is installed
         if (window.cardano && window.cardano.yoroi) {

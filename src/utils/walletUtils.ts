@@ -6,42 +6,11 @@ export const checkIfEvmWalletIsInstalled = (): boolean => {
   return window.ethereum !== undefined;
 };
 
-export const checkIfNamiIsInstalled = (): boolean => {
-  return window.cardano && window.cardano.nami !== undefined;
-};
-
 export const checkIfYoroiIsInstalled = (): boolean => {
   return window.cardano && window.cardano.yoroi !== undefined;
 };
 
 // Connect to Cardano wallets
-export const connectToNami = async () => {
-  if (!checkIfNamiIsInstalled()) {
-    toast.error("Nami wallet not installed");
-    return null;
-  }
-  
-  try {
-    const namiAPI = await window.cardano.nami.enable();
-    const address = await namiAPI.getChangeAddress();
-    const addressHex = Buffer.from(address, 'hex').toString('hex');
-    
-    toast.success("Nami wallet connected", {
-      description: `Address: ${addressHex.substring(0, 6)}...${addressHex.substring(addressHex.length - 4)}`
-    });
-    
-    return {
-      account: addressHex,
-      chainId: null,
-      connected: true
-    };
-  } catch (error) {
-    console.error('Nami connection error:', error);
-    toast.error("Failed to connect to Nami wallet");
-    return null;
-  }
-};
-
 export const connectToYoroi = async () => {
   if (!checkIfYoroiIsInstalled()) {
     toast.error("Yoroi wallet not installed");
