@@ -30,6 +30,10 @@ declare global {
         enable: () => Promise<any>;
         isEnabled: () => Promise<boolean>;
       };
+      lace?: {
+        enable: () => Promise<any>;
+        isEnabled: () => Promise<boolean>;
+      };
     };
   }
 }

@@ -2,27 +2,8 @@
 import { toast } from "sonner";
 import { bech32 } from "bech32";
 
-// Extending window interface to include cardano with lace wallet
-// Using interface merging instead of redeclaring the Window interface
-declare global {
-  interface Window {
-    cardano?: {
-      yoroi?: {
-        enable: () => Promise<any>;
-        isEnabled: () => Promise<boolean>;
-      };
-      lace?: {
-        enable: () => Promise<any>;
-        isEnabled: () => Promise<boolean>;
-      };
-      nami?: {
-        enable: () => Promise<any>;
-        isEnabled: () => Promise<boolean>;
-      };
-      [key: string]: any;
-    };
-  }
-}
+// We won't redeclare the Window interface here to avoid conflicts
+// The types are already defined in src/types/web3Types.ts
 
 // Check if different wallet types are installed
 export const checkIfEvmWalletIsInstalled = (): boolean => {
@@ -30,13 +11,13 @@ export const checkIfEvmWalletIsInstalled = (): boolean => {
 };
 
 export const checkIfCaradanoWalletIsInstalled = (
-  walletName: "yoroi" | "lace"
+  walletName: "yoroi" | "lace" | "nami"
 ): boolean => {
   return window.cardano && window.cardano[walletName] !== undefined;
 };
 
 // Connect to Cardano wallets
-export const connectToCardanoWallet = async (walletName: "yoroi" | "lace") => {
+export const connectToCardanoWallet = async (walletName: "yoroi" | "lace" | "nami") => {
   if (!checkIfCaradanoWalletIsInstalled(walletName)) {
     toast.error(
       `${
@@ -47,7 +28,8 @@ export const connectToCardanoWallet = async (walletName: "yoroi" | "lace") => {
   }
 
   try {
-    const walletApi = await window.cardano[walletName].enable();
+    // Type assertion to handle dynamic wallet access 
+    const walletApi = await (window.cardano as any)[walletName].enable();
     const addressHex = await walletApi.getChangeAddress();
 
     const address = hexToBech32(addressHex);

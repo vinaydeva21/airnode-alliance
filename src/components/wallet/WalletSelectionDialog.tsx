@@ -114,9 +114,8 @@ const WalletOption: React.FC<WalletOptionProps> = ({ wallet, onConnect }) => {
         }
         break;
       case "lace":
-        // Check if Lace wallet is installed - use type assertion to avoid TypeScript error
-        const cardanoWithLace = window.cardano as any;
-        if (cardanoWithLace && cardanoWithLace.lace) {
+        // No need for type assertion anymore since we properly updated the type
+        if (window.cardano && window.cardano.lace) {
           onConnect(wallet.id);
         } else {
           // Redirect to Lace wallet website
