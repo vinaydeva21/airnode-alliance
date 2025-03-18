@@ -1,5 +1,29 @@
+
 import { toast } from "sonner";
 import { bech32 } from "bech32";
+
+// Extending window interface to include cardano with more comprehensive typing
+declare global {
+  interface Window {
+    ethereum?: any;
+    cardano?: {
+      yoroi?: {
+        enable: () => Promise<any>;
+        isEnabled: () => Promise<boolean>;
+      };
+      lace?: {
+        enable: () => Promise<any>;
+        isEnabled: () => Promise<boolean>;
+      };
+      nami?: {
+        enable: () => Promise<any>;
+        isEnabled: () => Promise<boolean>;
+      };
+      [key: string]: any;
+    };
+  }
+}
+
 // Check if different wallet types are installed
 export const checkIfEvmWalletIsInstalled = (): boolean => {
   return window.ethereum !== undefined;

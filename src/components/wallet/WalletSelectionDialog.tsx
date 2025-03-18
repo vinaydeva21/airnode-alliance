@@ -114,8 +114,9 @@ const WalletOption: React.FC<WalletOptionProps> = ({ wallet, onConnect }) => {
         }
         break;
       case "lace":
-        // Check if Lace wallet is installed
-        if (window.cardano && window.cardano.lace) {
+        // Check if Lace wallet is installed - use type assertion to avoid TypeScript error
+        const cardanoWithLace = window.cardano as any;
+        if (cardanoWithLace && cardanoWithLace.lace) {
           onConnect(wallet.id);
         } else {
           // Redirect to Lace wallet website
