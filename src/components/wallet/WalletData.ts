@@ -32,14 +32,13 @@ export interface WalletAssets {
 export interface WalletInfo {
   id: string;
   name: string;
+  network: "ethereum" | "cardano";
 }
 
 // Mock data
 export const MOCK_WALLETS: WalletInfo[] = [
-  { id: "metamask", name: "MetaMask" },
-  { id: "yoroi", name: "Yoroi Wallet" },
-  { id: "lace", name: "Lace Wallet" },
-  { id: "wmc", name: "World Mobile Wallet" },
+  { id: "yoroi", name: "Yoroi Wallet", network: "cardano" },
+  { id: "lace", name: "Lace Wallet", network: "cardano" },
 ];
 
 export const MOCK_TRANSACTIONS: Transaction[] = [
