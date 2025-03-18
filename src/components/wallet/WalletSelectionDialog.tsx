@@ -1,11 +1,16 @@
-
 import React from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { WalletInfo } from "./WalletData";
 import { toast } from "sonner";
 import { useWeb3 } from "@/contexts/Web3Context";
-import { useConnectModal } from '@rainbow-me/rainbowkit';
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 interface WalletSelectionDialogProps {
   open: boolean;
@@ -18,7 +23,7 @@ export const WalletSelectionDialog: React.FC<WalletSelectionDialogProps> = ({
   open,
   onOpenChange,
   wallets,
-  onConnect
+  onConnect,
 }) => {
   const { openConnectModal } = useConnectModal();
 
@@ -31,7 +36,7 @@ export const WalletSelectionDialog: React.FC<WalletSelectionDialogProps> = ({
             Select a wallet to connect to the AirNode Alliance
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="py-4 flex flex-col gap-3">
           <button
             onClick={() => {
@@ -50,9 +55,9 @@ export const WalletSelectionDialog: React.FC<WalletSelectionDialogProps> = ({
             </div>
             <div className="text-ana-purple">Connect</div>
           </button>
-          
+
           {wallets.map((wallet) => (
-            <WalletOption 
+            <WalletOption
               key={wallet.id}
               wallet={wallet}
               onConnect={onConnect}
@@ -71,13 +76,15 @@ interface WalletOptionProps {
 
 const WalletOption: React.FC<WalletOptionProps> = ({ wallet, onConnect }) => {
   const { web3State } = useWeb3();
-  
+
   const getWalletIcon = (id: string) => {
     switch (id) {
       case "metamask":
         return "🦊";
       case "yoroi":
         return "🔷";
+      case "lace":
+        return "✨";
       case "wmc":
         return "🌐";
       default:
