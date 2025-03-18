@@ -2,10 +2,10 @@
 import { toast } from "sonner";
 import { bech32 } from "bech32";
 
-// Extending window interface to include cardano with more comprehensive typing
+// Extending window interface to include cardano with lace wallet
+// Using interface merging instead of redeclaring the Window interface
 declare global {
   interface Window {
-    ethereum?: any;
     cardano?: {
       yoroi?: {
         enable: () => Promise<any>;
