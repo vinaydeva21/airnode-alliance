@@ -28,9 +28,6 @@ const formSchema = z.object({
   roi: z.coerce.number().min(0, {
     message: "ROI must be positive.",
   }),
-  totalFractions: z.coerce.number().int().min(1, {
-    message: "Total fractions must be at least 1.",
-  }),
 });
 
 export default function MintingTab() {
@@ -45,7 +42,6 @@ export default function MintingTab() {
       uptime: 99.5,
       earnings: 2.5,
       roi: 18.0,
-      totalFractions: 1000,
     },
   });
 
@@ -61,10 +57,10 @@ export default function MintingTab() {
           earnings: values.earnings,
           roi: values.roi,
         },
-        totalFractions: values.totalFractions,
+        totalFractions: 1000, // Set default value for totalFractions
       };
       
-      await mintNFT(values.airNodeId, values.totalFractions, metadata);
+      await mintNFT(values.airNodeId, 1000, metadata); // Use default 1000 fractions
       toast.success("NFT minted successfully!");
       form.reset();
     } catch (error) {
@@ -167,23 +163,6 @@ export default function MintingTab() {
                   )}
                 />
               </div>
-              
-              <FormField
-                control={form.control}
-                name="totalFractions"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Total Fractions</FormLabel>
-                    <FormControl>
-                      <Input type="number" {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      Number of shareable fractions for this NFT
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
               
               <Button 
                 type="submit" 
