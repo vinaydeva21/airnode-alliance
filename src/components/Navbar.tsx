@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Shield } from "lucide-react";
 import Logo from "./Logo";
 import WalletConnect from "./WalletConnect";
 
@@ -37,6 +37,10 @@ const Navbar = () => {
             </Link>
             <Link to="/governance" className="text-white/80 hover:text-white transition-colors">
               Governance
+            </Link>
+            <Link to="/admin" className="text-white/80 hover:text-white transition-colors flex items-center gap-1">
+              <Shield size={16} />
+              Admin
             </Link>
           </div>
           <WalletConnect className="hidden md:block" />
@@ -79,6 +83,14 @@ const Navbar = () => {
               onClick={() => setMobileMenuOpen(false)}
             >
               Governance
+            </Link>
+            <Link 
+              to="/admin" 
+              className="text-white/80 hover:text-white transition-colors py-2 flex items-center gap-1"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <Shield size={16} />
+              Admin
             </Link>
             <div className="pt-2">
               <WalletConnect />

@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import Marketplace from "./pages/Marketplace";
 import Dashboard from "./pages/Dashboard";
 import Governance from "./pages/Governance";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => (
               <Route path="/marketplace" element={<Marketplace />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/governance" element={<Governance />} />
+              <Route path="/admin" element={<Admin />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
