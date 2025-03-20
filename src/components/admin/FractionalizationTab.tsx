@@ -1,9 +1,8 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Divide, Info, DollarSign } from "lucide-react";
+import { Divide, Info } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -24,9 +23,6 @@ const formSchema = z.object({
   fractionCount: z.coerce.number().int().min(1, {
     message: "Fraction count must be at least 1.",
   }),
-  pricePerFraction: z.coerce.number().min(0.01, {
-    message: "Price per fraction must be at least 0.01.",
-  }),
 });
 
 export default function FractionalizationTab() {
@@ -37,7 +33,6 @@ export default function FractionalizationTab() {
     defaultValues: {
       airNodeId: "",
       fractionCount: 1000,
-      pricePerFraction: 0.1,
     },
   });
 
@@ -115,26 +110,6 @@ export default function FractionalizationTab() {
                     </FormControl>
                     <FormDescription>
                       How many fractions to create from this NFT
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="pricePerFraction"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Price per Fraction</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <DollarSign className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-                        <Input className="pl-10" type="number" step="0.01" {...field} />
-                      </div>
-                    </FormControl>
-                    <FormDescription>
-                      Initial listing price for each fraction
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
