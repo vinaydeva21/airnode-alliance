@@ -33,7 +33,8 @@ import { Button } from "@/components/ui/button";
 import { useNFTContract } from "@/hooks/useNFTContract";
 import { NFTMetadata } from "@/types/blockchain";
 import { toast } from "sonner";
-
+import { mintNFTCardano } from "@/lib/cardanoTx";
+import { useWeb3 } from "@/contexts/Web3Context";
 const formSchema = z.object({
   airNodeId: z.string().min(3, {
     message: "AirNode ID must be at least 3 characters.",
@@ -58,6 +59,7 @@ const formSchema = z.object({
 export default function MintingTab() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { mintNFT, loading } = useNFTContract();
+  const { web3State, connect, disconnect } = useWeb3();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -86,7 +88,13 @@ export default function MintingTab() {
         fractions: values.fractionCount,
       };
 
-      await mintNFT(values.airNodeId, values.fractionCount, metadata);
+      // await mintNFT(values.airNodeId, values.fractionCount, metadata);
+      await mintNFTCardano(
+        values.airNodeId,
+        values.fractionCount,
+        metadata,
+        web3State.chainId
+      );
       toast.success("NFT minted successfully!");
       form.reset();
     } catch (error) {

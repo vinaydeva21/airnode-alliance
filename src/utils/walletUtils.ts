@@ -1,4 +1,3 @@
-
 import { toast } from "sonner";
 import { bech32 } from "bech32";
 
@@ -17,7 +16,9 @@ export const checkIfCaradanoWalletIsInstalled = (
 };
 
 // Connect to Cardano wallets
-export const connectToCardanoWallet = async (walletName: "yoroi" | "lace" | "nami") => {
+export const connectToCardanoWallet = async (
+  walletName: "yoroi" | "lace" | "nami"
+) => {
   if (!checkIfCaradanoWalletIsInstalled(walletName)) {
     toast.error(
       `${
@@ -28,7 +29,7 @@ export const connectToCardanoWallet = async (walletName: "yoroi" | "lace" | "nam
   }
 
   try {
-    // Type assertion to handle dynamic wallet access 
+    // Type assertion to handle dynamic wallet access
     const walletApi = await (window.cardano as any)[walletName].enable();
     const addressHex = await walletApi.getChangeAddress();
 
@@ -47,7 +48,7 @@ export const connectToCardanoWallet = async (walletName: "yoroi" | "lace" | "nam
 
     return {
       account: address,
-      chainId: null,
+      chainId: walletApi,
       connected: true,
     };
   } catch (error) {
