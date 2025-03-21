@@ -1,19 +1,18 @@
-
-import { ContractInteractions } from '@/types/blockchain';
-import { Web3State } from '@/types/blockchain';
-import { ethers } from 'ethers';
-import { toast } from 'sonner';
+import { ContractInteractions } from "@/types/blockchain";
+import { Web3State } from "@/types/blockchain";
+import { ethers } from "ethers";
+import { toast } from "sonner";
 
 export const useContractInteractions = (
-  web3State: Web3State, 
+  web3State: Web3State,
   provider: ethers.BrowserProvider | null
 ): ContractInteractions | null => {
   if (!web3State.connected || !provider) return null;
 
   return {
     // NFT Contract interactions
-    mintNFT: async (airNodeId, fractionCount, metadataURI) => {
-      console.log("Minting NFT:", { airNodeId, fractionCount, metadataURI });
+    mintNFT: async (airNodeId, fractionCount, metadata) => {
+      console.log("Minting NFT:", { airNodeId, fractionCount, metadata });
       toast.info("NFT minting process initiated");
     },
     transferNFT: async (fractionId, toAddress) => {
@@ -99,6 +98,6 @@ export const useContractInteractions = (
     liquidateNFT: async (fractionId) => {
       console.log("Liquidating NFT:", fractionId);
       toast.info("Liquidation initiated");
-    }
+    },
   };
 };

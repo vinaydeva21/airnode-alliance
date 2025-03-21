@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { TrendingUp, ShoppingCart, Wallet, Coins } from "lucide-react";
 import Navbar from "@/components/Navbar";
@@ -9,7 +8,7 @@ import { MarketplaceTabs } from "@/components/marketplace/MarketplaceTabs";
 const Marketplace = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("buy");
-  
+
   const airNodes = [
     {
       id: "portal-180",
@@ -22,8 +21,8 @@ const Marketplace = () => {
       performance: {
         uptime: 99.2,
         earnings: 2.4,
-        roi: 18.6
-      }
+        roi: 18.6,
+      },
     },
     {
       id: "portal-360",
@@ -36,8 +35,8 @@ const Marketplace = () => {
       performance: {
         uptime: 98.7,
         earnings: 2.9,
-        roi: 19.2
-      }
+        roi: 19.2,
+      },
     },
     {
       id: "nexus-1",
@@ -50,8 +49,8 @@ const Marketplace = () => {
       performance: {
         uptime: 99.8,
         earnings: 3.6,
-        roi: 22.4
-      }
+        roi: 22.4,
+      },
     },
     {
       id: "nexus-2",
@@ -64,49 +63,53 @@ const Marketplace = () => {
       performance: {
         uptime: 97.9,
         earnings: 3.2,
-        roi: 20.1
-      }
+        roi: 20.1,
+      },
     },
   ];
 
   const lendingOptions = [
-    { 
-      id: "loan-1", 
-      title: "AirNode-Backed Loan", 
+    {
+      id: "loan-1",
+      title: "AirNode-Backed Loan",
       description: "Borrow stablecoins using your AirNode shares as collateral",
       apy: "4.5%",
       ltv: "70%",
       term: "1-12 months",
-      icon: <Wallet className="h-10 w-10 text-ana-purple" />
+      icon: <Wallet className="h-10 w-10 text-ana-purple" />,
     },
-    { 
-      id: "loan-2", 
-      title: "Yield Farming", 
-      description: "Provide liquidity with your ANA tokens and earn enhanced yields",
+    {
+      id: "loan-2",
+      title: "Yield Farming",
+      description:
+        "Provide liquidity with your ANA tokens and earn enhanced yields",
       apy: "16%",
       ltv: "N/A",
       term: "Flexible",
-      icon: <Coins className="h-10 w-10 text-green-400" />
+      icon: <Coins className="h-10 w-10 text-green-400" />,
     },
-    { 
-      id: "loan-3", 
-      title: "ANA Staking", 
-      description: "Stake your ANA tokens to earn rewards and increase governance voting power",
+    {
+      id: "loan-3",
+      title: "ANA Staking",
+      description:
+        "Stake your ANA tokens to earn rewards and increase governance voting power",
       apy: "12%",
       ltv: "N/A",
       term: "30/90/180 days",
-      icon: <TrendingUp className="h-10 w-10 text-blue-400" />
-    }
+      icon: <TrendingUp className="h-10 w-10 text-blue-400" />,
+    },
   ];
 
   return (
     <NetworkBackground>
       <Navbar />
-      
+
       <div className="pt-24 pb-20 px-4">
         <div className="container mx-auto">
-          <h1 className="text-3xl font-bold text-white mb-8">AirNode Marketplace</h1>
-          
+          <h1 className="text-3xl font-bold text-white mb-8">
+            AirNode Marketplace
+          </h1>
+
           <MarketplaceTabs
             activeTab={activeTab}
             setActiveTab={setActiveTab}
@@ -117,7 +120,7 @@ const Marketplace = () => {
           />
         </div>
       </div>
-      
+
       <Footer />
     </NetworkBackground>
   );
