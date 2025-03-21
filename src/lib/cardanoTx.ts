@@ -8,7 +8,11 @@ export async function mintNFTCardano(
   metadata: NFTMetadata,
   walletApi: any
 ) {
-  console.log("api", walletApi);
-  const lucid = await Lucid(PROVIDER, NETWORK);
-  lucid.selectWallet.fromAPI(walletApi);
+  try {
+    console.log(metadata);
+    const lucid = await Lucid(PROVIDER, NETWORK);
+    lucid.selectWallet.fromAPI(walletApi);
+  } catch (error: any) {
+    console.log(error);
+  }
 }
