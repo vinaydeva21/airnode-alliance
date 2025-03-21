@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { User, Wallet, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
-import { 
+import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { AuthDialog } from "./wallet/AuthDialog";
 import { StakingDialog } from "./wallet/StakingDialog";
@@ -15,9 +15,9 @@ import { TransactionHistoryDialog } from "./wallet/TransactionHistoryDialog";
 import { MyAssetsDialog } from "./wallet/MyAssetsDialog";
 import { WalletDropdownMenu } from "./wallet/WalletDropdownMenu";
 import { WalletSelectionDialog } from "./wallet/WalletSelectionDialog";
-import { 
-  MOCK_WALLETS, 
-  MOCK_TRANSACTIONS, 
+import {
+  MOCK_WALLETS,
+  MOCK_TRANSACTIONS,
   DEFAULT_WALLET_ASSETS,
   truncateAddress,
 } from "./wallet/WalletData";
@@ -39,7 +39,7 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
 
   const handleConnect = async (walletId: string) => {
     setConnecting(true);
-    
+
     try {
       // Connect to the wallet using Web3Context
       await connect(walletId);
@@ -107,7 +107,7 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
           onHistoryClick={() => setTransactionHistoryOpen(true)}
         />
       )}
-      
+
       <AuthDialog
         open={authDialogOpen}
         onOpenChange={setAuthDialogOpen}
@@ -115,19 +115,19 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
         setActiveTab={setAuthTab}
         onSuccess={handleAuthSuccess}
       />
-      
+
       <StakingDialog
         open={stakeDialogOpen}
         onOpenChange={setStakeDialogOpen}
         availableAna={DEFAULT_WALLET_ASSETS.tokens.ana}
       />
-      
+
       <TransactionHistoryDialog
         open={transactionHistoryOpen}
         onOpenChange={setTransactionHistoryOpen}
         transactions={MOCK_TRANSACTIONS}
       />
-      
+
       <MyAssetsDialog
         open={myAssetsDialogOpen}
         onOpenChange={setMyAssetsDialogOpen}
@@ -140,7 +140,7 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
         }}
       />
 
-      <WalletSelectionDialog 
+      <WalletSelectionDialog
         open={walletSelectionOpen}
         onOpenChange={setWalletSelectionOpen}
         wallets={MOCK_WALLETS}
