@@ -1,11 +1,33 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Check, Package, Pin, AlertCircle, Cpu, Divide, ListPlus } from "lucide-react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Check,
+  Package,
+  Pin,
+  AlertCircle,
+  Cpu,
+  Divide,
+  ListPlus,
+} from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useNFTContract } from "@/hooks/useNFTContract";
@@ -28,12 +50,15 @@ const formSchema = z.object({
   roi: z.coerce.number().min(0, {
     message: "ROI must be positive.",
   }),
+  fractionCount: z.coerce.number().int().min(1, {
+    message: "Fraction count must be at least 1.",
+  }),
 });
 
 export default function MintingTab() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { mintNFT, loading } = useNFTContract();
-  
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -42,12 +67,13 @@ export default function MintingTab() {
       uptime: 99.5,
       earnings: 2.5,
       roi: 18.0,
+      fractionCount: 1000,
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
-    
+
     try {
       const metadata: NFTMetadata = {
         airNodeId: values.airNodeId,
@@ -57,10 +83,10 @@ export default function MintingTab() {
           earnings: values.earnings,
           roi: values.roi,
         },
-        totalFractions: 1000, // Set default value for totalFractions
+        fractions: values.fractionCount,
       };
-      
-      await mintNFT(values.airNodeId, 1000, metadata); // Use default 1000 fractions
+
+      await mintNFT(values.airNodeId, values.fractionCount, metadata);
       toast.success("NFT minted successfully!");
       form.reset();
     } catch (error) {
@@ -80,7 +106,8 @@ export default function MintingTab() {
             Mint New AirNode NFT
           </CardTitle>
           <CardDescription>
-            Create a new AirNode NFT that can be fractionalized and listed on the marketplace
+            Create a new AirNode NFT that can be fractionalized and listed on
+            the marketplace
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -102,7 +129,7 @@ export default function MintingTab() {
                   </FormItem>
                 )}
               />
-              
+
               <FormField
                 control={form.control}
                 name="location"
@@ -119,7 +146,7 @@ export default function MintingTab() {
                   </FormItem>
                 )}
               />
-              
+
               <div className="grid grid-cols-3 gap-4">
                 <FormField
                   control={form.control}
@@ -134,7 +161,7 @@ export default function MintingTab() {
                     </FormItem>
                   )}
                 />
-                
+
                 <FormField
                   control={form.control}
                   name="earnings"
@@ -148,7 +175,7 @@ export default function MintingTab() {
                     </FormItem>
                   )}
                 />
-                
+
                 <FormField
                   control={form.control}
                   name="roi"
@@ -163,10 +190,26 @@ export default function MintingTab() {
                   )}
                 />
               </div>
-              
-              <Button 
-                type="submit" 
-                className="w-full" 
+              <FormField
+                control={form.control}
+                name="fractionCount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Number of Fractions</FormLabel>
+                    <FormControl>
+                      <Input type="number" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      How many fractions to create from this NFT
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button
+                type="submit"
+                className="w-full"
                 disabled={isSubmitting || loading}
               >
                 {isSubmitting ? "Minting..." : "Mint NFT"}
@@ -175,7 +218,7 @@ export default function MintingTab() {
           </Form>
         </CardContent>
       </Card>
-      
+
       <div className="space-y-6">
         <Card className="bg-card/30 backdrop-blur-sm border-ana-purple/20">
           <CardHeader>
@@ -189,36 +232,42 @@ export default function MintingTab() {
                 </div>
                 <div className="flex-1">
                   <p className="font-medium">Create AirNode NFT</p>
-                  <p className="text-sm text-muted-foreground">Mint a new NFT with node metadata</p>
+                  <p className="text-sm text-muted-foreground">
+                    Mint a new NFT with node metadata
+                  </p>
                 </div>
                 <Check className="h-5 w-5 text-green-500" />
               </li>
-              
+
               <li className="flex items-start gap-3">
                 <div className="h-6 w-6 rounded-full bg-ana-purple/20 flex items-center justify-center text-ana-purple mt-0.5">
                   <Divide size={14} />
                 </div>
                 <div className="flex-1">
                   <p className="font-medium">Fractionalize</p>
-                  <p className="text-sm text-muted-foreground">Split the NFT into shareable fractions</p>
+                  <p className="text-sm text-muted-foreground">
+                    Split the NFT into shareable fractions
+                  </p>
                 </div>
                 <Pin className="h-5 w-5 text-yellow-500" />
               </li>
-              
+
               <li className="flex items-start gap-3">
                 <div className="h-6 w-6 rounded-full bg-ana-purple/20 flex items-center justify-center text-ana-purple mt-0.5">
                   <ListPlus size={14} />
                 </div>
                 <div className="flex-1">
                   <p className="font-medium">List on Marketplace</p>
-                  <p className="text-sm text-muted-foreground">Make fractions available for purchase</p>
+                  <p className="text-sm text-muted-foreground">
+                    Make fractions available for purchase
+                  </p>
                 </div>
                 <AlertCircle className="h-5 w-5 text-gray-400" />
               </li>
             </ul>
           </CardContent>
         </Card>
-        
+
         <Card className="bg-card/30 backdrop-blur-sm border-ana-purple/20">
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
@@ -252,7 +301,8 @@ export default function MintingTab() {
           </CardContent>
           <CardFooter>
             <p className="text-xs text-muted-foreground">
-              All AirNodes use energy-efficient hardware with redundant connectivity
+              All AirNodes use energy-efficient hardware with redundant
+              connectivity
             </p>
           </CardFooter>
         </Card>
