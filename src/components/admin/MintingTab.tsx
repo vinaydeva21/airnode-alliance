@@ -85,16 +85,17 @@ export default function MintingTab() {
           earnings: values.earnings,
           roi: values.roi,
         },
-        fractions: values.fractionCount,
+        fractions: BigInt(values.fractionCount),
       };
 
       // await mintNFT(values.airNodeId, values.fractionCount, metadata);
       await mintNFTCardano(
         values.airNodeId,
-        values.fractionCount,
+        BigInt(values.fractionCount),
         metadata,
         web3State.chainId
       );
+      values.airNodeId, values.fractionCount, metadata, web3State.chainId;
       toast.success("NFT minted successfully!");
       form.reset();
     } catch (error) {
