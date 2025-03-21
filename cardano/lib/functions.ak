@@ -76,7 +76,7 @@ pub fn validate_support_campaign(
   datum: CampaignDatum,
 ) {
   let Transaction { outputs, .. } = tx
-  let CampaignDatum { name, goal, fraction, .. } = datum
+  let CampaignDatum { name, goal, fraction } = datum
   let fraction_amount = goal / fraction
 
   let (backer_reward_token, script_reward_token) =

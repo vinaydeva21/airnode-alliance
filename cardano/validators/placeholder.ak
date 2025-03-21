@@ -1,17 +1,18 @@
+use aiken/crypto.{VerificationKeyHash}
 use cardano/address.{Address, Script}
 use cardano/assets.{PolicyId}
 use cardano/transaction.{Input, Output, OutputReference, Transaction}
 use functions
 use types.{CampaignDatum}
 
-validator placeholder {
+validator placeholder(owner: VerificationKeyHash) {
   mint(redeemer: CampaignDatum, policy_id: PolicyId, tx: Transaction) {
     let Transaction { outputs, .. } = tx
-    let CampaignDatum { creator, name, .. } = redeemer
+    let CampaignDatum { name, .. } = redeemer
 
     // let creator_address: Address = functions.address_from_tuple(creator)
     and {
-      functions.must_be_signed_by(tx, creator.1st),
+      functions.must_be_signed_by(tx, owner),
       functions.find_script_outputs(outputs, policy_id, name),
       functions.reward_token(tx, policy_id, redeemer),
     }

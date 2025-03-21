@@ -9,6 +9,5 @@ pub type StakeKeyHash =
 pub type CampaignDatum {
   name: ByteArray,
   goal: Int,
-  creator: (PaymentKeyHash, StakeKeyHash),
   fraction: Int,
 }
