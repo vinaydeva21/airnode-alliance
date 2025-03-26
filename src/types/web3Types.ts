@@ -24,6 +24,7 @@ interface Cardano {
   lace?: CardanoWallet;
 }
 
+// Properly declare the window interface extension
 declare global {
   interface Window {
     ethereum?: {
@@ -33,6 +34,6 @@ declare global {
       removeListener: (eventName: string, callback: (...args: any[]) => void) => void;
       selectedAddress?: string;
     };
-    cardano?: Cardano;
+    cardano?: Cardano; // Using optional chaining operator to make it nullable
   }
 }
