@@ -12,6 +12,18 @@ export interface WalletProviderProps {
   children: React.ReactNode;
 }
 
+// Define the Cardano interface before extending Window
+interface CardanoWallet {
+  enable: () => Promise<any>;
+  isEnabled: () => Promise<boolean>;
+}
+
+interface Cardano {
+  nami?: CardanoWallet;
+  yoroi?: CardanoWallet;
+  lace?: CardanoWallet;
+}
+
 declare global {
   interface Window {
     ethereum?: {
@@ -21,19 +33,6 @@ declare global {
       removeListener: (eventName: string, callback: (...args: any[]) => void) => void;
       selectedAddress?: string;
     };
-    cardano?: {
-      nami?: {
-        enable: () => Promise<any>;
-        isEnabled: () => Promise<boolean>;
-      };
-      yoroi?: {
-        enable: () => Promise<any>;
-        isEnabled: () => Promise<boolean>;
-      };
-      lace?: {
-        enable: () => Promise<any>;
-        isEnabled: () => Promise<boolean>;
-      };
-    };
+    cardano?: Cardano;
   }
 }

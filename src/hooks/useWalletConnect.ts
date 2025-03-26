@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Web3State } from "@/types/blockchain";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
@@ -27,7 +28,7 @@ export const useWalletConnect = () => {
     if (isConnected && address) {
       setWeb3State({
         account: address,
-        chainId: chainId,
+        chainId: chainId || null, // Convert undefined to null
         connected: true,
       });
     }
@@ -37,28 +38,31 @@ export const useWalletConnect = () => {
   useEffect(() => {
     const initProvider = async () => {
       if (checkIfEvmWalletIsInstalled()) {
-        const ethersProvider = new ethers.BrowserProvider(window.ethereum);
-        setProvider(ethersProvider);
+        // Only create the provider if window.ethereum exists
+        if (window.ethereum) {
+          const ethersProvider = new ethers.BrowserProvider(window.ethereum);
+          setProvider(ethersProvider);
 
-        window.ethereum.on("accountsChanged", (accounts: string[]) => {
-          if (accounts.length === 0) {
-            disconnect();
-          } else {
+          window.ethereum.on("accountsChanged", (accounts: string[]) => {
+            if (accounts.length === 0) {
+              disconnect();
+            } else {
+              setWeb3State((prev) => ({
+                ...prev,
+                account: accounts[0],
+              }));
+            }
+          });
+
+          window.ethereum.on("chainChanged", (chainId: string) => {
+            const decimalChainId = parseInt(chainId, 16);
             setWeb3State((prev) => ({
               ...prev,
-              account: accounts[0],
+              chainId: decimalChainId,
             }));
-          }
-        });
-
-        window.ethereum.on("chainChanged", (chainId: string) => {
-          const decimalChainId = parseInt(chainId, 16);
-          setWeb3State((prev) => ({
-            ...prev,
-            chainId: decimalChainId,
-          }));
-          window.location.reload();
-        });
+            window.location.reload();
+          });
+        }
       }
     };
 

@@ -18,6 +18,7 @@ const NetworkBackground: React.FC<NetworkBackgroundProps> = ({ children, classNa
     
     // Set canvas size
     const resize = () => {
+      if (!canvas) return;
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
@@ -38,8 +39,8 @@ const NetworkBackground: React.FC<NetworkBackgroundProps> = ({ children, classNa
       color: string;
       
       constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
+        this.x = Math.random() * (canvas?.width || 0);
+        this.y = Math.random() * (canvas?.height || 0);
         this.size = Math.random() * 2 + 0.5;
         this.speedX = Math.random() * 0.5 - 0.25;
         this.speedY = Math.random() * 0.5 - 0.25;
@@ -50,6 +51,7 @@ const NetworkBackground: React.FC<NetworkBackgroundProps> = ({ children, classNa
       }
       
       update() {
+        if (!canvas) return;
         // Move particles
         this.x += this.speedX;
         this.y += this.speedY;
@@ -63,7 +65,7 @@ const NetworkBackground: React.FC<NetworkBackgroundProps> = ({ children, classNa
       }
       
       draw() {
-        if (!ctx) return;
+        if (!ctx || !canvas) return;
         ctx.fillStyle = this.color;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
@@ -79,6 +81,7 @@ const NetworkBackground: React.FC<NetworkBackgroundProps> = ({ children, classNa
     
     // Connect particles with lines
     function connectParticles() {
+      if (!ctx || !canvas) return;
       const maxDistance = 100;
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
@@ -88,12 +91,12 @@ const NetworkBackground: React.FC<NetworkBackgroundProps> = ({ children, classNa
           
           if (distance < maxDistance) {
             const opacity = 1 - distance / maxDistance;
-            ctx!.strokeStyle = `rgba(140, 82, 255, ${opacity * 0.2})`;
-            ctx!.lineWidth = 0.5;
-            ctx!.beginPath();
-            ctx!.moveTo(particles[i].x, particles[i].y);
-            ctx!.lineTo(particles[j].x, particles[j].y);
-            ctx!.stroke();
+            ctx.strokeStyle = `rgba(140, 82, 255, ${opacity * 0.2})`;
+            ctx.lineWidth = 0.5;
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
           }
         }
       }
@@ -102,6 +105,7 @@ const NetworkBackground: React.FC<NetworkBackgroundProps> = ({ children, classNa
     // Animation loop
     const animate = () => {
       requestAnimationFrame(animate);
+      if (!ctx || !canvas) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
       particles.forEach(particle => {
