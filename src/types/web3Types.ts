@@ -12,7 +12,7 @@ export interface WalletProviderProps {
   children: React.ReactNode;
 }
 
-// Define the Cardano interface before extending Window
+// Define the Cardano interface
 interface CardanoWallet {
   enable: () => Promise<any>;
   isEnabled: () => Promise<boolean>;
