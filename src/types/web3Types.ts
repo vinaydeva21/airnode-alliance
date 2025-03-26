@@ -34,6 +34,6 @@ declare global {
       removeListener: (eventName: string, callback: (...args: any[]) => void) => void;
       selectedAddress?: string;
     };
-    cardano?: Cardano; // Using optional chaining operator to make it nullable
+    cardano?: Cardano;
   }
 }
