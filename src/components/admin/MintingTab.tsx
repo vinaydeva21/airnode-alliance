@@ -37,6 +37,7 @@ import { toast } from "sonner";
 import { mintNFTCardano } from "@/lib/cardanoTx";
 import { useWeb3 } from "@/contexts/Web3Context";
 import { useEthereumContracts } from "@/hooks/useEthereumContracts";
+import { useNavigate } from "react-router-dom";
 
 const formSchema = z.object({
   airNodeId: z.string().min(3, {
@@ -66,6 +67,7 @@ export default function MintingTab() {
   const { mintNFT: mintNFTWithHook, loading } = useNFTContract();
   const { web3State } = useWeb3();
   const { mintNFT: mintEthereumNFT, loading: ethLoading } = useEthereumContracts();
+  const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -123,6 +125,25 @@ export default function MintingTab() {
         if (transaction) {
           setTxHash(transaction.hash);
           console.log("Minted NFT on Ethereum:", transaction.hash);
+          
+          // Show success toast with a link to the marketplace
+          toast.success(
+            <div>
+              NFT minted successfully!
+              <button 
+                className="ml-2 underline text-blue-500" 
+                onClick={() => navigate('/marketplace')}
+              >
+                View in Marketplace
+              </button>
+            </div>,
+            { duration: 5000 }
+          );
+          
+          // Direct user to marketplace after a short delay
+          setTimeout(() => {
+            navigate('/marketplace');
+          }, 2000);
         }
       } else {
         // Use Cardano contracts
@@ -136,10 +157,10 @@ export default function MintingTab() {
         if (transaction) {
           setTxHash(transaction);
           console.log("Minted NFT on Cardano:", transaction);
+          toast.success("NFT minted successfully!");
         }
       }
       
-      toast.success("NFT minted successfully!");
       form.reset();
     } catch (error) {
       console.error("Error minting NFT:", error);

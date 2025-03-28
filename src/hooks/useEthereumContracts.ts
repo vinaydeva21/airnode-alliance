@@ -1,10 +1,11 @@
+
 import { ethers } from "ethers";
 import { useState, useEffect } from "react";
 import { useWeb3 } from "@/contexts/Web3Context";
 import { toast } from "sonner";
-import { MarketplaceListing } from "@/types/blockchain";
+import { MarketplaceListing, NFTMetadata } from "@/types/blockchain";
 
-// Import ABIs (these will be created next)
+// Import ABIs
 import AirNodeNFTAbi from "@/contracts/abis/AirNodeNFT.json";
 import AirNodeMarketplaceAbi from "@/contracts/abis/AirNodeMarketplace.json";
 import ANATokenAbi from "@/contracts/abis/ANAToken.json";
@@ -28,6 +29,7 @@ export const useEthereumContracts = () => {
     token: null,
   });
   const [loading, setLoading] = useState(false);
+  const [mintedNFTs, setMintedNFTs] = useState<any[]>([]);
 
   // Initialize contracts when wallet is connected
   useEffect(() => {
@@ -61,6 +63,24 @@ export const useEthereumContracts = () => {
           marketplace: marketplaceContract,
           token: tokenContract,
         });
+        
+        // Listen for NFT minted event
+        nftContract.on("NFTMinted", (tokenId, airNodeId, fractions, event) => {
+          console.log("NFT Minted event:", tokenId, airNodeId, fractions);
+          const newNFT = {
+            tokenId: tokenId.toString(),
+            airNodeId,
+            fractions: fractions.toString()
+          };
+          setMintedNFTs(prev => [...prev, newNFT]);
+        });
+        
+        return () => {
+          // Remove event listeners on cleanup
+          if (nftContract) {
+            nftContract.removeAllListeners("NFTMinted");
+          }
+        };
       } catch (error) {
         console.error("Failed to initialize contracts:", error);
         toast.error("Failed to connect to blockchain contracts");
@@ -74,16 +94,7 @@ export const useEthereumContracts = () => {
   const mintNFT = async (
     airNodeId: string,
     fractionCount: number,
-    metadata: {
-      airNodeId: string;
-      location: string;
-      performance: {
-        uptime: number;
-        earnings: number;
-        roi: number;
-      };
-      fractions: bigint;
-    }
+    metadata: NFTMetadata
   ) => {
     if (!contracts.nft) {
       toast.error("NFT contract not initialized");
@@ -116,7 +127,25 @@ export const useEthereumContracts = () => {
       );
       
       toast.info("Minting transaction submitted");
-      await tx.wait();
+      const receipt = await tx.wait();
+      console.log("Mint transaction confirmed:", receipt);
+      
+      // Get the token ID from the event
+      const event = receipt.logs
+        .map((log: any) => {
+          try {
+            return contracts.nft?.interface.parseLog(log);
+          } catch (e) {
+            return null;
+          }
+        })
+        .find((event: any) => event && event.name === "NFTMinted");
+      
+      if (event) {
+        const tokenId = event.args[0].toString();
+        console.log("Minted token ID:", tokenId);
+      }
+      
       toast.success("NFT minted successfully");
       return tx;
     } catch (error) {
@@ -128,28 +157,33 @@ export const useEthereumContracts = () => {
     }
   };
 
-  // Fractionalize NFT function (this is handled in the ERC1155 contract)
-  const fractionalizeNFT = async (
-    tokenId: number,
-    fractionCount: number
-  ) => {
-    if (!contracts.nft) {
-      toast.error("NFT contract not initialized");
-      return;
+  // Function to get active marketplace listings
+  const getMarketplaceListings = async (): Promise<MarketplaceListing[]> => {
+    if (!contracts.marketplace) {
+      toast.error("Marketplace contract not initialized");
+      return [];
     }
 
-    setLoading(true);
     try {
-      // In our ERC1155 implementation, fractionalization happens at mint time
-      // This function could be used to create additional fractions if needed
-      toast.info("Fractionalization is handled at mint time");
-      return true;
+      const listingIds = await contracts.marketplace.getActiveListings();
+      const listings: MarketplaceListing[] = [];
+
+      for (const id of listingIds) {
+        const listing = await contracts.marketplace.listings(id);
+        listings.push({
+          fractionId: listing.fractionId.toString(),
+          seller: listing.seller,
+          price: Number(ethers.formatEther(listing.price)),
+          type: listing.listingType === 0 ? "sale" : "lease",
+          leaseDuration: listing.leaseDuration ? Number(listing.leaseDuration) : undefined
+        });
+      }
+
+      return listings;
     } catch (error) {
-      console.error("Error fractionalizing NFT:", error);
-      toast.error("Failed to fractionalize NFT");
-      throw error;
-    } finally {
-      setLoading(false);
+      console.error("Error getting marketplace listings:", error);
+      toast.error("Failed to fetch marketplace listings");
+      return [];
     }
   };
 
@@ -206,32 +240,23 @@ export const useEthereumContracts = () => {
     }
   };
 
-  // Function to get active marketplace listings
-  const getMarketplaceListings = async (): Promise<MarketplaceListing[]> => {
-    if (!contracts.marketplace) {
-      toast.error("Marketplace contract not initialized");
+  // Function to get user's minted NFTs
+  const getUserMintedNFTs = async () => {
+    if (!contracts.nft || !web3State.account) {
       return [];
     }
 
     try {
-      const listingIds = await contracts.marketplace.getActiveListings();
-      const listings: MarketplaceListing[] = [];
-
-      for (const id of listingIds) {
-        const listing = await contracts.marketplace.listings(id);
-        listings.push({
-          fractionId: listing.fractionId.toString(),
-          seller: listing.seller,
-          price: Number(ethers.formatEther(listing.price)),
-          type: listing.listingType === 0 ? "sale" : "lease",
-          leaseDuration: listing.leaseDuration ? Number(listing.leaseDuration) : undefined
-        });
+      // This is a simplified approach - in a real app, you'd query events or have a more sophisticated way
+      // to get the user's NFTs
+      const balance = await contracts.nft.balanceOf(web3State.account, 1);
+      if (balance > 0) {
+        // User has some NFTs
+        return [{ tokenId: "1", balance: balance.toString() }];
       }
-
-      return listings;
+      return [];
     } catch (error) {
-      console.error("Error getting marketplace listings:", error);
-      toast.error("Failed to fetch marketplace listings");
+      console.error("Error getting user NFTs:", error);
       return [];
     }
   };
@@ -240,8 +265,10 @@ export const useEthereumContracts = () => {
     contracts,
     loading,
     mintNFT,
-    fractionalizeNFT,
+    mintedNFTs,
+    fractionalizeNFT: async () => true, // This is handled at mint time
     listNFTOnMarketplace,
     getMarketplaceListings,
+    getUserMintedNFTs
   };
 };
