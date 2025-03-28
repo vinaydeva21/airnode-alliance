@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,6 +36,7 @@ import { toast } from "sonner";
 import { useWeb3 } from "@/contexts/Web3Context";
 import { useEthereumContracts } from "@/hooks/useEthereumContracts";
 import { useNavigate } from "react-router-dom";
+import { connectToEthereumNFTContract, mintEthereumNFT } from "@/config/scripts/scripts";
 
 const formSchema = z.object({
   airNodeId: z.string().min(3, {
@@ -61,7 +63,7 @@ export default function MintingTab() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [txHash, setTxHash] = useState<string | null>(null);
   const { web3State } = useWeb3();
-  const { mintNFT: mintEthereumNFT, loading: ethLoading } = useEthereumContracts();
+  const { mintNFT: mintEthereumNFTFromHook, loading: ethLoading } = useEthereumContracts();
   const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -105,19 +107,18 @@ export default function MintingTab() {
         metadata
       });
       
-      // Use Ethereum contracts
+      // Call direct mint function to ensure MetaMask popup
+      toast.info("Requesting wallet confirmation...");
       const transaction = await mintEthereumNFT(
         values.airNodeId, 
         values.fractionCount, 
         metadata
       );
       
-      // Extract and set tx hash
       if (transaction) {
         setTxHash(transaction.hash);
         console.log("Minted NFT on Ethereum:", transaction.hash);
         
-        // Show success toast with a link to the marketplace
         toast.success(
           <div>
             NFT minted successfully!
@@ -134,13 +135,13 @@ export default function MintingTab() {
         // Direct user to marketplace after a short delay
         setTimeout(() => {
           navigate('/marketplace');
-        }, 2000);
+        }, 3000);
       }
       
       form.reset();
     } catch (error) {
       console.error("Error minting NFT:", error);
-      toast.error("Failed to mint NFT");
+      toast.error("Failed to mint NFT. Please check your wallet and try again.");
     } finally {
       setIsSubmitting(false);
     }

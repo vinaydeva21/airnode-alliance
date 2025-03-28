@@ -1,3 +1,4 @@
+
 import { Lucid, Network, Blockfrost, LucidEvolution } from "@lucid-evolution/lucid";
 import {
   BLOCKFROST_ID,
@@ -34,10 +35,13 @@ export const mintingValidator = plutus.mint_token_placeholder_mint || {};
 // Connect to Ethereum contract
 export const connectToEthereumNFTContract = async () => {
   if (!window.ethereum) {
-    throw new Error("Ethereum provider not found");
+    throw new Error("Ethereum provider not found. Please install MetaMask or another compatible wallet.");
   }
   
   try {
+    // Request account access if needed
+    await window.ethereum.request({ method: 'eth_requestAccounts' });
+    
     const provider = new ethers.BrowserProvider(window.ethereum);
     const signer = await provider.getSigner();
     
@@ -81,7 +85,7 @@ export const mintEthereumNFT = async (
 
     console.log("Minting NFT with metadata:", metadataStruct);
     
-    // Call the contract's mintNFT function
+    // This will trigger the MetaMask popup
     const tx = await nftContract.mintNFT(
       metadata.airNodeId,
       fractionCount,

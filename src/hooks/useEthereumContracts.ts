@@ -1,4 +1,3 @@
-
 import { ethers } from "ethers";
 import { useState, useEffect, useCallback } from "react";
 import { useWeb3 } from "@/contexts/Web3Context";
@@ -38,6 +37,9 @@ export const useEthereumContracts = () => {
       if (!web3State.connected || !window.ethereum) return;
 
       try {
+        // Request accounts access
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        
         const provider = new ethers.BrowserProvider(window.ethereum);
         const signer = await provider.getSigner();
 
@@ -95,46 +97,28 @@ export const useEthereumContracts = () => {
     initContracts();
   }, [web3State.connected]);
 
-  // Mint NFT function - use the one from scripts.ts
+  // Mint NFT function using direct contract call to ensure MetaMask popup
   const mintNFT = async (
     airNodeId: string,
     fractionCount: number,
     metadata: NFTMetadata
   ) => {
-    if (!contracts.nft) {
-      toast.error("NFT contract not initialized");
+    if (!web3State.connected) {
+      toast.error("Please connect your wallet first");
       return;
     }
 
     setLoading(true);
     try {
       toast.info("Preparing mint transaction...");
+      
+      // Direct call to contract via script to ensure MetaMask popup
       const tx = await mintNFTFromScripts(airNodeId, fractionCount, metadata);
       
       toast.info("Minting transaction submitted");
-      const receipt = await tx.wait();
-      console.log("Mint transaction confirmed:", receipt);
       
-      // Process event data if needed
-      const events = receipt.logs.map((log: any) => {
-        try {
-          return contracts.nft?.interface.parseLog({
-            topics: log.topics,
-            data: log.data
-          });
-        } catch (e) {
-          return null;
-        }
-      }).filter(Boolean);
+      // The receipt and event processing will be handled by the NFTMinted event listener
       
-      const mintEvent = events.find((event: any) => event && event.name === "NFTMinted");
-      
-      if (mintEvent) {
-        const tokenId = mintEvent.args[0].toString();
-        console.log("Minted token ID:", tokenId);
-      }
-      
-      toast.success("NFT minted successfully");
       return tx;
     } catch (error) {
       console.error("Error minting NFT:", error);
