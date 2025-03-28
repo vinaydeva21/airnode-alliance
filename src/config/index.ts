@@ -2,11 +2,11 @@
 // Import CML instead of directly importing Network and Provider
 import { CML } from "@lucid-evolution/lucid";
 
-export const BF_URL = process.env.NEXT_PUBLIC_BF_URL!;
-export const BF_PID = process.env.NEXT_PUBLIC_BF_PID!;
-const NETWORKx = process.env.NEXT_PUBLIC_CARDANO_NETWORK as string;
+export const BF_URL = process.env.NEXT_PUBLIC_BF_URL || '';
+export const BF_PID = process.env.NEXT_PUBLIC_BF_PID || '';
+const NETWORKx = process.env.NEXT_PUBLIC_CARDANO_NETWORK as string || '';
 
-export const NETWORK: string = NETWORKx;
+export const NETWORK: string = NETWORKx || 'Preprod';
 // Use the provider differently since Blockfrost is not directly exported
 export const PROVIDER = { url: BF_URL, projectId: BF_PID };
 

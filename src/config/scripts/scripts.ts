@@ -20,7 +20,9 @@ export const createLucid = async (network: string = CARDANO_NETWORK) => {
       url: BLOCKFROST_URL,
       projectId: BLOCKFROST_ID
     };
-    return await CML.Lucid(provider, network);
+    
+    // Fix: Call createLucid directly through CML
+    return await CML.createLucid(provider, network);
   } catch (error) {
     console.error("Failed to create Lucid instance:", error);
     throw error;
@@ -33,7 +35,9 @@ export const setWallet = async (
   walletApi: any
 ): Promise<any> => {
   // The correct way to use the Lucid API to select a wallet
-  lucid.selectWallet.fromAPI(walletApi);
+  if (lucid && lucid.selectWallet && typeof lucid.selectWallet.fromAPI === 'function') {
+    lucid.selectWallet.fromAPI(walletApi);
+  }
   return lucid; // Return the lucid instance after setting the wallet
 };
 

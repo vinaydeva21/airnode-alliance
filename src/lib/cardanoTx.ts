@@ -19,7 +19,7 @@ export const mintNFTCardano = async (
     toast.info("Connecting to Cardano wallet...");
     
     // Get the first available wallet
-    const availableWallets = Object.keys(window.cardano)
+    const availableWallets = Object.keys(window.cardano || {})
       .filter(key => typeof window.cardano?.[key]?.enable === 'function');
     
     if (availableWallets.length === 0) {
@@ -29,7 +29,7 @@ export const mintNFTCardano = async (
 
     // Select the first available wallet
     const walletKey = availableWallets[0];
-    const wallet = window.cardano[walletKey];
+    const wallet = window.cardano?.[walletKey];
     
     if (!wallet) {
       toast.error(`Selected wallet ${walletKey} not found`);
@@ -39,7 +39,7 @@ export const mintNFTCardano = async (
     // Enable the wallet
     const api = await wallet.enable();
     
-    // Create Lucid instance
+    // Create Lucid instance with updated function
     const lucid = await createLucid();
     
     // Set the wallet
