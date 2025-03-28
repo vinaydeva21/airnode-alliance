@@ -1,9 +1,10 @@
 
 import { ethers } from "ethers";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useWeb3 } from "@/contexts/Web3Context";
 import { toast } from "sonner";
 import { MarketplaceListing, NFTMetadata } from "@/types/blockchain";
+import { connectToEthereumNFTContract, mintEthereumNFT as mintNFTFromScripts } from "@/config/scripts/scripts";
 
 // Import ABIs
 import AirNodeNFTAbi from "@/contracts/abis/AirNodeNFT.json";
@@ -65,14 +66,18 @@ export const useEthereumContracts = () => {
         });
         
         // Listen for NFT minted event
-        nftContract.on("NFTMinted", (tokenId, airNodeId, fractions, event) => {
-          console.log("NFT Minted event:", tokenId, airNodeId, fractions);
+        const nftMintedFilter = nftContract.filters.NFTMinted();
+        
+        nftContract.on(nftMintedFilter, (tokenId, airNodeId, fractions, event) => {
+          console.log("NFT Minted event captured:", tokenId, airNodeId, fractions);
           const newNFT = {
             tokenId: tokenId.toString(),
             airNodeId,
-            fractions: fractions.toString()
+            fractions: fractions.toString(),
+            timestamp: Date.now() // Add timestamp for sorting
           };
           setMintedNFTs(prev => [...prev, newNFT]);
+          toast.success("New NFT minted and added to marketplace!");
         });
         
         return () => {
@@ -90,7 +95,7 @@ export const useEthereumContracts = () => {
     initContracts();
   }, [web3State.connected]);
 
-  // Mint NFT function
+  // Mint NFT function - use the one from scripts.ts
   const mintNFT = async (
     airNodeId: string,
     fractionCount: number,
@@ -103,46 +108,29 @@ export const useEthereumContracts = () => {
 
     setLoading(true);
     try {
-      // Create a metadata URI (in a real app, this would be IPFS or similar)
-      const metadataURI = `https://example.com/metadata/${airNodeId}`;
-      
-      // Convert metadata to contract format
-      const metadataStruct = {
-        airNodeId: metadata.airNodeId,
-        location: metadata.location,
-        performance: {
-          uptime: metadata.performance.uptime,
-          earnings: ethers.parseEther(metadata.performance.earnings.toString()),
-          roi: metadata.performance.roi,
-        },
-        fractions: fractionCount,
-      };
-
       toast.info("Preparing mint transaction...");
-      const tx = await contracts.nft.mintNFT(
-        metadata.airNodeId,
-        fractionCount,
-        metadataURI,
-        metadataStruct
-      );
+      const tx = await mintNFTFromScripts(airNodeId, fractionCount, metadata);
       
       toast.info("Minting transaction submitted");
       const receipt = await tx.wait();
       console.log("Mint transaction confirmed:", receipt);
       
-      // Get the token ID from the event
-      const event = receipt.logs
-        .map((log: any) => {
-          try {
-            return contracts.nft?.interface.parseLog(log);
-          } catch (e) {
-            return null;
-          }
-        })
-        .find((event: any) => event && event.name === "NFTMinted");
+      // Process event data if needed
+      const events = receipt.logs.map((log: any) => {
+        try {
+          return contracts.nft?.interface.parseLog({
+            topics: log.topics,
+            data: log.data
+          });
+        } catch (e) {
+          return null;
+        }
+      }).filter(Boolean);
       
-      if (event) {
-        const tokenId = event.args[0].toString();
+      const mintEvent = events.find((event: any) => event && event.name === "NFTMinted");
+      
+      if (mintEvent) {
+        const tokenId = mintEvent.args[0].toString();
         console.log("Minted token ID:", tokenId);
       }
       
@@ -158,14 +146,15 @@ export const useEthereumContracts = () => {
   };
 
   // Function to get active marketplace listings
-  const getMarketplaceListings = async (): Promise<MarketplaceListing[]> => {
+  const getMarketplaceListings = useCallback(async (): Promise<MarketplaceListing[]> => {
     if (!contracts.marketplace) {
-      toast.error("Marketplace contract not initialized");
+      console.warn("Marketplace contract not initialized");
       return [];
     }
 
     try {
       const listingIds = await contracts.marketplace.getActiveListings();
+      console.log("Retrieved listing IDs:", listingIds);
       const listings: MarketplaceListing[] = [];
 
       for (const id of listingIds) {
@@ -185,6 +174,13 @@ export const useEthereumContracts = () => {
       toast.error("Failed to fetch marketplace listings");
       return [];
     }
+  }, [contracts.marketplace]);
+
+  // Fractionalize NFT (this is handled during mint in the AirNodeNFT contract)
+  const fractionalizeNFT = async () => {
+    // In our implementation, fractionalization happens at mint time
+    // This function exists for API compatibility
+    return true;
   };
 
   // List NFT fractions on marketplace
@@ -241,32 +237,27 @@ export const useEthereumContracts = () => {
   };
 
   // Function to get user's minted NFTs
-  const getUserMintedNFTs = async () => {
+  const getUserMintedNFTs = useCallback(async () => {
     if (!contracts.nft || !web3State.account) {
       return [];
     }
 
     try {
-      // This is a simplified approach - in a real app, you'd query events or have a more sophisticated way
-      // to get the user's NFTs
-      const balance = await contracts.nft.balanceOf(web3State.account, 1);
-      if (balance > 0) {
-        // User has some NFTs
-        return [{ tokenId: "1", balance: balance.toString() }];
-      }
-      return [];
+      // In a real app, you'd query events or have a more sophisticated way
+      // to get the user's NFTs. Here we're just using our local state.
+      return mintedNFTs;
     } catch (error) {
       console.error("Error getting user NFTs:", error);
       return [];
     }
-  };
+  }, [contracts.nft, web3State.account, mintedNFTs]);
 
   return {
     contracts,
     loading,
     mintNFT,
     mintedNFTs,
-    fractionalizeNFT: async () => true, // This is handled at mint time
+    fractionalizeNFT,
     listNFTOnMarketplace,
     getMarketplaceListings,
     getUserMintedNFTs

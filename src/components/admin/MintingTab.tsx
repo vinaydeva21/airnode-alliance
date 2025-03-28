@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,10 +30,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useNFTContract } from "@/hooks/useNFTContract";
 import { NFTMetadata } from "@/types/blockchain";
 import { toast } from "sonner";
-import { mintNFTCardano } from "@/lib/cardanoTx";
 import { useWeb3 } from "@/contexts/Web3Context";
 import { useEthereumContracts } from "@/hooks/useEthereumContracts";
 import { useNavigate } from "react-router-dom";
@@ -62,9 +59,7 @@ const formSchema = z.object({
 
 export default function MintingTab() {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [networkType, setNetworkType] = useState<string>("ethereum");
   const [txHash, setTxHash] = useState<string | null>(null);
-  const { mintNFT: mintNFTWithHook, loading } = useNFTContract();
   const { web3State } = useWeb3();
   const { mintNFT: mintEthereumNFT, loading: ethLoading } = useEthereumContracts();
   const navigate = useNavigate();
@@ -86,6 +81,13 @@ export default function MintingTab() {
     setTxHash(null);
 
     try {
+      // Check if Ethereum wallet is connected
+      if (!web3State.connected || !web3State.account) {
+        toast.error("Please connect your Ethereum wallet first");
+        setIsSubmitting(false);
+        return;
+      }
+      
       const metadata: NFTMetadata = {
         airNodeId: values.airNodeId,
         location: values.location,
@@ -96,69 +98,43 @@ export default function MintingTab() {
         },
         fractions: BigInt(values.fractionCount),
       };
-
-      let transaction;
       
-      // Check network type
-      if (networkType === "ethereum") {
-        // Check if Ethereum wallet is connected
-        if (!web3State.connected || !web3State.account) {
-          toast.error("Please connect your Ethereum wallet first");
-          setIsSubmitting(false);
-          return;
-        }
+      console.log("Minting NFT on Ethereum with:", {
+        airNodeId: values.airNodeId,
+        fractionCount: values.fractionCount,
+        metadata
+      });
+      
+      // Use Ethereum contracts
+      const transaction = await mintEthereumNFT(
+        values.airNodeId, 
+        values.fractionCount, 
+        metadata
+      );
+      
+      // Extract and set tx hash
+      if (transaction) {
+        setTxHash(transaction.hash);
+        console.log("Minted NFT on Ethereum:", transaction.hash);
         
-        console.log("Minting NFT on Ethereum with:", {
-          airNodeId: values.airNodeId,
-          fractionCount: values.fractionCount,
-          metadata
-        });
-        
-        // Use Ethereum contracts
-        transaction = await mintEthereumNFT(
-          values.airNodeId, 
-          values.fractionCount, 
-          metadata
+        // Show success toast with a link to the marketplace
+        toast.success(
+          <div>
+            NFT minted successfully!
+            <button 
+              className="ml-2 underline text-blue-500" 
+              onClick={() => navigate('/marketplace')}
+            >
+              View in Marketplace
+            </button>
+          </div>,
+          { duration: 5000 }
         );
         
-        // Extract and set tx hash
-        if (transaction) {
-          setTxHash(transaction.hash);
-          console.log("Minted NFT on Ethereum:", transaction.hash);
-          
-          // Show success toast with a link to the marketplace
-          toast.success(
-            <div>
-              NFT minted successfully!
-              <button 
-                className="ml-2 underline text-blue-500" 
-                onClick={() => navigate('/marketplace')}
-              >
-                View in Marketplace
-              </button>
-            </div>,
-            { duration: 5000 }
-          );
-          
-          // Direct user to marketplace after a short delay
-          setTimeout(() => {
-            navigate('/marketplace');
-          }, 2000);
-        }
-      } else {
-        // Use Cardano contracts
-        transaction = await mintNFTCardano(
-          values.airNodeId,
-          BigInt(values.fractionCount),
-          metadata,
-          web3State.chainId
-        );
-        
-        if (transaction) {
-          setTxHash(transaction);
-          console.log("Minted NFT on Cardano:", transaction);
-          toast.success("NFT minted successfully!");
-        }
+        // Direct user to marketplace after a short delay
+        setTimeout(() => {
+          navigate('/marketplace');
+        }, 2000);
       }
       
       form.reset();
@@ -184,30 +160,6 @@ export default function MintingTab() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="mb-6">
-            <div className="text-sm font-medium mb-2">Select Network</div>
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                variant={networkType === "ethereum" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setNetworkType("ethereum")}
-                className={networkType === "ethereum" ? "bg-ana-purple hover:bg-ana-purple/90" : ""}
-              >
-                Ethereum
-              </Button>
-              <Button
-                type="button"
-                variant={networkType === "cardano" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setNetworkType("cardano")}
-                className={networkType === "cardano" ? "bg-ana-purple hover:bg-ana-purple/90" : ""}
-              >
-                Cardano
-              </Button>
-            </div>
-          </div>
-
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField
@@ -307,7 +259,7 @@ export default function MintingTab() {
               <Button
                 type="submit"
                 className="w-full bg-ana-purple hover:bg-ana-purple/90"
-                disabled={isSubmitting || loading || ethLoading}
+                disabled={isSubmitting || ethLoading}
               >
                 {isSubmitting ? (
                   <>
@@ -315,7 +267,7 @@ export default function MintingTab() {
                     Minting...
                   </>
                 ) : (
-                  `Mint NFT on ${networkType === "ethereum" ? "Ethereum" : "Cardano"}`
+                  "Mint NFT on Ethereum"
                 )}
               </Button>
             </form>

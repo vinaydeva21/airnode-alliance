@@ -6,6 +6,11 @@ import {
   CARDANO_NETWORK,
 } from "@/config/index";
 import * as plutus from "./plutus";
+import { ethers } from "ethers";
+import AirNodeNFTAbi from "@/contracts/abis/AirNodeNFT.json";
+
+// Ethereum contract address
+const NFT_CONTRACT_ADDRESS = "0xd8b927cf2a1628c087383274bff3b2a011ebaa04";
 
 // Create a Lucid instance
 export const createLucid = async (network: Network = CARDANO_NETWORK as Network) => {
@@ -27,46 +32,90 @@ export const setWallet = async (
 export const AirNodeValidator = plutus.placeholder_placeholder_spend || {};
 export const mintingValidator = plutus.mint_token_placeholder_mint || {};
 
-// Generate transaction for minting NFT
-export const generateMintNFTTx = async (
-  lucid: LucidEvolution,
-  policyId: string,
-  assetName: string,
-  metadata: any,
-  recipient: string
-) => {
+// Connect to Ethereum contract
+export const connectToEthereumNFTContract = async () => {
+  if (!window.ethereum) {
+    throw new Error("Ethereum provider not found");
+  }
+  
   try {
-    // Implementation would reference the correct plutus validator
-    // This is a placeholder since we don't have the actual plutus validators yet
-    console.log("Generating mint NFT transaction");
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
     
-    // Return mock transaction for now
-    return {
-      txHash: "mock_tx_hash",
-      submit: async () => "submitted_tx_hash"
-    };
+    // Connect to the NFT contract
+    const nftContract = new ethers.Contract(
+      NFT_CONTRACT_ADDRESS,
+      AirNodeNFTAbi.abi,
+      signer
+    );
+    
+    return nftContract;
   } catch (error) {
-    console.error("Error generating mint NFT tx:", error);
+    console.error("Error connecting to Ethereum NFT contract:", error);
     throw error;
   }
 };
 
-// Generate transaction for marketplace listing
-export const generateMarketplaceListingTx = async (
-  lucid: LucidEvolution,
-  policyId: string,
-  assetName: string,
-  price: bigint,
-  seller: string
+// Mint NFT on Ethereum
+export const mintEthereumNFT = async (
+  airNodeId: string,
+  fractionCount: number,
+  metadata: any
 ) => {
   try {
-    // Implementation would reference the correct plutus validator
-    console.log("Generating marketplace listing transaction");
+    const nftContract = await connectToEthereumNFTContract();
     
-    // Return mock transaction for now
+    // Create a metadata URI (in a real app, this would be IPFS or similar)
+    const metadataURI = `https://example.com/metadata/${airNodeId}`;
+    
+    // Convert metadata to contract format
+    const metadataStruct = {
+      airNodeId: metadata.airNodeId,
+      location: metadata.location,
+      performance: {
+        uptime: metadata.performance.uptime,
+        earnings: ethers.parseEther(metadata.performance.earnings.toString()),
+        roi: metadata.performance.roi,
+      },
+      fractions: fractionCount,
+    };
+
+    console.log("Minting NFT with metadata:", metadataStruct);
+    
+    // Call the contract's mintNFT function
+    const tx = await nftContract.mintNFT(
+      metadata.airNodeId,
+      fractionCount,
+      metadataURI,
+      metadataStruct
+    );
+    
+    console.log("Mint transaction submitted:", tx.hash);
+    const receipt = await tx.wait();
+    console.log("Mint transaction confirmed:", receipt);
+    
+    // Return the transaction for further processing
+    return tx;
+  } catch (error) {
+    console.error("Error minting Ethereum NFT:", error);
+    throw error;
+  }
+};
+
+// Generate transaction for marketplace listing (remove Cardano specifics)
+export const generateMarketplaceListingTx = async (
+  nftContract: ethers.Contract,
+  tokenId: number,
+  price: number
+) => {
+  try {
+    // Implementation would reference the Ethereum marketplace contract
+    console.log("Generating Ethereum marketplace listing transaction");
+    
+    // This would be replaced with actual Ethereum contract calls
     return {
-      txHash: "mock_tx_hash",
-      submit: async () => "submitted_tx_hash"
+      txHash: "eth_mock_tx_hash",
+      submit: async () => "submitted_eth_tx_hash"
     };
   } catch (error) {
     console.error("Error generating marketplace listing tx:", error);

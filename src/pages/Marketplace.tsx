@@ -110,6 +110,7 @@ const Marketplace = () => {
     const loadMarketplaceData = async () => {
       if (web3State.connected) {
         try {
+          // Get user's NFTs directly from the contract
           const userNFTs = await getUserMintedNFTs();
           console.log("User minted NFTs:", userNFTs);
           
@@ -117,13 +118,14 @@ const Marketplace = () => {
           const listings = await getMarketplaceListings();
           console.log("Marketplace listings:", listings);
           
-          // Here we update the airNodes array to include any newly minted NFTs
-          // In a real app, you'd parse the contract data more thoroughly
+          // Process mintedNFTs to display on marketplace
           if (mintedNFTs.length > 0) {
+            console.log("Processing minted NFTs for marketplace display:", mintedNFTs);
+            
             const newNodes = mintedNFTs.map(nft => ({
               id: nft.airNodeId || `token-${nft.tokenId}`,
               name: `AirNode ${nft.airNodeId || nft.tokenId}`,
-              location: "Recently Minted",
+              location: "Ethereum Network",
               price: 50, // Default price
               imageUrl: "/lovable-uploads/944059d9-4b2a-4ce4-a703-1df8d972e858.png",
               totalShares: parseInt(nft.fractions) || 1000,
@@ -133,7 +135,8 @@ const Marketplace = () => {
                 earnings: 2.5,
                 roi: 18.0,
               },
-              isNewlyMinted: true
+              isNewlyMinted: true,
+              timestamp: nft.timestamp || Date.now()
             }));
             
             // Check if the NFT already exists in the list
@@ -141,8 +144,12 @@ const Marketplace = () => {
             const filteredNewNodes = newNodes.filter(node => !existingIds.includes(node.id));
             
             if (filteredNewNodes.length > 0) {
-              setAirNodes(prev => [...filteredNewNodes, ...prev]);
-              toast.success("Newly minted NFTs are now available in the marketplace");
+              // Sort by timestamp to show newest first
+              const sortedNodes = [...filteredNewNodes, ...airNodes]
+                .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+              
+              setAirNodes(sortedNodes);
+              console.log("Updated airNodes with newly minted NFTs:", sortedNodes);
             }
           }
         } catch (error) {

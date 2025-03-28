@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useWeb3 } from "@/contexts/Web3Context";
 import { useEthereumContracts } from "@/hooks/useEthereumContracts";
+import { useNavigate } from "react-router-dom";
 
 // Mock data - in a real app, this would come from a contract call
 const mockNFTs = [
@@ -30,7 +32,8 @@ const formSchema = z.object({
 export default function FractionalizationTab() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { web3State } = useWeb3();
-  const { fractionalizeNFT, loading } = useEthereumContracts();
+  const { fractionalizeNFT, loading, contracts } = useEthereumContracts();
+  const navigate = useNavigate();
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -44,19 +47,28 @@ export default function FractionalizationTab() {
     setIsSubmitting(true);
     
     try {
-      if (web3State.chainId && web3State.chainId > 0) {
-        // Ethereum chain
-        await fractionalizeNFT();
-        toast.success(`Successfully fractionalized token #${values.tokenId} into ${values.fractionCount} fractions`);
-      } else {
-        // Cardano
-        // Here you would call the Cardano fractionalization function
-        // Simulate async operation for now
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        toast.success(`Successfully fractionalized token #${values.tokenId} into ${values.fractionCount} fractions on Cardano`);
+      if (!web3State.connected || !web3State.account) {
+        toast.error("Please connect your Ethereum wallet first");
+        setIsSubmitting(false);
+        return;
       }
       
-      toast.info("Fractions ready to be listed on the marketplace");
+      // Always use Ethereum functionality
+      await fractionalizeNFT();
+      toast.success(`Successfully fractionalized token #${values.tokenId} into ${values.fractionCount} fractions`);
+      
+      toast.info(
+        <div>
+          Fractions ready to be listed on the marketplace
+          <button 
+            className="ml-2 underline text-blue-500" 
+            onClick={() => navigate('/marketplace')}
+          >
+            View in Marketplace
+          </button>
+        </div>
+      );
+      
       form.reset();
     } catch (error) {
       console.error("Error fractionalizing NFT:", error);
