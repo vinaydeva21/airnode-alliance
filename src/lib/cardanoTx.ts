@@ -11,7 +11,7 @@ export const mintNFTCardano = async (
   chainId: number | null
 ) => {
   try {
-    if (!window.cardano) {
+    if (typeof window === 'undefined' || !window.cardano) {
       toast.error("Cardano wallet API not found");
       return;
     }
@@ -20,7 +20,7 @@ export const mintNFTCardano = async (
     
     // Get the first available wallet
     const availableWallets = Object.keys(window.cardano)
-      .filter(key => typeof window.cardano[key]?.enable === 'function');
+      .filter(key => typeof window.cardano?.[key]?.enable === 'function');
     
     if (availableWallets.length === 0) {
       toast.error("No Cardano wallets available");

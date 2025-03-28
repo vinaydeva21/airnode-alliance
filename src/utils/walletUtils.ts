@@ -4,13 +4,13 @@ import { bech32 } from "bech32";
 
 // Check if different wallet types are installed
 export const checkIfEvmWalletIsInstalled = (): boolean => {
-  return typeof window !== 'undefined' && window.ethereum !== undefined;
+  return typeof window !== 'undefined' && !!window.ethereum;
 };
 
 export const checkIfCaradanoWalletIsInstalled = (
   walletName: "yoroi" | "lace" | "nami"
 ): boolean => {
-  return typeof window !== 'undefined' && window.cardano && window.cardano[walletName] !== undefined;
+  return typeof window !== 'undefined' && !!window.cardano && !!window.cardano[walletName];
 };
 
 // Connect to Cardano wallets
