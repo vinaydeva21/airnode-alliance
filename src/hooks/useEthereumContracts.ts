@@ -9,12 +9,11 @@ import AirNodeNFTAbi from "@/contracts/abis/AirNodeNFT.json";
 import AirNodeMarketplaceAbi from "@/contracts/abis/AirNodeMarketplace.json";
 import ANATokenAbi from "@/contracts/abis/ANAToken.json";
 
-// Contract addresses - these should be replaced with actual deployed addresses
+// Contract addresses - using the deployed contract addresses
 const CONTRACT_ADDRESSES = {
-  // Replace these with your deployed contract addresses once available
-  NFT: "0x0000000000000000000000000000000000000000",
-  MARKETPLACE: "0x0000000000000000000000000000000000000000",
-  TOKEN: "0x0000000000000000000000000000000000000000",
+  NFT: "0xd8b927cf2a1628c087383274bff3b2a011ebaa04",
+  MARKETPLACE: "0x04dfdc0a81b9aedeb2780ee1ba4723c88fb57ace",
+  TOKEN: "0xc2fdc83aea820f75dc1e89e8c92c3d451d90fca9",
 };
 
 export const useEthereumContracts = () => {

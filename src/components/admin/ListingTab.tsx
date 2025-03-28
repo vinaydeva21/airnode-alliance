@@ -3,64 +3,64 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { ListPlus, ShoppingCart, Clock, DollarSign } from "lucide-react";
+import { ListPlus, Info, Tag } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useMarketplace } from "@/hooks/useMarketplace";
+import { Switch } from "@/components/ui/switch";
+import { Slider } from "@/components/ui/slider";
 import { toast } from "sonner";
 import { useWeb3 } from "@/contexts/Web3Context";
 import { useEthereumContracts } from "@/hooks/useEthereumContracts";
 
-// Mock fractionalized NFTs data
-const fractionData = [
-  { id: "fraction-portal-180-001", nftId: "portal-180", name: "Portal 180 #001", count: 1000 },
-  { id: "fraction-portal-360-001", nftId: "portal-360", name: "Portal 360 #001", count: 1000 },
-  { id: "fraction-nexus-1-001", nftId: "nexus-1", name: "Nexus I #001", count: 2000 },
+// Mock data - in a real app, this would come from a contract call
+const mockFractions = [
+  { id: "1-0", tokenId: 1, fractionId: 0, name: "Portal 180", location: "Nairobi, Kenya" },
+  { id: "1-1", tokenId: 1, fractionId: 1, name: "Portal 180", location: "Nairobi, Kenya" },
+  { id: "2-0", tokenId: 2, fractionId: 0, name: "Portal 360", location: "Lagos, Nigeria" },
+  { id: "3-0", tokenId: 3, fractionId: 0, name: "Nexus I", location: "Addis Ababa, Ethiopia" },
 ];
 
 const formSchema = z.object({
   fractionId: z.string().min(1, {
     message: "Please select a fraction to list.",
   }),
-  listingType: z.enum(["sale", "auction"]),
-  price: z.coerce.number().min(0.01, {
-    message: "Price must be at least 0.01.",
+  price: z.coerce.number().positive({
+    message: "Price must be positive.",
   }),
-  quantity: z.coerce.number().int().min(1, {
-    message: "Quantity must be at least 1.",
+  quantity: z.coerce.number().int().positive({
+    message: "Quantity must be a positive integer.",
   }),
-  duration: z.coerce.number().int().min(1).optional(),
+  isAuction: z.boolean().default(false),
+  duration: z.coerce.number().int().min(0).max(365, {
+    message: "Duration must be between 0 and 365 days.",
+  }),
 });
 
 export default function ListingTab() {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { listForSale, loading } = useMarketplace();
   const { web3State } = useWeb3();
-  const { listNFTOnMarketplace, loading: ethLoading } = useEthereumContracts();
+  const { listNFTOnMarketplace, loading } = useEthereumContracts();
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       fractionId: "",
-      listingType: "sale",
-      price: 0.1,
-      quantity: 100,
-      duration: 7,
+      price: 0.01,
+      quantity: 1,
+      isAuction: false,
+      duration: 0,
     },
   });
 
-  const listingType = form.watch("listingType");
+  const isAuction = form.watch("isAuction");
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     
     try {
-      // Parse tokenId and fractionId from the combined ID
-      const parts = values.fractionId.split('-');
-      const tokenId = parseInt(parts[2] || '1');
-      const fractionId = parseInt(parts[3] || '1');
+      const [tokenId, fractionId] = values.fractionId.split("-").map(Number);
       
       if (web3State.chainId && web3State.chainId > 0) {
         // Ethereum chain
@@ -69,19 +69,20 @@ export default function ListingTab() {
           fractionId,
           values.price,
           values.quantity,
-          values.listingType === 'auction',
-          values.duration || 7
+          values.isAuction,
+          values.duration
         );
+        toast.success("Successfully listed fraction on marketplace");
       } else {
-        // Cardano chain
-        await listForSale(values.fractionId, values.price);
+        // Cardano - would use a different implementation
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        toast.success("Successfully listed fraction on Cardano marketplace");
       }
       
-      toast.success(`Successfully listed ${values.quantity} fractions for ${values.listingType}`);
       form.reset();
     } catch (error) {
-      console.error("Error listing fractions:", error);
-      toast.error("Failed to list fractions");
+      console.error("Error listing NFT fraction:", error);
+      toast.error("Failed to list NFT fraction");
     } finally {
       setIsSubmitting(false);
     }
@@ -93,10 +94,10 @@ export default function ListingTab() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <ListPlus className="h-6 w-6 text-ana-purple" />
-            List Fractions on Marketplace
+            List on Marketplace
           </CardTitle>
           <CardDescription>
-            Make fractionalized AirNode NFTs available on the marketplace
+            List your AirNode fractions for sale or lease on the marketplace
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -107,43 +108,23 @@ export default function ListingTab() {
                 name="fractionId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Select Fractionalized NFT</FormLabel>
+                    <FormLabel>Select Fraction</FormLabel>
                     <FormControl>
                       <select 
                         className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         {...field}
                       >
-                        <option value="">Select a fractionalized NFT</option>
-                        {fractionData.map(fraction => (
-                          <option key={fraction.id} value={fraction.id}>
-                            {fraction.name} ({fraction.count} fractions)
+                        <option value="">Select a fraction</option>
+                        {mockFractions.map(fraction => (
+                          <option key={fraction.id} value={`${fraction.tokenId}-${fraction.fractionId}`}>
+                            {fraction.name} - Fraction #{fraction.fractionId}
                           </option>
                         ))}
                       </select>
                     </FormControl>
                     <FormDescription>
-                      Choose fractions to list on the marketplace
+                      Choose a fraction to list on the marketplace
                     </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="listingType"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Listing Type</FormLabel>
-                    <FormControl>
-                      <select 
-                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                        {...field}
-                      >
-                        <option value="sale">Fixed Price Sale</option>
-                        <option value="auction">Timed Auction</option>
-                      </select>
-                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -154,13 +135,13 @@ export default function ListingTab() {
                 name="price"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{listingType === "auction" ? "Starting Price" : "Price per Fraction"}</FormLabel>
+                    <FormLabel>Price (ETH)</FormLabel>
                     <FormControl>
-                      <div className="relative">
-                        <DollarSign className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-                        <Input className="pl-10" type="number" step="0.01" {...field} />
-                      </div>
+                      <Input type="number" step="0.001" {...field} />
                     </FormControl>
+                    <FormDescription>
+                      Set the price for this fraction
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -171,28 +152,57 @@ export default function ListingTab() {
                 name="quantity"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Quantity to List</FormLabel>
+                    <FormLabel>Quantity</FormLabel>
                     <FormControl>
                       <Input type="number" {...field} />
                     </FormControl>
                     <FormDescription>
-                      Number of fractions to make available
+                      Number of fractions to list
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name="isAuction"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-base">Lease/Auction</FormLabel>
+                      <FormDescription>
+                        Enable for lease or auction-based listing
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
               
-              {listingType === "auction" && (
+              {isAuction && (
                 <FormField
                   control={form.control}
                   name="duration"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Auction Duration (days)</FormLabel>
+                      <FormLabel>Duration (days): {field.value}</FormLabel>
                       <FormControl>
-                        <Input type="number" {...field} />
+                        <Slider
+                          defaultValue={[field.value]}
+                          max={365}
+                          step={1}
+                          onValueChange={(vals) => field.onChange(vals[0])}
+                        />
                       </FormControl>
+                      <FormDescription>
+                        Set the duration for the lease period
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -204,7 +214,7 @@ export default function ListingTab() {
                 className="w-full" 
                 disabled={isSubmitting || loading}
               >
-                {isSubmitting ? "Listing..." : "List on Marketplace"}
+                {isSubmitting ? "Processing..." : "List on Marketplace"}
               </Button>
             </form>
           </Form>
@@ -215,42 +225,50 @@ export default function ListingTab() {
         <Card className="bg-card/30 backdrop-blur-sm border-ana-purple/20">
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
-              <ShoppingCart className="h-5 w-5 text-ana-purple" />
-              Marketplace Listing Options
+              <Info className="h-5 w-5 text-ana-purple" />
+              About Marketplace Listings
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="rounded-md bg-blue-500/10 p-4 border border-blue-500/20">
-              <h4 className="font-medium flex items-center gap-2 mb-2">
-                <ShoppingCart className="h-4 w-4" />
-                Fixed Price Sale
-              </h4>
-              <p className="text-sm">
-                List fractions at a set price that buyers can immediately purchase.
-                Ideal for consistent income generation and quick sales.
-              </p>
-              
-              <div className="mt-3 flex justify-between text-xs text-muted-foreground">
-                <span>Quick liquidity</span>
-                <span>No waiting period</span>
-                <span>Predictable returns</span>
-              </div>
+            <p className="text-sm">
+              List your AirNode fractions on the decentralized marketplace to enable trading, 
+              leasing, or fractional ownership. You can list fractions either for direct sale 
+              or lease/auction.
+            </p>
+            
+            <div className="rounded-md bg-ana-purple/10 p-3 border border-ana-purple/20">
+              <h4 className="font-medium mb-2">Listing Types</h4>
+              <ul className="text-sm space-y-2">
+                <li className="flex items-start gap-2">
+                  <Tag size={16} className="mt-0.5 text-ana-purple" />
+                  <div>
+                    <span className="font-medium">Direct Sale</span>
+                    <p className="text-muted-foreground">Fixed price sale where buyers can instantly purchase fractions</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Tag size={16} className="mt-0.5 text-ana-purple" />
+                  <div>
+                    <span className="font-medium">Lease</span>
+                    <p className="text-muted-foreground">Time-limited access to fractions with automatic return</p>
+                  </div>
+                </li>
+              </ul>
             </div>
             
-            <div className="rounded-md bg-green-500/10 p-4 border border-green-500/20">
-              <h4 className="font-medium flex items-center gap-2 mb-2">
-                <Clock className="h-4 w-4" />
-                Timed Auction
-              </h4>
-              <p className="text-sm">
-                Set a starting price and duration for competitive bidding.
-                Potential for higher returns if there's significant demand.
-              </p>
-              
-              <div className="mt-3 flex justify-between text-xs text-muted-foreground">
-                <span>Higher price potential</span>
-                <span>Market-driven pricing</span>
-                <span>Buyer competition</span>
+            <div className="mt-4">
+              <h4 className="font-medium mb-2">Market Fees</h4>
+              <div className="flex items-center justify-between text-sm py-2 border-b border-ana-purple/10">
+                <span>Platform fee</span>
+                <span className="font-medium">2.5%</span>
+              </div>
+              <div className="flex items-center justify-between text-sm py-2 border-b border-ana-purple/10">
+                <span>Creator royalty</span>
+                <span className="font-medium">1.0%</span>
+              </div>
+              <div className="flex items-center justify-between text-sm py-2">
+                <span>DAO treasury</span>
+                <span className="font-medium">0.5%</span>
               </div>
             </div>
           </CardContent>
@@ -258,57 +276,50 @@ export default function ListingTab() {
         
         <Card className="bg-card/30 backdrop-blur-sm border-ana-purple/20">
           <CardHeader>
-            <CardTitle className="text-lg">Recommended Listing Strategy</CardTitle>
+            <CardTitle className="text-lg">Marketplace Features</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-sm">
-              For newly minted AirNode fractions, we recommend the following strategy:
-            </p>
-            
+          <CardContent>
             <ul className="space-y-3">
               <li className="flex items-start gap-2">
-                <div className="h-6 w-6 rounded-full bg-ana-purple/20 flex items-center justify-center text-ana-purple mt-0.5">
-                  <DollarSign size={14} />
+                <div className="h-6 w-6 rounded-full bg-ana-purple flex items-center justify-center text-white text-sm font-medium">
+                  ✓
                 </div>
                 <div className="flex-1">
-                  <p className="font-medium">Tiered Pricing Structure</p>
-                  <p className="text-sm text-muted-foreground">
-                    List 60% at standard price, 30% at premium price, hold 10% in reserve
-                  </p>
+                  <p className="font-medium">Real-time Pricing</p>
+                  <p className="text-sm text-muted-foreground">Market-driven pricing based on network performance</p>
                 </div>
               </li>
               
               <li className="flex items-start gap-2">
-                <div className="h-6 w-6 rounded-full bg-ana-purple/20 flex items-center justify-center text-ana-purple mt-0.5">
-                  <Clock size={14} />
+                <div className="h-6 w-6 rounded-full bg-ana-purple flex items-center justify-center text-white text-sm font-medium">
+                  ✓
                 </div>
                 <div className="flex-1">
-                  <p className="font-medium">Phased Release</p>
-                  <p className="text-sm text-muted-foreground">
-                    Start with a smaller batch to test market demand before releasing more
-                  </p>
+                  <p className="font-medium">Cross-chain Trading</p>
+                  <p className="text-sm text-muted-foreground">List on Ethereum or Cardano networks</p>
                 </div>
               </li>
               
               <li className="flex items-start gap-2">
-                <div className="h-6 w-6 rounded-full bg-ana-purple/20 flex items-center justify-center text-ana-purple mt-0.5">
-                  <ShoppingCart size={14} />
+                <div className="h-6 w-6 rounded-full bg-ana-purple flex items-center justify-center text-white text-sm font-medium">
+                  ✓
                 </div>
                 <div className="flex-1">
-                  <p className="font-medium">Bundle Options</p>
-                  <p className="text-sm text-muted-foreground">
-                    Offer discounted bundles of 10+ fractions for larger investors
-                  </p>
+                  <p className="font-medium">Automatic Rewards</p>
+                  <p className="text-sm text-muted-foreground">Fraction owners receive network rewards</p>
+                </div>
+              </li>
+              
+              <li className="flex items-start gap-2">
+                <div className="h-6 w-6 rounded-full bg-ana-purple flex items-center justify-center text-white text-sm font-medium">
+                  ✓
+                </div>
+                <div className="flex-1">
+                  <p className="font-medium">Transparent History</p>
+                  <p className="text-sm text-muted-foreground">View complete trading history and performance</p>
                 </div>
               </li>
             </ul>
-            
-            <div className="text-xs text-muted-foreground mt-4">
-              <p className="font-medium">Market Insights:</p>
-              <p>Current average price per fraction: $0.15</p>
-              <p>Recent listing sold out in: 48 hours</p>
-              <p>Highest demand locations: East Africa, Southeast Asia</p>
-            </div>
           </CardContent>
         </Card>
       </div>

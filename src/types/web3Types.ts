@@ -1,39 +1,46 @@
 
-import { ContractInteractions, Web3State } from "@/types/blockchain";
-
-export interface Web3ContextType {
-  web3State: Web3State;
-  contracts: ContractInteractions | null;
-  connect: (walletId: string) => Promise<void>;
-  disconnect: () => void;
+export interface Window {
+  ethereum?: any;
+  cardano: Cardano;
 }
 
-export interface WalletProviderProps {
-  children: React.ReactNode;
+export interface Cardano {
+  enable: () => Promise<CIP30Wallet>;
+  nami?: AnyWallet;
+  eternl?: AnyWallet;
+  flint?: AnyWallet;
+  lace?: AnyWallet;
+  gerowallet?: AnyWallet;
+  typhoncip30?: AnyWallet;
+  [key: string]: AnyWallet | undefined | ((arg: any) => any);
 }
 
-// Define the Cardano interface
-interface CardanoWallet {
-  enable: () => Promise<any>;
-  isEnabled: () => Promise<boolean>;
+export interface AnyWallet {
+  enable: () => Promise<CIP30Wallet>;
+  name?: string;
+  apiVersion?: string;
+  icon?: string;
+  [key: string]: any;
 }
 
-interface Cardano {
-  nami?: CardanoWallet;
-  yoroi?: CardanoWallet;
-  lace?: CardanoWallet;
+export interface CIP30Wallet {
+  getNetworkId: () => Promise<number>;
+  getUtxos: () => Promise<string[] | undefined>;
+  getBalance: () => Promise<any>;
+  getUsedAddresses: () => Promise<string[]>;
+  getUnusedAddresses: () => Promise<string[]>;
+  getChangeAddress: () => Promise<string>;
+  getRewardAddresses: () => Promise<string[]>;
+  signTx: (tx: string, partialSign: boolean) => Promise<string>;
+  signData: (address: string, payload: string) => Promise<any>;
+  submitTx: (tx: string) => Promise<string>;
+  getCollateral: () => Promise<string[] | undefined>;
+  [key: string]: any;
 }
 
-// Properly declare the window interface extension
 declare global {
   interface Window {
-    ethereum?: {
-      isMetaMask?: boolean;
-      request: (request: { method: string; params?: any[] }) => Promise<any>;
-      on: (eventName: string, callback: (...args: any[]) => void) => void;
-      removeListener: (eventName: string, callback: (...args: any[]) => void) => void;
-      selectedAddress?: string;
-    };
-    cardano?: Cardano;
+    ethereum?: any;
+    cardano: Cardano;
   }
 }

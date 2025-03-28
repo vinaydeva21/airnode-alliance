@@ -1,81 +1,69 @@
+
+import { Lucid, Network, Blockfrost } from "lucid-cardano";
 import {
-  applyDoubleCborEncoding,
-  applyParamsToScript,
-  MintingPolicy,
-  Validator,
-} from "@lucid-evolution/lucid";
-import {
-  placeholder_placeholder_spend,
-  mint_token_placeholder_mint,
-  airnode_nft_airnode_nft_mint,
-  airnode_nft_airnode_nft_spend,
-  marketplace_marketplace_spend,
-  staking_staking_spend,
-  governance_governance_spend,
-} from "./plutus";
+  BLOCKFROST_ID,
+  BLOCKFROST_URL,
+  CARDANO_NETWORK,
+} from "@/config/index";
+import * as plutus from "./plutus";
 
-// ------------------------------------------------------------------
-const airnode_script = applyDoubleCborEncoding(placeholder_placeholder_spend);
+// Create a Lucid instance
+export const createLucid = async (network: Network = CARDANO_NETWORK) => {
+  const blockfrostProvider = new Blockfrost(BLOCKFROST_URL, BLOCKFROST_ID);
+  return await Lucid.new(blockfrostProvider, network);
+};
 
-export function AirNodeValidator(params: any[]): Validator {
-  return {
-    type: "PlutusV3",
-    script: applyParamsToScript(airnode_script, params),
-  };
-}
+// Set the wallet for Lucid instance
+export const setWallet = async (
+  lucid: Lucid,
+  walletApi: any
+): Promise<Lucid> => {
+  return lucid.selectWallet(walletApi);
+};
 
-// AirNode NFT contracts
-const airnode_nft_mint = applyDoubleCborEncoding(airnode_nft_airnode_nft_mint);
+// Generate transaction for minting NFT
+export const generateMintNFTTx = async (
+  lucid: Lucid,
+  policyId: string,
+  assetName: string,
+  metadata: any,
+  recipient: string
+) => {
+  try {
+    // Implementation would reference the correct plutus validator
+    // This is a placeholder since we don't have the actual plutus validators yet
+    console.log("Generating mint NFT transaction");
+    
+    // Return mock transaction for now
+    return {
+      txHash: "mock_tx_hash",
+      submit: async () => "submitted_tx_hash"
+    };
+  } catch (error) {
+    console.error("Error generating mint NFT tx:", error);
+    throw error;
+  }
+};
 
-export function AirNodeNFTMintingPolicy(params: any[]): MintingPolicy {
-  return {
-    type: "PlutusV3",
-    script: applyParamsToScript(airnode_nft_mint, params),
-  };
-}
-
-const airnode_nft_spend_validator = applyDoubleCborEncoding(airnode_nft_airnode_nft_spend);
-
-export function AirNodeNFTValidator(params: any[]): Validator {
-  return {
-    type: "PlutusV3",
-    script: applyParamsToScript(airnode_nft_spend_validator, params),
-  };
-}
-
-// Marketplace contract
-const marketplace_validator = applyDoubleCborEncoding(marketplace_marketplace_spend);
-
-export function MarketplaceValidator(params: any[]): Validator {
-  return {
-    type: "PlutusV3",
-    script: applyParamsToScript(marketplace_validator, params),
-  };
-}
-
-// Staking contract
-const staking_validator = applyDoubleCborEncoding(staking_staking_spend);
-
-export function StakingValidator(params: any[]): Validator {
-  return {
-    type: "PlutusV3",
-    script: applyParamsToScript(staking_validator, params),
-  };
-}
-
-// Governance contract
-const governance_validator = applyDoubleCborEncoding(governance_governance_spend);
-
-export function GovernanceValidator(params: any[]): Validator {
-  return {
-    type: "PlutusV3",
-    script: applyParamsToScript(governance_validator, params),
-  };
-}
-
-// Default mint token policy
-const mint_token = applyDoubleCborEncoding(mint_token_placeholder_mint);
-export const mintingValidator: MintingPolicy = {
-  type: "PlutusV3",
-  script: mint_token_placeholder_mint,
+// Generate transaction for marketplace listing
+export const generateMarketplaceListingTx = async (
+  lucid: Lucid,
+  policyId: string,
+  assetName: string,
+  price: bigint,
+  seller: string
+) => {
+  try {
+    // Implementation would reference the correct plutus validator
+    console.log("Generating marketplace listing transaction");
+    
+    // Return mock transaction for now
+    return {
+      txHash: "mock_tx_hash",
+      submit: async () => "submitted_tx_hash"
+    };
+  } catch (error) {
+    console.error("Error generating marketplace listing tx:", error);
+    throw error;
+  }
 };

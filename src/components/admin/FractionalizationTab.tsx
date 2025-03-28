@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,13 +13,13 @@ import { useEthereumContracts } from "@/hooks/useEthereumContracts";
 
 // Mock data - in a real app, this would come from a contract call
 const mockNFTs = [
-  { id: "portal-180", name: "Portal 180", location: "Nairobi, Kenya" },
-  { id: "portal-360", name: "Portal 360", location: "Lagos, Nigeria" },
-  { id: "nexus-1", name: "Nexus I", location: "Addis Ababa, Ethiopia" },
+  { id: "1", tokenId: 1, name: "Portal 180", location: "Nairobi, Kenya" },
+  { id: "2", tokenId: 2, name: "Portal 360", location: "Lagos, Nigeria" },
+  { id: "3", tokenId: 3, name: "Nexus I", location: "Addis Ababa, Ethiopia" },
 ];
 
 const formSchema = z.object({
-  airNodeId: z.string().min(1, {
+  tokenId: z.coerce.number().int().min(1, {
     message: "Please select an AirNode NFT.",
   }),
   fractionCount: z.coerce.number().int().min(1, {
@@ -36,7 +35,7 @@ export default function FractionalizationTab() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      airNodeId: "",
+      tokenId: 0,
       fractionCount: 1000,
     },
   });
@@ -45,19 +44,16 @@ export default function FractionalizationTab() {
     setIsSubmitting(true);
     
     try {
-      // Extract tokenId from airNodeId (this would be different in a real app)
-      const tokenId = parseInt(values.airNodeId.split('-')[1] || '1');
-      
       if (web3State.chainId && web3State.chainId > 0) {
         // Ethereum chain
-        await fractionalizeNFT(tokenId, values.fractionCount);
-        toast.success(`Successfully fractionalized ${values.airNodeId} into ${values.fractionCount} fractions`);
+        await fractionalizeNFT(values.tokenId, values.fractionCount);
+        toast.success(`Successfully fractionalized token #${values.tokenId} into ${values.fractionCount} fractions`);
       } else {
         // Cardano
         // Here you would call the Cardano fractionalization function
         // Simulate async operation for now
         await new Promise(resolve => setTimeout(resolve, 1500));
-        toast.success(`Successfully fractionalized ${values.airNodeId} into ${values.fractionCount} fractions on Cardano`);
+        toast.success(`Successfully fractionalized token #${values.tokenId} into ${values.fractionCount} fractions on Cardano`);
       }
       
       toast.info("Fractions ready to be listed on the marketplace");
@@ -87,7 +83,7 @@ export default function FractionalizationTab() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField
                 control={form.control}
-                name="airNodeId"
+                name="tokenId"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Select AirNode NFT</FormLabel>
@@ -95,11 +91,12 @@ export default function FractionalizationTab() {
                       <select 
                         className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         {...field}
+                        onChange={(e) => field.onChange(parseInt(e.target.value))}
                       >
-                        <option value="">Select an AirNode</option>
+                        <option value={0}>Select an AirNode</option>
                         {mockNFTs.map(nft => (
-                          <option key={nft.id} value={nft.id}>
-                            {nft.name} - {nft.location}
+                          <option key={nft.id} value={nft.tokenId}>
+                            Token #{nft.tokenId} - {nft.name} - {nft.location}
                           </option>
                         ))}
                       </select>
@@ -132,7 +129,7 @@ export default function FractionalizationTab() {
               <Button 
                 type="submit" 
                 className="w-full" 
-                disabled={isSubmitting}
+                disabled={isSubmitting || loading}
               >
                 {isSubmitting ? "Processing..." : "Fractionalize NFT"}
               </Button>
