@@ -1,101 +1,86 @@
-import { NFTMetadata } from "@/types/blockchain";
-import {
-  BigInt,
-  Data,
-  fromText,
-  Lucid,
-  mintingPolicyToId,
-  paymentCredentialOf,
-  validatorToAddress,
-} from "@lucid-evolution/lucid";
-import { NETWORK, PROVIDER } from "../config";
-import { AirNodeValidator, mintingValidator } from "@/config/scripts/scripts";
-import { CampaignDatum } from "@/types/cardano";
 
-export async function mintNFTCardano(
+import { toast } from "sonner";
+import { NFTMetadata } from "@/types/blockchain";
+import { createLucid, setWallet, generateMintNFTTx } from "@/config/scripts/scripts";
+
+// This function would handle minting NFTs on Cardano
+export const mintNFTCardano = async (
   airNodeId: string,
   fractionCount: bigint,
   metadata: NFTMetadata,
-  walletApi: any
-) {
+  chainId: number | null
+) => {
   try {
-    const lucid = await Lucid(PROVIDER, NETWORK);
-    lucid.selectWallet.fromAPI(walletApi);
-    const address = await lucid.wallet().address();
-    // const mintingValidator: MintingPolicy = {
-    //   type: "PlutusV3",
-    //   script: mint_token_placeholder_mint,
-    // };
+    if (!window.cardano) {
+      toast.error("Cardano wallet API not found");
+      return;
+    }
 
-    //     const contractAddress = validatorToAddress(NETWORK, validator);
-    //     const policyId = mintingPolicyToId(validator);
+    toast.info("Connecting to Cardano wallet...");
+    
+    // Get the first available wallet
+    const availableWallets = Object.keys(window.cardano)
+      .filter(key => typeof window.cardano[key]?.enable === 'function');
+    
+    if (availableWallets.length === 0) {
+      toast.error("No Cardano wallets available");
+      return;
+    }
 
-    const policyID = mintingPolicyToId(mintingValidator);
-    const assetName = "AirNode";
-    const fracToken = "Fraction-AirNode";
+    // Select the first available wallet
+    const walletKey = availableWallets[0];
+    const wallet = window.cardano[walletKey];
+    
+    if (!wallet) {
+      toast.error(`Selected wallet ${walletKey} not found`);
+      return;
+    }
 
-    const mintedAssets = { [`${policyID}${fromText(assetName)}`]: 1n };
-    const fractiontoken = {
-      [`${policyID}${fromText(fracToken)}`]: fractionCount,
+    // Enable the wallet
+    const api = await wallet.enable();
+    
+    // Create Lucid instance
+    const lucid = await createLucid();
+    
+    // Set the wallet
+    const lucidWithWallet = await setWallet(lucid, api);
+    
+    // Generate NFT metadata
+    const nftMetadata = {
+      name: `AirNode ${airNodeId}`,
+      description: `Fractionalized AirNode at ${metadata.location}`,
+      image: "ipfs://QmXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", // Placeholder IPFS URI
+      attributes: [
+        { trait_type: "Uptime", value: metadata.performance.uptime },
+        { trait_type: "Earnings", value: metadata.performance.earnings },
+        { trait_type: "ROI", value: metadata.performance.roi },
+        { trait_type: "Fractions", value: fractionCount.toString() }
+      ]
     };
-    const redeemer = Data.void();
-    console.log("refder", redeemer);
-    console.log("pid", policyID);
-
-    const tx = await lucid
-      .newTx()
-      .mintAssets(mintedAssets, redeemer)
-      .mintAssets(fractiontoken, redeemer)
-
-      .attach.MintingPolicy(mintingValidator)
-      .complete();
-
-    const signed = await tx.sign.withWallet().complete();
-    const txHash = await signed.submit();
-    console.log("tx complete", txHash);
+    
+    // Mint NFT (using placeholder values for now)
+    const policyId = "policy123456789";
+    const assetName = `AirNode${airNodeId}`;
+    const recipientAddress = await api.getChangeAddress();
+    
+    toast.info("Preparing mint transaction...");
+    
+    const tx = await generateMintNFTTx(
+      lucidWithWallet,
+      policyId,
+      assetName,
+      nftMetadata,
+      recipientAddress
+    );
+    
+    toast.info("Submitting transaction...");
+    await tx.submit();
+    
+    toast.success("NFT minted successfully on Cardano blockchain");
+    return tx.txHash;
   } catch (error) {
-    console.log(error);
+    console.error("Error minting NFT on Cardano:", error);
+    toast.error("Failed to mint NFT on Cardano blockchain");
+    throw error;
   }
-  // try {
-  //   const lucid = await Lucid(PROVIDER, NETWORK);
-  //   lucid.selectWallet.fromAPI(walletApi);
-  //   const address = await lucid.wallet().address();
-
-  //   const validator = AirNodeValidator([paymentCredentialOf(address).hash]);
-  //   const contractAddress = validatorToAddress(NETWORK, validator);
-  //   const policyId = mintingPolicyToId(validator);
-
-  //   const tokens = {
-  //     [policyId + fromText(airNodeId)]: BigInt(fractionCount),
-  //   };
-
-  //   const redeemer: CampaignDatum = {
-  //     name: fromText(airNodeId),
-  //     goal: BigInt(fractionCount * 4_000_000),
-  //     fraction: BigInt(fractionCount),
-  //   };
-  //   const tx = await lucid
-  //     .newTx()
-  //     .mintAssets(tokens, Data.to(redeemer, CampaignDatum))
-  //     .pay.ToContract(
-  //       contractAddress,
-  //       { kind: "inline", value: Data.to(redeemer, CampaignDatum) },
-  //       { lovelace: 2_000_000n, ...tokens }
-  //     )
-  //     .attach.Script(validator)
-  //     .attachMetadata(721, {
-  //       [policyId]: {
-  //         [airNodeId]: {
-  //           name: airNodeId,
-  //           image: "https://avatars.githubusercontent.com/u/106166350",
-  //           ...metadata,
-  //         },
-  //       },
-  //     })
-  //     .addSigner(address)
-  //     .complete();
-  //   console.log("tx complete");
-  // } catch (error: any) {
-  //   console.log(error);
-  // }
-}
+};

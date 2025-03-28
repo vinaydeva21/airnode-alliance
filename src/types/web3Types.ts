@@ -38,6 +38,26 @@ export interface CIP30Wallet {
   [key: string]: any;
 }
 
+// Web3Context types for React context
+export interface Web3ContextType {
+  web3State: Web3State;
+  provider: any;
+  contracts: any;
+  connect: (walletId: string) => Promise<void>;
+  disconnect: () => Promise<void>;
+}
+
+export interface WalletProviderProps {
+  children: React.ReactNode;
+}
+
+// Web3State type for app state
+export interface Web3State {
+  account: string | null;
+  chainId: number | null;
+  connected: boolean;
+}
+
 declare global {
   interface Window {
     ethereum?: any;

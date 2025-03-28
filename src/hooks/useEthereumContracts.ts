@@ -12,7 +12,7 @@ import ANATokenAbi from "@/contracts/abis/ANAToken.json";
 // Contract addresses - using the deployed contract addresses
 const CONTRACT_ADDRESSES = {
   NFT: "0xd8b927cf2a1628c087383274bff3b2a011ebaa04",
-  MARKETPLACE: "0x04dfdc0a81b9aedeb2780ee1ba4723c88fb57ace",
+  MARKETPLACE: "0x04dfdc0a81b9aedeb2780ee1ba4723c88fb57ace", 
   TOKEN: "0xc2fdc83aea820f75dc1e89e8c92c3d451d90fca9",
 };
 
@@ -107,6 +107,7 @@ export const useEthereumContracts = () => {
         fractions: fractionCount,
       };
 
+      toast.info("Preparing mint transaction...");
       const tx = await contracts.nft.mintNFT(
         metadata.airNodeId,
         fractionCount,
@@ -169,6 +170,7 @@ export const useEthereumContracts = () => {
     setLoading(true);
     try {
       // First, approve the marketplace to transfer the NFT
+      toast.info("Approving marketplace to transfer NFT...");
       const approveTx = await contracts.nft.setApprovalForAll(
         CONTRACT_ADDRESSES.MARKETPLACE,
         true
@@ -182,6 +184,7 @@ export const useEthereumContracts = () => {
       // Determine listing type (fixed price or auction)
       const listingType = isAuction ? 1 : 0; // 0 for Sale, 1 for Lease/Auction
 
+      toast.info("Creating listing on marketplace...");
       const tx = await contracts.marketplace.createListing(
         tokenId,
         fractionId,
@@ -203,11 +206,46 @@ export const useEthereumContracts = () => {
     }
   };
 
+  // Function to get active marketplace listings
+  const getMarketplaceListings = async () => {
+    if (!contracts.marketplace) {
+      toast.error("Marketplace contract not initialized");
+      return [];
+    }
+
+    try {
+      const listingIds = await contracts.marketplace.getActiveListings();
+      const listings = [];
+
+      for (const id of listingIds) {
+        const listing = await contracts.marketplace.listings(id);
+        listings.push({
+          id: id.toString(),
+          tokenId: listing.tokenId.toString(),
+          fractionId: listing.fractionId.toString(),
+          seller: listing.seller,
+          price: ethers.formatEther(listing.price),
+          listingType: listing.listingType === 0 ? "sale" : "lease",
+          leaseDuration: listing.leaseDuration.toString(),
+          timestamp: new Date(Number(listing.timestamp) * 1000).toLocaleString(),
+          active: listing.active
+        });
+      }
+
+      return listings;
+    } catch (error) {
+      console.error("Error getting marketplace listings:", error);
+      toast.error("Failed to fetch marketplace listings");
+      return [];
+    }
+  };
+
   return {
     contracts,
     loading,
     mintNFT,
     fractionalizeNFT,
     listNFTOnMarketplace,
+    getMarketplaceListings,
   };
 };

@@ -1,5 +1,5 @@
 
-import { Lucid, Network, Blockfrost } from "lucid-cardano";
+import { Lucid, Network, Blockfrost } from "@lucid-evolution/lucid";
 import {
   BLOCKFROST_ID,
   BLOCKFROST_URL,
@@ -8,7 +8,7 @@ import {
 import * as plutus from "./plutus";
 
 // Create a Lucid instance
-export const createLucid = async (network: Network = CARDANO_NETWORK) => {
+export const createLucid = async (network: Network = CARDANO_NETWORK as Network) => {
   const blockfrostProvider = new Blockfrost(BLOCKFROST_URL, BLOCKFROST_ID);
   return await Lucid.new(blockfrostProvider, network);
 };
@@ -20,6 +20,10 @@ export const setWallet = async (
 ): Promise<Lucid> => {
   return lucid.selectWallet(walletApi);
 };
+
+// Export validators for use in other files
+export const AirNodeValidator = plutus.airNodeValidator || {};
+export const mintingValidator = plutus.mintingValidator || {};
 
 // Generate transaction for minting NFT
 export const generateMintNFTTx = async (
