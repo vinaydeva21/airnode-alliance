@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,9 +34,8 @@ import { Button } from "@/components/ui/button";
 import { NFTMetadata } from "@/types/blockchain";
 import { toast } from "sonner";
 import { useWeb3 } from "@/contexts/Web3Context";
-import { useEthereumContracts } from "@/hooks/useEthereumContracts";
 import { useNavigate } from "react-router-dom";
-import { connectToEthereumNFTContract } from "@/config/scripts/scripts";
+import { mintEthereumNFT, connectToEthereumNFTContract } from "@/config/scripts/scripts";
 
 const formSchema = z.object({
   airNodeId: z.string().min(3, {
@@ -64,7 +62,6 @@ export default function MintingTab() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [txHash, setTxHash] = useState<string | null>(null);
   const { web3State } = useWeb3();
-  const { contracts, loading: ethLoading } = useEthereumContracts();
   const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -109,85 +106,81 @@ export default function MintingTab() {
         metadata
       });
       
-      // Direct interaction with the contract
-      try {
-        const nftContract = await connectToEthereumNFTContract();
-        if (!nftContract) {
-          throw new Error("NFT contract connection failed");
-        }
-        
-        // Create a metadata URI (in a real app, this would be IPFS or similar)
-        const metadataJSON = JSON.stringify({
-          airNodeId: values.airNodeId,
-          location: values.location,
-          performance: {
-            uptime: values.uptime,
-            earnings: values.earnings,
-            roi: values.roi
-          },
-          totalFractions: values.fractionCount
-        });
-        
-        const metadataURI = `data:application/json;base64,${btoa(metadataJSON)}`;
-        
-        // Convert metadata to contract format
-        const metadataStruct = {
-          airNodeId: metadata.airNodeId,
-          location: metadata.location,
-          performance: {
-            uptime: metadata.performance.uptime,
-            earnings: ethers.parseEther(metadata.performance.earnings.toString()),
-            roi: metadata.performance.roi,
-          },
-          fractions: values.fractionCount,
-        };
-        
-        toast.info("Please confirm the transaction in your wallet...");
-        
-        // This will trigger the MetaMask popup
-        const tx = await nftContract.mintNFT(
-          metadata.airNodeId,
-          values.fractionCount,
-          metadataURI,
-          metadataStruct
-        );
-        
-        toast.info("Transaction submitted, waiting for confirmation...");
-        console.log("Mint transaction submitted:", tx.hash);
-        
-        setTxHash(tx.hash);
-        
-        // Wait for transaction confirmation
-        const receipt = await tx.wait();
-        console.log("Mint transaction confirmed:", receipt);
-        
-        toast.success(
-          <div>
-            NFT minted successfully!
-            <button 
-              className="ml-2 underline text-blue-500" 
-              onClick={() => navigate('/marketplace')}
-            >
-              View in Marketplace
-            </button>
-          </div>,
-          { duration: 5000 }
-        );
-        
-        // Reset form
-        form.reset();
-        
-        // Direct user to marketplace after a short delay
-        setTimeout(() => {
-          navigate('/marketplace');
-        }, 3000);
-      } catch (error: any) {
-        console.error("Contract interaction error:", error);
-        toast.error(error.message || "Failed to mint NFT. Please check your wallet and try again.");
+      // Connect directly to the NFT contract
+      const nftContract = await connectToEthereumNFTContract();
+      
+      if (!nftContract) {
+        throw new Error("NFT contract connection failed");
       }
-    } catch (error) {
-      console.error("Error minting NFT:", error);
-      toast.error("Failed to mint NFT. Please check your wallet and try again.");
+      
+      // Create a metadata URI (in a real app, this would be IPFS or similar)
+      const metadataJSON = JSON.stringify({
+        airNodeId: values.airNodeId,
+        location: values.location,
+        performance: {
+          uptime: values.uptime,
+          earnings: values.earnings,
+          roi: values.roi
+        },
+        totalFractions: values.fractionCount
+      });
+      
+      const metadataURI = `data:application/json;base64,${btoa(metadataJSON)}`;
+      
+      // Convert metadata to contract format
+      const metadataStruct = {
+        airNodeId: metadata.airNodeId,
+        location: metadata.location,
+        performance: {
+          uptime: metadata.performance.uptime,
+          earnings: ethers.parseEther(metadata.performance.earnings.toString()),
+          roi: metadata.performance.roi,
+        },
+        fractions: values.fractionCount,
+      };
+      
+      toast.info("Please confirm the transaction in your wallet...");
+      
+      // This will trigger the MetaMask popup
+      const tx = await nftContract.mintNFT(
+        metadata.airNodeId,
+        values.fractionCount,
+        metadataURI,
+        metadataStruct
+      );
+      
+      toast.info("Transaction submitted, waiting for confirmation...");
+      console.log("Mint transaction submitted:", tx.hash);
+      
+      setTxHash(tx.hash);
+      
+      // Wait for transaction confirmation
+      const receipt = await tx.wait();
+      console.log("Mint transaction confirmed:", receipt);
+      
+      toast.success(
+        <div>
+          NFT minted successfully!
+          <button 
+            className="ml-2 underline text-blue-500" 
+            onClick={() => navigate('/marketplace')}
+          >
+            View in Marketplace
+          </button>
+        </div>,
+        { duration: 5000 }
+      );
+      
+      // Reset form
+      form.reset();
+      
+      // Direct user to marketplace after a short delay
+      setTimeout(() => {
+        navigate('/marketplace');
+      }, 3000);
+    } catch (error: any) {
+      console.error("Contract interaction error:", error);
+      toast.error(error.message || "Failed to mint NFT. Please check your wallet and try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -306,7 +299,7 @@ export default function MintingTab() {
               <Button
                 type="submit"
                 className="w-full bg-ana-purple hover:bg-ana-purple/90"
-                disabled={isSubmitting || ethLoading}
+                disabled={isSubmitting}
               >
                 {isSubmitting ? (
                   <>

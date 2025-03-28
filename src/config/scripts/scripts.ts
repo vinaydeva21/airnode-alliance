@@ -1,4 +1,3 @@
-
 import { Lucid, Network, Blockfrost, LucidEvolution } from "@lucid-evolution/lucid";
 import {
   BLOCKFROST_ID,
@@ -32,14 +31,14 @@ export const setWallet = async (
 export const AirNodeValidator = plutus.placeholder_placeholder_spend || {};
 export const mintingValidator = plutus.mint_token_placeholder_mint || {};
 
-// Connect to Ethereum contract
+// Connect to Ethereum contract - this function will trigger MetaMask
 export const connectToEthereumNFTContract = async () => {
   if (!window.ethereum) {
     throw new Error("Ethereum provider not found. Please install MetaMask or another compatible wallet.");
   }
   
   try {
-    // Request account access
+    // This will trigger the MetaMask popup if accounts aren't already connected
     await window.ethereum.request({ method: 'eth_requestAccounts' });
     
     const provider = new ethers.BrowserProvider(window.ethereum);
@@ -47,7 +46,7 @@ export const connectToEthereumNFTContract = async () => {
     
     console.log("Connected to Ethereum with address:", await signer.getAddress());
     
-    // Connect to the NFT contract
+    // Connect to the NFT contract with the signer
     const nftContract = new ethers.Contract(
       NFT_CONTRACT_ADDRESS,
       AirNodeNFTAbi.abi,
@@ -94,7 +93,7 @@ export const mintEthereumNFT = async (
 
     console.log("Minting NFT with metadata:", metadataStruct);
     
-    // This will trigger the MetaMask popup
+    // This will trigger the MetaMask popup for transaction signing
     const tx = await nftContract.mintNFT(
       metadata.airNodeId,
       fractionCount,
@@ -103,10 +102,6 @@ export const mintEthereumNFT = async (
     );
     
     console.log("Mint transaction submitted:", tx.hash);
-    const receipt = await tx.wait();
-    console.log("Mint transaction confirmed:", receipt);
-    
-    // Return the transaction for further processing
     return tx;
   } catch (error) {
     console.error("Error minting Ethereum NFT:", error);
