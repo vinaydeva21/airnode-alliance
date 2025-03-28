@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { TrendingUp, ShoppingCart, Wallet, Coins } from "lucide-react";
 import Navbar from "@/components/Navbar";
@@ -9,12 +8,29 @@ import { useEthereumContracts } from "@/hooks/useEthereumContracts";
 import { useWeb3 } from "@/contexts/Web3Context";
 import { toast } from "sonner";
 
+interface AirNode {
+  id: string;
+  name: string;
+  location: string;
+  price: number;
+  imageUrl: string;
+  totalShares: number;
+  availableShares: number;
+  performance: {
+    uptime: number;
+    earnings: number;
+    roi: number;
+  };
+  timestamp?: number;
+  isNewlyMinted?: boolean;
+}
+
 const Marketplace = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("buy");
   const { getMarketplaceListings, mintedNFTs, getUserMintedNFTs } = useEthereumContracts();
   const { web3State } = useWeb3();
-  const [airNodes, setAirNodes] = useState([
+  const [airNodes, setAirNodes] = useState<AirNode[]>([
     {
       id: "portal-180",
       name: "Portal 180",
@@ -28,6 +44,7 @@ const Marketplace = () => {
         earnings: 2.4,
         roi: 18.6,
       },
+      timestamp: Date.now() - 1000000,
     },
     {
       id: "portal-360",
@@ -42,6 +59,7 @@ const Marketplace = () => {
         earnings: 2.9,
         roi: 19.2,
       },
+      timestamp: Date.now() - 900000,
     },
     {
       id: "nexus-1",
@@ -56,6 +74,7 @@ const Marketplace = () => {
         earnings: 3.6,
         roi: 22.4,
       },
+      timestamp: Date.now() - 800000,
     },
     {
       id: "nexus-2",
@@ -70,6 +89,7 @@ const Marketplace = () => {
         earnings: 3.2,
         roi: 20.1,
       },
+      timestamp: Date.now() - 700000,
     },
   ]);
 
@@ -105,20 +125,16 @@ const Marketplace = () => {
     },
   ];
 
-  // Load marketplace listings and user minted NFTs
   useEffect(() => {
     const loadMarketplaceData = async () => {
       if (web3State.connected) {
         try {
-          // Get user's NFTs directly from the contract
           const userNFTs = await getUserMintedNFTs();
           console.log("User minted NFTs:", userNFTs);
           
-          // Get marketplace listings from the contract
           const listings = await getMarketplaceListings();
           console.log("Marketplace listings:", listings);
           
-          // Process mintedNFTs to display on marketplace
           if (mintedNFTs.length > 0) {
             console.log("Processing minted NFTs for marketplace display:", mintedNFTs);
             
@@ -126,7 +142,7 @@ const Marketplace = () => {
               id: nft.airNodeId || `token-${nft.tokenId}`,
               name: `AirNode ${nft.airNodeId || nft.tokenId}`,
               location: "Ethereum Network",
-              price: 50, // Default price
+              price: 50,
               imageUrl: "/lovable-uploads/944059d9-4b2a-4ce4-a703-1df8d972e858.png",
               totalShares: parseInt(nft.fractions) || 1000,
               availableShares: parseInt(nft.fractions) || 1000,
@@ -139,12 +155,10 @@ const Marketplace = () => {
               timestamp: nft.timestamp || Date.now()
             }));
             
-            // Check if the NFT already exists in the list
             const existingIds = airNodes.map(node => node.id);
             const filteredNewNodes = newNodes.filter(node => !existingIds.includes(node.id));
             
             if (filteredNewNodes.length > 0) {
-              // Sort by timestamp to show newest first
               const sortedNodes = [...filteredNewNodes, ...airNodes]
                 .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
               
