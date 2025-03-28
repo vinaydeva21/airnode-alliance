@@ -46,7 +46,7 @@ export default function FractionalizationTab() {
     try {
       if (web3State.chainId && web3State.chainId > 0) {
         // Ethereum chain
-        await fractionalizeNFT(values.tokenId, values.fractionCount);
+        await fractionalizeNFT();
         toast.success(`Successfully fractionalized token #${values.tokenId} into ${values.fractionCount} fractions`);
       } else {
         // Cardano

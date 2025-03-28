@@ -18,8 +18,9 @@ export const setWallet = async (
   lucid: LucidEvolution,
   walletApi: any
 ): Promise<LucidEvolution> => {
-  // The correct way to select a wallet is to use the wallet's API directly
-  return lucid.selectWallet.fromAPI(walletApi);
+  // The correct way to use the Lucid API to select a wallet
+  lucid.selectWallet.fromAPI(walletApi);
+  return lucid; // Return the lucid instance after setting the wallet
 };
 
 // Export validators for use in other files
