@@ -28,7 +28,11 @@ export const connectToCardanoWallet = async (
 
   try {
     // Safe access to cardano wallet
-    const cardanoWallet = window.cardano?.[walletName];
+    if (typeof window === 'undefined' || !window.cardano) {
+      throw new Error(`Cardano API not available`);
+    }
+    
+    const cardanoWallet = window.cardano[walletName];
     if (!cardanoWallet) {
       throw new Error(`${walletName} wallet not available`);
     }
@@ -79,7 +83,7 @@ export const connectToEvmWallet = async () => {
 
   try {
     // Safe access to ethereum object
-    if (!window.ethereum) {
+    if (typeof window === 'undefined' || !window.ethereum) {
       throw new Error("Ethereum object not available");
     }
     

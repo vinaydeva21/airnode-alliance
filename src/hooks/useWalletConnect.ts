@@ -1,7 +1,6 @@
 
 import { useState, useEffect } from "react";
 import { Web3State } from "@/types/blockchain";
-import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { ethers } from "ethers";
 import { toast } from "sonner";
 import {
@@ -19,27 +18,12 @@ export const useWalletConnect = () => {
   const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null);
   const [walletType, setWalletType] = useState<string | null>(null);
 
-  const { address, chainId, isConnected } = useAccount();
-  const { connectAsync, connectors } = useConnect();
-  const { disconnectAsync } = useDisconnect();
-
-  // Update web3State when wagmi account changes
-  useEffect(() => {
-    if (isConnected && address) {
-      setWeb3State({
-        account: address,
-        chainId: chainId || null, // Convert undefined to null
-        connected: true,
-      });
-    }
-  }, [address, chainId, isConnected]);
-
   // Initialize Ethereum provider and set up event listeners
   useEffect(() => {
     const initProvider = async () => {
       if (checkIfEvmWalletIsInstalled()) {
         // Only create the provider if window.ethereum exists
-        if (window.ethereum) {
+        if (typeof window !== 'undefined' && window.ethereum) {
           const ethersProvider = new ethers.BrowserProvider(window.ethereum);
           setProvider(ethersProvider);
 
@@ -69,7 +53,7 @@ export const useWalletConnect = () => {
     initProvider();
 
     return () => {
-      if (window.ethereum) {
+      if (typeof window !== 'undefined' && window.ethereum) {
         window.ethereum.removeListener("accountsChanged", () => {});
         window.ethereum.removeListener("chainChanged", () => {});
       }
@@ -104,10 +88,6 @@ export const useWalletConnect = () => {
   // Disconnect function
   const disconnect = async () => {
     try {
-      if (isConnected) {
-        await disconnectAsync();
-      }
-
       setWeb3State({
         account: null,
         chainId: null,

@@ -105,7 +105,7 @@ const WalletOption: React.FC<WalletOptionProps> = ({ wallet, onConnect }) => {
     switch (wallet.id) {
       case "yoroi":
         // Check if Yoroi wallet is installed
-        if (window.cardano && window.cardano.yoroi) {
+        if (typeof window !== 'undefined' && window.cardano && window.cardano.yoroi) {
           onConnect(wallet.id);
         } else {
           // Redirect to Yoroi wallet website
@@ -115,7 +115,7 @@ const WalletOption: React.FC<WalletOptionProps> = ({ wallet, onConnect }) => {
         break;
       case "lace":
         // No need for type assertion anymore since we properly updated the type
-        if (window.cardano && window.cardano.lace) {
+        if (typeof window !== 'undefined' && window.cardano && window.cardano.lace) {
           onConnect(wallet.id);
         } else {
           // Redirect to Lace wallet website

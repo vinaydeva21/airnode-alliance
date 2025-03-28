@@ -1,4 +1,5 @@
-import { Lucid, Network, Blockfrost, LucidEvolution } from "@lucid-evolution/lucid";
+
+import { CML } from "@lucid-evolution/lucid";
 import {
   BLOCKFROST_ID,
   BLOCKFROST_URL,
@@ -12,16 +13,25 @@ import AirNodeNFTAbi from "@/contracts/abis/AirNodeNFT.json";
 const NFT_CONTRACT_ADDRESS = "0xd8b927cf2a1628c087383274bff3b2a011ebaa04";
 
 // Create a Lucid instance
-export const createLucid = async (network: Network = CARDANO_NETWORK as Network) => {
-  const blockfrostProvider = new Blockfrost(BLOCKFROST_URL, BLOCKFROST_ID);
-  return await Lucid(blockfrostProvider, network);
+export const createLucid = async (network: string = CARDANO_NETWORK) => {
+  try {
+    // Use CML instead of direct Lucid imports
+    const provider = {
+      url: BLOCKFROST_URL,
+      projectId: BLOCKFROST_ID
+    };
+    return await CML.Lucid(provider, network);
+  } catch (error) {
+    console.error("Failed to create Lucid instance:", error);
+    throw error;
+  }
 };
 
 // Set the wallet for Lucid instance
 export const setWallet = async (
-  lucid: LucidEvolution,
+  lucid: any,
   walletApi: any
-): Promise<LucidEvolution> => {
+): Promise<any> => {
   // The correct way to use the Lucid API to select a wallet
   lucid.selectWallet.fromAPI(walletApi);
   return lucid; // Return the lucid instance after setting the wallet
@@ -33,7 +43,7 @@ export const mintingValidator = plutus.mint_token_placeholder_mint || {};
 
 // Connect to Ethereum contract - this function will trigger MetaMask
 export const connectToEthereumNFTContract = async () => {
-  if (!window.ethereum) {
+  if (typeof window === 'undefined' || !window.ethereum) {
     throw new Error("Ethereum provider not found. Please install MetaMask or another compatible wallet.");
   }
   
