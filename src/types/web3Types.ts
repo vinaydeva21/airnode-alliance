@@ -58,9 +58,4 @@ export interface Web3State {
   connected: boolean;
 }
 
-declare global {
-  interface Window {
-    ethereum?: any;
-    cardano: Cardano;
-  }
-}
+// Remove the duplicate declaration and use the above interface

@@ -1,5 +1,5 @@
 
-import { Lucid, Network, Blockfrost } from "@lucid-evolution/lucid";
+import { Lucid, Network, Blockfrost, LucidEvolution } from "@lucid-evolution/lucid";
 import {
   BLOCKFROST_ID,
   BLOCKFROST_URL,
@@ -10,24 +10,24 @@ import * as plutus from "./plutus";
 // Create a Lucid instance
 export const createLucid = async (network: Network = CARDANO_NETWORK as Network) => {
   const blockfrostProvider = new Blockfrost(BLOCKFROST_URL, BLOCKFROST_ID);
-  return await Lucid.new(blockfrostProvider, network);
+  return await Lucid(blockfrostProvider, network);
 };
 
 // Set the wallet for Lucid instance
 export const setWallet = async (
-  lucid: Lucid,
+  lucid: LucidEvolution,
   walletApi: any
-): Promise<Lucid> => {
+): Promise<LucidEvolution> => {
   return lucid.selectWallet(walletApi);
 };
 
 // Export validators for use in other files
-export const AirNodeValidator = plutus.airNodeValidator || {};
-export const mintingValidator = plutus.mintingValidator || {};
+export const AirNodeValidator = plutus.placeholder_placeholder_spend || {};
+export const mintingValidator = plutus.mint_token_placeholder_mint || {};
 
 // Generate transaction for minting NFT
 export const generateMintNFTTx = async (
-  lucid: Lucid,
+  lucid: LucidEvolution,
   policyId: string,
   assetName: string,
   metadata: any,
@@ -51,7 +51,7 @@ export const generateMintNFTTx = async (
 
 // Generate transaction for marketplace listing
 export const generateMarketplaceListingTx = async (
-  lucid: Lucid,
+  lucid: LucidEvolution,
   policyId: string,
   assetName: string,
   price: bigint,

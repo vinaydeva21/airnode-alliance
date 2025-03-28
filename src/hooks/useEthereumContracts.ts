@@ -1,8 +1,8 @@
-
 import { ethers } from "ethers";
 import { useState, useEffect } from "react";
 import { useWeb3 } from "@/contexts/Web3Context";
 import { toast } from "sonner";
+import { MarketplaceListing } from "@/types/blockchain";
 
 // Import ABIs (these will be created next)
 import AirNodeNFTAbi from "@/contracts/abis/AirNodeNFT.json";
@@ -207,7 +207,7 @@ export const useEthereumContracts = () => {
   };
 
   // Function to get active marketplace listings
-  const getMarketplaceListings = async () => {
+  const getMarketplaceListings = async (): Promise<MarketplaceListing[]> => {
     if (!contracts.marketplace) {
       toast.error("Marketplace contract not initialized");
       return [];
@@ -215,20 +215,16 @@ export const useEthereumContracts = () => {
 
     try {
       const listingIds = await contracts.marketplace.getActiveListings();
-      const listings = [];
+      const listings: MarketplaceListing[] = [];
 
       for (const id of listingIds) {
         const listing = await contracts.marketplace.listings(id);
         listings.push({
-          id: id.toString(),
-          tokenId: listing.tokenId.toString(),
           fractionId: listing.fractionId.toString(),
           seller: listing.seller,
-          price: ethers.formatEther(listing.price),
-          listingType: listing.listingType === 0 ? "sale" : "lease",
-          leaseDuration: listing.leaseDuration.toString(),
-          timestamp: new Date(Number(listing.timestamp) * 1000).toLocaleString(),
-          active: listing.active
+          price: Number(ethers.formatEther(listing.price)),
+          type: listing.listingType === 0 ? "sale" : "lease",
+          leaseDuration: listing.leaseDuration ? Number(listing.leaseDuration) : undefined
         });
       }
 

@@ -20,6 +20,7 @@ export const Web3Provider: React.FC<WalletProviderProps> = ({ children }) => {
   return (
     <Web3Context.Provider value={{ 
       web3State, 
+      provider,
       contracts, 
       connect, 
       disconnect 
