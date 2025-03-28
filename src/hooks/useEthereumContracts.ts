@@ -3,14 +3,14 @@ import { useState, useEffect, useCallback } from "react";
 import { useWeb3 } from "@/contexts/Web3Context";
 import { toast } from "sonner";
 import { MarketplaceListing, NFTMetadata } from "@/types/blockchain";
-import { connectToEthereumNFTContract, mintEthereumNFT as mintNFTFromScripts } from "@/config/scripts/scripts";
+import { connectToEthereumNFTContract } from "@/config/scripts/scripts";
 
 // Import ABIs
 import AirNodeNFTAbi from "@/contracts/abis/AirNodeNFT.json";
 import AirNodeMarketplaceAbi from "@/contracts/abis/AirNodeMarketplace.json";
 import ANATokenAbi from "@/contracts/abis/ANAToken.json";
 
-// Contract addresses - using the deployed contract addresses
+// Contract addresses
 const CONTRACT_ADDRESSES = {
   NFT: "0xd8b927cf2a1628c087383274bff3b2a011ebaa04",
   MARKETPLACE: "0x04dfdc0a81b9aedeb2780ee1ba4723c88fb57ace", 
@@ -34,14 +34,21 @@ export const useEthereumContracts = () => {
   // Initialize contracts when wallet is connected
   useEffect(() => {
     const initContracts = async () => {
-      if (!web3State.connected || !window.ethereum) return;
+      if (!web3State.connected || !window.ethereum) {
+        console.log("Not connected or no Ethereum provider");
+        return;
+      }
 
       try {
+        console.log("Initializing contracts with account:", web3State.account);
+        
         // Request accounts access
         await window.ethereum.request({ method: 'eth_requestAccounts' });
         
         const provider = new ethers.BrowserProvider(window.ethereum);
         const signer = await provider.getSigner();
+
+        console.log("Connected with signer address:", await signer.getAddress());
 
         const nftContract = new ethers.Contract(
           CONTRACT_ADDRESSES.NFT,
@@ -67,6 +74,8 @@ export const useEthereumContracts = () => {
           token: tokenContract,
         });
         
+        console.log("Contracts initialized, setting up event listeners");
+        
         // Listen for NFT minted event
         const nftMintedFilter = nftContract.filters.NFTMinted();
         
@@ -81,7 +90,7 @@ export const useEthereumContracts = () => {
           setMintedNFTs(prev => [...prev, newNFT]);
           toast.success("New NFT minted and added to marketplace!");
         });
-        
+
         return () => {
           // Remove event listeners on cleanup
           if (nftContract) {
@@ -95,9 +104,9 @@ export const useEthereumContracts = () => {
     };
 
     initContracts();
-  }, [web3State.connected]);
+  }, [web3State.connected, web3State.account]);
 
-  // Mint NFT function using direct contract call to ensure MetaMask popup
+  // Function to mint NFT directly using the contract
   const mintNFT = async (
     airNodeId: string,
     fractionCount: number,
@@ -105,25 +114,62 @@ export const useEthereumContracts = () => {
   ) => {
     if (!web3State.connected) {
       toast.error("Please connect your wallet first");
-      return;
+      return null;
     }
 
     setLoading(true);
     try {
       toast.info("Preparing mint transaction...");
       
-      // Direct call to contract via script to ensure MetaMask popup
-      const tx = await mintNFTFromScripts(airNodeId, fractionCount, metadata);
+      // Connect directly to the contract to ensure MetaMask popup
+      const nftContract = await connectToEthereumNFTContract();
       
-      toast.info("Minting transaction submitted");
+      if (!nftContract) {
+        throw new Error("Could not connect to NFT contract");
+      }
       
-      // The receipt and event processing will be handled by the NFTMinted event listener
+      const metadataJSON = JSON.stringify({
+        airNodeId: metadata.airNodeId,
+        location: metadata.location,
+        performance: metadata.performance,
+        totalFractions: fractionCount
+      });
       
+      const metadataURI = `data:application/json;base64,${btoa(metadataJSON)}`;
+      
+      // Convert metadata to contract format
+      const metadataStruct = {
+        airNodeId: metadata.airNodeId,
+        location: metadata.location,
+        performance: {
+          uptime: metadata.performance.uptime,
+          earnings: ethers.parseEther(metadata.performance.earnings.toString()),
+          roi: metadata.performance.roi,
+        },
+        fractions: fractionCount,
+      };
+      
+      toast.info("Please confirm the transaction in your wallet");
+      
+      // This will trigger the MetaMask popup
+      const tx = await nftContract.mintNFT(
+        metadata.airNodeId,
+        fractionCount,
+        metadataURI,
+        metadataStruct
+      );
+      
+      toast.info("Transaction submitted, waiting for confirmation...");
+      
+      // Wait for the transaction to be mined
+      const receipt = await tx.wait();
+      
+      // Event will be handled by the listener
       return tx;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error minting NFT:", error);
-      toast.error("Failed to mint NFT");
-      throw error;
+      toast.error(error.message || "Failed to mint NFT");
+      return null;
     } finally {
       setLoading(false);
     }

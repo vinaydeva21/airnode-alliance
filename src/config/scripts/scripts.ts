@@ -39,11 +39,13 @@ export const connectToEthereumNFTContract = async () => {
   }
   
   try {
-    // Request account access if needed
+    // Request account access
     await window.ethereum.request({ method: 'eth_requestAccounts' });
     
     const provider = new ethers.BrowserProvider(window.ethereum);
     const signer = await provider.getSigner();
+    
+    console.log("Connected to Ethereum with address:", await signer.getAddress());
     
     // Connect to the NFT contract
     const nftContract = new ethers.Contract(
@@ -68,8 +70,15 @@ export const mintEthereumNFT = async (
   try {
     const nftContract = await connectToEthereumNFTContract();
     
-    // Create a metadata URI (in a real app, this would be IPFS or similar)
-    const metadataURI = `https://example.com/metadata/${airNodeId}`;
+    // Create a metadata URI
+    const metadataJSON = JSON.stringify({
+      airNodeId: metadata.airNodeId,
+      location: metadata.location,
+      performance: metadata.performance,
+      totalFractions: fractionCount
+    });
+    
+    const metadataURI = `data:application/json;base64,${btoa(metadataJSON)}`;
     
     // Convert metadata to contract format
     const metadataStruct = {
