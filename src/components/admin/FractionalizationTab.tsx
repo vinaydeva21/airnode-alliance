@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,6 +9,8 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { useWeb3 } from "@/contexts/Web3Context";
+import { useEthereumContracts } from "@/hooks/useEthereumContracts";
 
 // Mock data - in a real app, this would come from a contract call
 const mockNFTs = [
@@ -27,6 +30,8 @@ const formSchema = z.object({
 
 export default function FractionalizationTab() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { web3State } = useWeb3();
+  const { fractionalizeNFT, loading } = useEthereumContracts();
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -40,13 +45,21 @@ export default function FractionalizationTab() {
     setIsSubmitting(true);
     
     try {
-      // In a real app, this would call a contract method
-      console.log("Fractionalizing NFT:", values);
+      // Extract tokenId from airNodeId (this would be different in a real app)
+      const tokenId = parseInt(values.airNodeId.split('-')[1] || '1');
       
-      // Simulate async operation
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      if (web3State.chainId && web3State.chainId > 0) {
+        // Ethereum chain
+        await fractionalizeNFT(tokenId, values.fractionCount);
+        toast.success(`Successfully fractionalized ${values.airNodeId} into ${values.fractionCount} fractions`);
+      } else {
+        // Cardano
+        // Here you would call the Cardano fractionalization function
+        // Simulate async operation for now
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        toast.success(`Successfully fractionalized ${values.airNodeId} into ${values.fractionCount} fractions on Cardano`);
+      }
       
-      toast.success(`Successfully fractionalized ${values.airNodeId} into ${values.fractionCount} fractions`);
       toast.info("Fractions ready to be listed on the marketplace");
       form.reset();
     } catch (error) {

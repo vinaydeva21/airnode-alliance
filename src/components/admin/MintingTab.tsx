@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,6 +36,8 @@ import { NFTMetadata } from "@/types/blockchain";
 import { toast } from "sonner";
 import { mintNFTCardano } from "@/lib/cardanoTx";
 import { useWeb3 } from "@/contexts/Web3Context";
+import { useEthereumContracts } from "@/hooks/useEthereumContracts";
+
 const formSchema = z.object({
   airNodeId: z.string().min(3, {
     message: "AirNode ID must be at least 3 characters.",
@@ -58,8 +61,9 @@ const formSchema = z.object({
 
 export default function MintingTab() {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { mintNFT, loading } = useNFTContract();
-  const { web3State, connect, disconnect } = useWeb3();
+  const { mintNFT: mintNFTWithHook, loading } = useNFTContract();
+  const { web3State } = useWeb3();
+  const { mintNFT: mintEthereumNFT, loading: ethLoading } = useEthereumContracts();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -88,14 +92,22 @@ export default function MintingTab() {
         fractions: BigInt(values.fractionCount),
       };
 
-      // await mintNFT(values.airNodeId, values.fractionCount, metadata);
-      await mintNFTCardano(
-        values.airNodeId,
-        BigInt(values.fractionCount),
-        metadata,
-        web3State.chainId
-      );
-      values.airNodeId, values.fractionCount, metadata, web3State.chainId;
+      // Check if we should use Ethereum or Cardano based on connected wallet
+      if (web3State.chainId && web3State.chainId > 0) {
+        // Ethereum chain
+        await mintEthereumNFT(values.airNodeId, values.fractionCount, metadata);
+        console.log("Minted NFT on Ethereum chain:", web3State.chainId);
+      } else {
+        // Cardano
+        await mintNFTCardano(
+          values.airNodeId,
+          BigInt(values.fractionCount),
+          metadata,
+          web3State.chainId
+        );
+        console.log("Minted NFT on Cardano");
+      }
+      
       toast.success("NFT minted successfully!");
       form.reset();
     } catch (error) {

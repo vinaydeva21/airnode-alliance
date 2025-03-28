@@ -10,6 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useMarketplace } from "@/hooks/useMarketplace";
 import { toast } from "sonner";
+import { useWeb3 } from "@/contexts/Web3Context";
+import { useEthereumContracts } from "@/hooks/useEthereumContracts";
 
 // Mock fractionalized NFTs data
 const fractionData = [
@@ -35,6 +37,8 @@ const formSchema = z.object({
 export default function ListingTab() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { listForSale, loading } = useMarketplace();
+  const { web3State } = useWeb3();
+  const { listNFTOnMarketplace, loading: ethLoading } = useEthereumContracts();
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -53,7 +57,26 @@ export default function ListingTab() {
     setIsSubmitting(true);
     
     try {
-      await listForSale(values.fractionId, values.price);
+      // Parse tokenId and fractionId from the combined ID
+      const parts = values.fractionId.split('-');
+      const tokenId = parseInt(parts[2] || '1');
+      const fractionId = parseInt(parts[3] || '1');
+      
+      if (web3State.chainId && web3State.chainId > 0) {
+        // Ethereum chain
+        await listNFTOnMarketplace(
+          tokenId,
+          fractionId,
+          values.price,
+          values.quantity,
+          values.listingType === 'auction',
+          values.duration || 7
+        );
+      } else {
+        // Cardano chain
+        await listForSale(values.fractionId, values.price);
+      }
+      
       toast.success(`Successfully listed ${values.quantity} fractions for ${values.listingType}`);
       form.reset();
     } catch (error) {
