@@ -1,16 +1,21 @@
 
-// Import CML instead of directly importing Network and Provider
-import { CML } from "@lucid-evolution/lucid";
+// Ethereum network configuration
+export const ETHEREUM_NETWORK = process.env.NEXT_PUBLIC_ETHEREUM_NETWORK || 'sepolia';
+export const INFURA_KEY = process.env.NEXT_PUBLIC_INFURA_KEY || '';
+export const ALCHEMY_KEY = process.env.NEXT_PUBLIC_ALCHEMY_KEY || '';
 
-export const BF_URL = process.env.NEXT_PUBLIC_BF_URL || '';
-export const BF_PID = process.env.NEXT_PUBLIC_BF_PID || '';
-const NETWORKx = process.env.NEXT_PUBLIC_CARDANO_NETWORK as string || '';
+// Contract addresses
+export const NFT_CONTRACT_ADDRESS = "0xd8b927cf2a1628c087383274bff3b2a011ebaa04";
+export const MARKETPLACE_CONTRACT_ADDRESS = "0x04dfdc0a81b9aedeb2780ee1ba4723c88fb57ace";
+export const TOKEN_CONTRACT_ADDRESS = "0xc2fdc83aea820f75dc1e89e8c92c3d451d90fca9";
 
-export const NETWORK: string = NETWORKx || 'Preprod';
-// Use the provider differently since Blockfrost is not directly exported
-export const PROVIDER = { url: BF_URL, projectId: BF_PID };
-
-// Adding Blockfrost and Cardano network configs
-export const BLOCKFROST_URL = "https://cardano-preprod.blockfrost.io/api/v0";
-export const BLOCKFROST_ID = "preprodXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"; // Replace with actual ID in production
-export const CARDANO_NETWORK = "Preprod"; // 'Mainnet' | 'Testnet' | 'Preview' | 'Preprod'
+// Define the provider URL based on network
+export const getProviderUrl = () => {
+  if (INFURA_KEY) {
+    return `https://${ETHEREUM_NETWORK}.infura.io/v3/${INFURA_KEY}`;
+  } else if (ALCHEMY_KEY) {
+    return `https://eth-${ETHEREUM_NETWORK}.alchemyapi.io/v2/${ALCHEMY_KEY}`;
+  }
+  // Fallback to public RPC
+  return `https://${ETHEREUM_NETWORK}.ethereum.io`;
+};

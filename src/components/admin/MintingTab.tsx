@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,7 +36,7 @@ import { NFTMetadata } from "@/types/blockchain";
 import { toast } from "sonner";
 import { useWeb3 } from "@/contexts/Web3Context";
 import { useNavigate } from "react-router-dom";
-import { mintEthereumNFT, connectToEthereumNFTContract } from "@/config/scripts/scripts";
+import { connectToEthereumNFTContract } from "@/config/scripts/scripts";
 
 const formSchema = z.object({
   airNodeId: z.string().min(3, {

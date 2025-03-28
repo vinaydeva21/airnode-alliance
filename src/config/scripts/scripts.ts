@@ -1,49 +1,9 @@
 
-import { CML } from "@lucid-evolution/lucid";
-import {
-  BLOCKFROST_ID,
-  BLOCKFROST_URL,
-  CARDANO_NETWORK,
-} from "@/config/index";
-import * as plutus from "./plutus";
 import { ethers } from "ethers";
 import AirNodeNFTAbi from "@/contracts/abis/AirNodeNFT.json";
 
 // Ethereum contract address
 const NFT_CONTRACT_ADDRESS = "0xd8b927cf2a1628c087383274bff3b2a011ebaa04";
-
-// Create a Lucid instance
-export const createLucid = async (network: string = CARDANO_NETWORK) => {
-  try {
-    // Use CML instead of direct Lucid imports
-    const provider = {
-      url: BLOCKFROST_URL,
-      projectId: BLOCKFROST_ID
-    };
-    
-    // Fix: Call createLucid directly through CML
-    return await CML.createLucid(provider, network);
-  } catch (error) {
-    console.error("Failed to create Lucid instance:", error);
-    throw error;
-  }
-};
-
-// Set the wallet for Lucid instance
-export const setWallet = async (
-  lucid: any,
-  walletApi: any
-): Promise<any> => {
-  // The correct way to use the Lucid API to select a wallet
-  if (lucid && lucid.selectWallet && typeof lucid.selectWallet.fromAPI === 'function') {
-    lucid.selectWallet.fromAPI(walletApi);
-  }
-  return lucid; // Return the lucid instance after setting the wallet
-};
-
-// Export validators for use in other files
-export const AirNodeValidator = plutus.placeholder_placeholder_spend || {};
-export const mintingValidator = plutus.mint_token_placeholder_mint || {};
 
 // Connect to Ethereum contract - this function will trigger MetaMask
 export const connectToEthereumNFTContract = async () => {
@@ -123,7 +83,7 @@ export const mintEthereumNFT = async (
   }
 };
 
-// Generate transaction for marketplace listing (remove Cardano specifics)
+// Generate transaction for marketplace listing
 export const generateMarketplaceListingTx = async (
   nftContract: ethers.Contract,
   tokenId: number,

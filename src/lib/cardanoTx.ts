@@ -1,9 +1,10 @@
 
 import { toast } from "sonner";
 import { NFTMetadata } from "@/types/blockchain";
-import { createLucid, setWallet } from "@/config/scripts/scripts";
+import { connectToEthereumNFTContract } from "@/config/scripts/scripts";
+import { ethers } from "ethers";
 
-// This function would handle minting NFTs on Cardano
+// This function handles minting NFTs on Ethereum
 export const mintNFTCardano = async (
   airNodeId: string,
   fractionCount: bigint,
@@ -11,72 +12,76 @@ export const mintNFTCardano = async (
   chainId: number | null
 ) => {
   try {
-    if (typeof window === 'undefined' || !window.cardano) {
-      toast.error("Cardano wallet API not found");
+    if (typeof window === 'undefined' || !window.ethereum) {
+      toast.error("Ethereum wallet not found. Please install MetaMask");
       return;
     }
 
-    toast.info("Connecting to Cardano wallet...");
+    toast.info("Connecting to Ethereum wallet...");
     
-    // Get the first available wallet
-    const availableWallets = Object.keys(window.cardano || {})
-      .filter(key => typeof window.cardano?.[key]?.enable === 'function');
+    // Connect to Ethereum wallet
+    await window.ethereum.request({ method: 'eth_requestAccounts' });
     
-    if (availableWallets.length === 0) {
-      toast.error("No Cardano wallets available");
+    // Get the Ethereum provider
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
+    
+    toast.info(`Connected to wallet: ${await signer.getAddress()}`);
+    
+    // Connect to NFT contract
+    const nftContract = await connectToEthereumNFTContract();
+    
+    if (!nftContract) {
+      toast.error("Failed to connect to NFT contract");
       return;
     }
-
-    // Select the first available wallet
-    const walletKey = availableWallets[0];
-    const wallet = window.cardano?.[walletKey];
-    
-    if (!wallet) {
-      toast.error(`Selected wallet ${walletKey} not found`);
-      return;
-    }
-
-    // Enable the wallet
-    const api = await wallet.enable();
-    
-    // Create Lucid instance with updated function
-    const lucid = await createLucid();
-    
-    // Set the wallet
-    const lucidWithWallet = await setWallet(lucid, api);
     
     // Generate NFT metadata
-    const nftMetadata = {
+    const nftMetadataJSON = JSON.stringify({
       name: `AirNode ${airNodeId}`,
       description: `Fractionalized AirNode at ${metadata.location}`,
-      image: "ipfs://QmXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", // Placeholder IPFS URI
       attributes: [
         { trait_type: "Uptime", value: metadata.performance.uptime },
         { trait_type: "Earnings", value: metadata.performance.earnings },
         { trait_type: "ROI", value: metadata.performance.roi },
         { trait_type: "Fractions", value: fractionCount.toString() }
       ]
+    });
+    
+    const metadataURI = `data:application/json;base64,${btoa(nftMetadataJSON)}`;
+    
+    // Convert metadata to contract format
+    const metadataStruct = {
+      airNodeId: metadata.airNodeId,
+      location: metadata.location,
+      performance: {
+        uptime: metadata.performance.uptime,
+        earnings: ethers.parseEther(metadata.performance.earnings.toString()),
+        roi: metadata.performance.roi,
+      },
+      fractions: fractionCount,
     };
     
-    // Mint NFT (using placeholder values for now)
-    const policyId = "policy123456789";
-    const assetName = `AirNode${airNodeId}`;
-    const recipientAddress = await api.getChangeAddress();
+    toast.info("Please confirm the transaction in your wallet...");
     
-    toast.info("Preparing mint transaction...");
+    // Call the mint function on the smart contract
+    const tx = await nftContract.mintNFT(
+      metadata.airNodeId,
+      Number(fractionCount),
+      metadataURI,
+      metadataStruct
+    );
     
-    // Since generateMintNFTTx doesn't exist, we'll just create a placeholder transaction
-    // In a real implementation, this would call the actual mint transaction function
-    const txHash = "cardano_mock_tx_hash_" + Date.now();
+    toast.info("Transaction submitted, waiting for confirmation...");
     
-    toast.info("Submitting transaction...");
-    // await tx.submit();
+    // Wait for transaction confirmation
+    const receipt = await tx.wait();
     
-    toast.success("NFT minted successfully on Cardano blockchain");
-    return txHash;
+    toast.success("NFT minted successfully on Ethereum blockchain");
+    return tx.hash;
   } catch (error) {
-    console.error("Error minting NFT on Cardano:", error);
-    toast.error("Failed to mint NFT on Cardano blockchain");
+    console.error("Error minting NFT on Ethereum:", error);
+    toast.error("Failed to mint NFT on Ethereum blockchain");
     throw error;
   }
 };
