@@ -85,7 +85,7 @@ export default function MintingTab() {
           earnings: values.earnings,
           roi: values.roi,
         },
-        fractions: BigInt(values.fractionCount),
+        fractions: values.fractionCount,
       };
 
       // await mintNFT(values.airNodeId, values.fractionCount, metadata);

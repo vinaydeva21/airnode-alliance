@@ -7,7 +7,7 @@ export interface NFTMetadata {
     earnings: number;
     roi: number;
   };
-  fractions: bigint;
+  fractions: number;
 }
 
 export interface NFTFraction {

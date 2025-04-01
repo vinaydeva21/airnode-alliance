@@ -15,7 +15,7 @@ import { CampaignDatum } from "@/types/cardano";
 export async function mintNFTCardano(
   airNodeId: string,
   fractionCount: bigint,
-  metadata: NFTMetadata,
+  m: NFTMetadata,
   walletApi: any
 ) {
   try {
@@ -57,7 +57,10 @@ export async function mintNFTCardano(
           [airNodeId]: {
             name: airNodeId,
             image: "https://avatars.githubusercontent.com/u/106166350",
-            // ...metadata,
+            // airNodeId: m.airNodeId,
+            // location: m.location,
+            // performance: m.performance,
+            // fractions: m.fractions,
           },
         },
       })
