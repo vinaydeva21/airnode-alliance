@@ -1,23 +1,17 @@
-
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ShoppingCart, Wallet } from "lucide-react";
 import { BuyNodesTab } from "./tabs/BuyNodesTab";
 import { DeFiServicesTab } from "./tabs/DeFiServicesTab";
+import { AirNodePerformance } from "../airnode/AirNodeCard";
 
 interface AirNode {
-  id: string;
   name: string;
+  image: string;
   location: string;
-  price: number;
-  imageUrl: string;
-  totalShares: number;
-  availableShares: number;
-  performance: {
-    uptime: number;
-    earnings: number;
-    roi: number;
-  };
+  airNodeId: string;
+  fractions: string;
+  performance?: AirNodePerformance;
 }
 
 interface LendingOption {
@@ -45,7 +39,7 @@ export const MarketplaceTabs: React.FC<MarketplaceTabsProps> = ({
   airNodes,
   lendingOptions,
   searchQuery,
-  setSearchQuery
+  setSearchQuery,
 }) => {
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-10">
@@ -59,15 +53,15 @@ export const MarketplaceTabs: React.FC<MarketplaceTabsProps> = ({
           DeFi Services
         </TabsTrigger>
       </TabsList>
-      
+
       <TabsContent value="buy" className="mt-6">
-        <BuyNodesTab 
-          airNodes={airNodes} 
-          searchQuery={searchQuery} 
-          setSearchQuery={setSearchQuery} 
+        <BuyNodesTab
+          airNodes={airNodes}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
         />
       </TabsContent>
-      
+
       <TabsContent value="lending" className="mt-6">
         <DeFiServicesTab lendingOptions={lendingOptions} />
       </TabsContent>
