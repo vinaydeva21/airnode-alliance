@@ -57,10 +57,14 @@ export async function mintNFTCardano(
           [airNodeId]: {
             name: airNodeId,
             image: "https://avatars.githubusercontent.com/u/106166350",
-            // airNodeId: m.airNodeId,
-            // location: m.location,
-            // performance: m.performance,
-            // fractions: m.fractions,
+            airNodeId: m.airNodeId,
+            location: m.location,
+            performance: {
+              uptime: m.performance.uptime.toString(),
+              earnings: m.performance.earnings.toString(),
+              roi: m.performance.roi.toString(),
+            },
+            fractions: m.fractions,
           },
         },
       })
