@@ -10,7 +10,7 @@ interface AirNode {
   image: string;
   location: string;
   airNodeId: string;
-  fractions: string;
+  fractions: number;
   performance?: AirNodePerformance;
 }
 
