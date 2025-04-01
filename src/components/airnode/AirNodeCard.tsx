@@ -18,17 +18,17 @@ export interface AirNodeProps {
   image: string;
   location: string;
   airNodeId: string;
-  fractions: string;
+  fractions: number;
   performance?: AirNodePerformance;
   className?: string;
 }
 
 const AirNodeCard: React.FC<AirNodeProps> = ({
-  name,
-  location,
-  image,
-  airNodeId,
-  fractions,
+  name = "not available",
+  location = "not available",
+  image = "not available",
+  airNodeId = "not available",
+  fractions = 0,
   className = "",
   performance = {
     uptime: 99.2,
@@ -40,7 +40,6 @@ const AirNodeCard: React.FC<AirNodeProps> = ({
   const [purchaseOpen, setPurchaseOpen] = useState(false);
   const [collateralOpen, setCollateralOpen] = useState(false);
   const [shareAmount, setShareAmount] = useState(1);
-  console.log("card");
   return (
     <>
       <Card
@@ -49,7 +48,7 @@ const AirNodeCard: React.FC<AirNodeProps> = ({
         <div className="relative h-48 overflow-hidden">
           <img
             src={image || "/placeholder.svg"}
-            alt={name}
+            alt={name || "not available"}
             className="w-full h-full object-cover transition-transform hover:scale-105 duration-500"
           />
           <div className="absolute top-2 right-2">
@@ -65,21 +64,25 @@ const AirNodeCard: React.FC<AirNodeProps> = ({
               variant="outline"
               className="bg-green-500/20 text-green-300 border-green-500/30"
             >
-              {performance.uptime}% Uptime
+              {performance.uptime || "not available"}% Uptime
             </Badge>
             <Badge
               variant="outline"
               className="bg-ana-purple/20 text-ana-purple border-ana-purple/30"
             >
-              {performance.roi}% ROI
+              {performance.roi || "not available"}% ROI
             </Badge>
           </div>
         </div>
         <CardContent className="p-4">
           <div className="flex justify-between items-start mb-3">
             <div>
-              <h3 className="font-semibold text-white">{name}</h3>
-              <p className="text-sm text-white/70">{location}</p>
+              <h3 className="font-semibold text-white">
+                {name || "not available"}
+              </h3>
+              <p className="text-sm text-white/70">
+                {location || "not available"}
+              </p>
             </div>
             <div className="text-right">
               <div className="text-sm text-white/70">Price</div>
