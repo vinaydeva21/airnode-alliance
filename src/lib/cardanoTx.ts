@@ -33,6 +33,7 @@ export async function mintNFTCardano(
     const policyID = mintingPolicyToId(mintingValidator);
     const policyId = policyID;
     const contractAddress = validatorToAddress(NETWORK, mintingValidator);
+    console.log("adddr:", contractAddress);
     //   const validator = AirNodeValidator([paymentCredentialOf(address).hash]);
     //   const contractAddress = validatorToAddress(NETWORK, validator);
     //   const policyId = mintingPolicyToId(validator);
