@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,56 +14,33 @@ export interface AirNodePerformance {
 }
 
 export interface AirNodeProps {
-  id: string;
   name: string;
+  image: string;
   location: string;
-  price: number;
-  imageUrl: string;
-  totalShares: number;
-  availableShares: number;
-  className?: string;
+  airNodeId: string;
+  fractions: string;
   performance?: AirNodePerformance;
-  assetKey?: string; // Asset key for fetching token name
-  POLICYID: string; // Policy ID to match asset key
-  lucid: any; // Lucid instance
+  className?: string;
 }
 
 const AirNodeCard: React.FC<AirNodeProps> = ({
-  id,
   name,
   location,
-  price,
-  imageUrl,
-  totalShares,
-  availableShares,
+  image,
+  airNodeId,
+  fractions,
   className = "",
   performance = {
     uptime: 99.2,
     earnings: 2.4,
     roi: 18.6,
   },
-  assetKey,
-  POLICYID,
-  lucid,
 }) => {
-  const [tokenName, setTokenName] = useState<string>("");
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [purchaseOpen, setPurchaseOpen] = useState(false);
   const [collateralOpen, setCollateralOpen] = useState(false);
   const [shareAmount, setShareAmount] = useState(1);
-
-  useEffect(() => {
-    async function fetchTokenName() {
-      if (!lucid || !assetKey || !assetKey.startsWith(POLICYID)) return;
-
-      const hexName = assetKey.slice(POLICYID.length); // Extract token name from asset key
-      const name = Buffer.from(hexName, "hex").toString("utf-8"); // Convert hex to string
-      setTokenName(name);
-    }
-
-    fetchTokenName();
-  }, [lucid, assetKey, POLICYID]);
-
+  console.log("card");
   return (
     <>
       <Card
@@ -71,8 +48,8 @@ const AirNodeCard: React.FC<AirNodeProps> = ({
       >
         <div className="relative h-48 overflow-hidden">
           <img
-            src={imageUrl || "/placeholder.svg"}
-            alt={tokenName || name}
+            src={image || "/placeholder.svg"}
+            alt={name}
             className="w-full h-full object-cover transition-transform hover:scale-105 duration-500"
           />
           <div className="absolute top-2 right-2">
@@ -80,7 +57,7 @@ const AirNodeCard: React.FC<AirNodeProps> = ({
               variant="secondary"
               className="bg-ana-darkblue/80 hover:bg-ana-darkblue border-ana-purple/20 text-white"
             >
-              {availableShares}/{totalShares} Available
+              {"availableShares"}/{"totalShares"} Available
             </Badge>
           </div>
           <div className="absolute bottom-2 left-2 flex gap-1">
@@ -101,14 +78,12 @@ const AirNodeCard: React.FC<AirNodeProps> = ({
         <CardContent className="p-4">
           <div className="flex justify-between items-start mb-3">
             <div>
-              <h3 className="font-semibold text-white">
-                {tokenName || "Unknown Token"}
-              </h3>
+              <h3 className="font-semibold text-white">{name}</h3>
               <p className="text-sm text-white/70">{location}</p>
             </div>
             <div className="text-right">
               <div className="text-sm text-white/70">Price</div>
-              <div className="text-lg font-semibold text-white">${price}</div>
+              <div className="text-lg font-semibold text-white">${"price"}</div>
             </div>
           </div>
 
@@ -134,12 +109,12 @@ const AirNodeCard: React.FC<AirNodeProps> = ({
         </CardContent>
       </Card>
 
-      <NodeDetailsDialog
+      {/* <NodeDetailsDialog
         open={detailsOpen}
         onOpenChange={setDetailsOpen}
         node={{
-          id,
-          name: tokenName || name,
+          airNodeId,
+          name,
           location,
           price,
           totalShares,
@@ -154,252 +129,25 @@ const AirNodeCard: React.FC<AirNodeProps> = ({
           setDetailsOpen(false);
           setCollateralOpen(true);
         }}
-      />
+      /> */}
 
-      <NodePurchaseDialog
+      {/* <NodePurchaseDialog
         open={purchaseOpen}
         onOpenChange={setPurchaseOpen}
-        node={{
-          id,
-          name: tokenName || name,
-          price,
-          availableShares,
-          performance,
-        }}
+        node={{ id, name, price, availableShares, performance }}
         shareAmount={shareAmount}
         setShareAmount={setShareAmount}
-      />
+      /> */}
 
-      <NodeCollateralizeDialog
+      {/* <NodeCollateralizeDialog
         open={collateralOpen}
         onOpenChange={setCollateralOpen}
-        node={{ id, name: tokenName || name, price }}
+        node={{ id, name, price }}
         shareAmount={shareAmount}
         setShareAmount={setShareAmount}
-      />
+      /> */}
     </>
   );
 };
 
 export default AirNodeCard;
-
-// import React, { useState, useEffect } from "react";
-// import { Card, CardContent } from "@/components/ui/card";
-// import { Badge } from "@/components/ui/badge";
-// import { Button } from "@/components/ui/button";
-// import { Info, ShoppingCart } from "lucide-react";
-// import { NodeDetailsDialog } from "./NodeDetailsDialog";
-// import { NodePurchaseDialog } from "./NodePurchaseDialog";
-// import { NodeCollateralizeDialog } from "./NodeCollateralizeDialog";
-// import { mintingPolicyToId, validatorToAddress } from "@lucid-evolution/lucid";
-// import { mintingValidator } from "@/config/scripts/scripts";
-// import { NETWORK } from "@/config";
-
-// export interface AirNodePerformance {
-//   uptime: number;
-//   earnings: number;
-//   roi: number;
-// }
-
-// export interface AirNodeProps {
-//   id: string;
-//   name: string;
-//   location: string;
-//   price: number;
-//   imageUrl: string;
-//   totalShares: number;
-//   availableShares: number;
-//   className?: string;
-//   performance?: AirNodePerformance;
-//   assetKey?: string; // Asset key for fetching token name
-//   POLICYID: string; // Policy ID to match asset key
-//   lucid: any; // Lucid instance
-// }
-
-// const AirNodeCard: React.FC<AirNodeProps> = ({
-//   id,
-//   name,
-//   location,
-//   price,
-//   imageUrl,
-//   totalShares,
-//   availableShares,
-//   className = "",
-//   performance = {
-//     uptime: 99.2,
-//     earnings: 2.4,
-//     roi: 18.6,
-//   },
-//   assetKey,
-//   POLICYID,
-//   lucid,
-// }) => {
-//   const [tokenName, setTokenName] = useState<string>("");
-//   const [detailsOpen, setDetailsOpen] = useState(false);
-//   const [purchaseOpen, setPurchaseOpen] = useState(false);
-//   const [collateralOpen, setCollateralOpen] = useState(false);
-//   const [shareAmount, setShareAmount] = useState(1);
-
-//   async function fetchTokenName(assetKey: string): Promise<string> {
-//     const policyID = mintingPolicyToId(mintingValidator);
-
-//     if (!assetKey.startsWith(policyID)) return "";
-
-//     const hexName = assetKey.slice(policyID.length); // Extract token name in hex format
-//     try {
-//       return Buffer.from(hexName, "hex").toString("utf-8"); // Convert hex to UTF-8 string
-//     } catch (error) {
-//       console.error("Error decoding token name:", error);
-//       return "";
-//     }
-//   }
-//   useEffect(() => {
-//     async function fetchUTXOs() {
-//       if (!lucid) return;
-//       const contractAddress = validatorToAddress(NETWORK, mintingValidator);
-
-//       const utxos = await lucid.utxosAt(contractAddress); // Fetch UTXOs for the given address
-//       const policyID = mintingPolicyToId(mintingValidator);
-
-//       // Loop through each UTXO and extract the token name
-//       const updatedBalance = await Promise.all(
-//         utxos.map(async (utxo: any) => {
-//           return await Promise.all(
-//             Object.entries(utxo.assets).map(async ([assetKey, quantity]) => {
-//               if (assetKey.startsWith(policyID)) {
-//                 const tokenName = await fetchTokenName(assetKey); // Fetch token name
-//                 return { tokenName, quantity: Number(quantity) };
-//               }
-//             })
-//           );
-//         })
-//       );
-
-//       // Extract token name from the updated balance and set it to state
-//       const token = updatedBalance.flat().find(Boolean);
-//       if (token) {
-//         setTokenName(token.tokenName); // Set the token name to state
-//       }
-//     }
-
-//     fetchUTXOs();
-//   }, [lucid]);
-
-//   return (
-//     <>
-//       <Card
-//         className={`overflow-hidden airnode-card transition-all hover:shadow-lg hover:shadow-ana-purple/10 ${className}`}
-//       >
-//         <div className="relative h-48 overflow-hidden">
-//           <img
-//             src={imageUrl || "/placeholder.svg"}
-//             alt={tokenName || name}
-//             className="w-full h-full object-cover transition-transform hover:scale-105 duration-500"
-//           />
-//           <div className="absolute top-2 right-2">
-//             <Badge
-//               variant="secondary"
-//               className="bg-ana-darkblue/80 hover:bg-ana-darkblue border-ana-purple/20 text-white"
-//             >
-//               {availableShares}/{totalShares} Available
-//             </Badge>
-//           </div>
-//           <div className="absolute bottom-2 left-2 flex gap-1">
-//             <Badge
-//               variant="outline"
-//               className="bg-green-500/20 text-green-300 border-green-500/30"
-//             >
-//               {performance.uptime}% Uptime
-//             </Badge>
-//             <Badge
-//               variant="outline"
-//               className="bg-ana-purple/20 text-ana-purple border-ana-purple/30"
-//             >
-//               {performance.roi}% ROI
-//             </Badge>
-//           </div>
-//         </div>
-//         <CardContent className="p-4">
-//           <div className="flex justify-between items-start mb-3">
-//             <div>
-//               <h3 className="font-semibold text-white">
-//                 {tokenName || "Unknown Token"}
-//               </h3>
-//               <p className="text-sm text-white/70">{location}</p>
-//             </div>
-//             <div className="text-right">
-//               <div className="text-sm text-white/70">Price</div>
-//               <div className="text-lg font-semibold text-white">${price}</div>
-//             </div>
-//           </div>
-
-//           <div className="flex justify-between mt-4">
-//             <Button
-//               variant="outline"
-//               size="sm"
-//               className="gap-1 bg-transparent border-ana-purple/30 hover:bg-ana-purple/10"
-//               onClick={() => setDetailsOpen(true)}
-//             >
-//               <Info size={14} />
-//               Details
-//             </Button>
-//             <Button
-//               size="sm"
-//               className="gap-1"
-//               onClick={() => setPurchaseOpen(true)}
-//             >
-//               <ShoppingCart size={14} />
-//               Buy Shares
-//             </Button>
-//           </div>
-//         </CardContent>
-//       </Card>
-
-//       <NodeDetailsDialog
-//         open={detailsOpen}
-//         onOpenChange={setDetailsOpen}
-//         node={{
-//           id,
-//           name: tokenName || name,
-//           location,
-//           price,
-//           totalShares,
-//           availableShares,
-//           performance,
-//         }}
-//         onBuy={() => {
-//           setDetailsOpen(false);
-//           setPurchaseOpen(true);
-//         }}
-//         onCollateralize={() => {
-//           setDetailsOpen(false);
-//           setCollateralOpen(true);
-//         }}
-//       />
-
-//       <NodePurchaseDialog
-//         open={purchaseOpen}
-//         onOpenChange={setPurchaseOpen}
-//         node={{
-//           id,
-//           name: tokenName || name,
-//           price,
-//           availableShares,
-//           performance,
-//         }}
-//         shareAmount={shareAmount}
-//         setShareAmount={setShareAmount}
-//       />
-
-//       <NodeCollateralizeDialog
-//         open={collateralOpen}
-//         onOpenChange={setCollateralOpen}
-//         node={{ id, name: tokenName || name, price }}
-//         shareAmount={shareAmount}
-//         setShareAmount={setShareAmount}
-//       />
-//     </>
-//   );
-// };
-
-// export default AirNodeCard;

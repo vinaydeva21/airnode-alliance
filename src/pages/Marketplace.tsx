@@ -1,72 +1,105 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TrendingUp, ShoppingCart, Wallet, Coins } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import NetworkBackground from "@/components/NetworkBackground";
 import { MarketplaceTabs } from "@/components/marketplace/MarketplaceTabs";
+import {
+  Lucid,
+  mintingPolicyToId,
+  validatorToAddress,
+} from "@lucid-evolution/lucid";
+import { mintingValidator } from "@/config/scripts/scripts";
+import { NETWORK, PROVIDER } from "@/config";
+import { blockfrost } from "@/lib/blockfrost";
 
 const Marketplace = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("buy");
+  const [airNodes, setAirNodes] = useState<any[]>([]);
+  // const airNodes = [
+  //   {
+  //     id: "portal-180",
+  //     name: "Portal 180",
+  //     location: "Nairobi, Kenya",
+  //     price: 45,
+  //     imageUrl: "/lovable-uploads/944059d9-4b2a-4ce4-a703-1df8d972e858.png",
+  //     totalShares: 1000,
+  //     availableShares: 850,
+  //     performance: {
+  //       uptime: 99.2,
+  //       earnings: 2.4,
+  //       roi: 18.6,
+  //     },
+  //   },
+  //   {
+  //     id: "portal-360",
+  //     name: "Portal 360",
+  //     location: "Lagos, Nigeria",
+  //     price: 60,
+  //     imageUrl: "/lovable-uploads/b43073b7-44b5-4631-b30f-dc3671d1e301.png",
+  //     totalShares: 1000,
+  //     availableShares: 600,
+  //     performance: {
+  //       uptime: 98.7,
+  //       earnings: 2.9,
+  //       roi: 19.2,
+  //     },
+  //   },
+  //   {
+  //     id: "nexus-1",
+  //     name: "Nexus I",
+  //     price: 75,
+  //     location: "Addis Ababa, Ethiopia",
+  //     imageUrl: "/lovable-uploads/944059d9-4b2a-4ce4-a703-1df8d972e858.png",
+  //     totalShares: 2000,
+  //     availableShares: 1200,
+  //     performance: {
+  //       uptime: 99.8,
+  //       earnings: 3.6,
+  //       roi: 22.4,
+  //     },
+  //   },
+  //   {
+  //     id: "nexus-2",
+  //     name: "Nexus II",
+  //     price: 80,
+  //     location: "Kampala, Uganda",
+  //     imageUrl: "/lovable-uploads/b43073b7-44b5-4631-b30f-dc3671d1e301.png",
+  //     totalShares: 2000,
+  //     availableShares: 1800,
+  //     performance: {
+  //       uptime: 97.9,
+  //       earnings: 3.2,
+  //       roi: 20.1,
+  //     },
+  //   },
+  // ];
 
-  const airNodes = [
-    {
-      id: "portal-180",
-      name: "Portal 180",
-      location: "Nairobi, Kenya",
-      price: 45,
-      imageUrl: "/lovable-uploads/944059d9-4b2a-4ce4-a703-1df8d972e858.png",
-      totalShares: 1000,
-      availableShares: 850,
-      performance: {
-        uptime: 99.2,
-        earnings: 2.4,
-        roi: 18.6,
-      },
-    },
-    {
-      id: "portal-360",
-      name: "Portal 360",
-      location: "Lagos, Nigeria",
-      price: 60,
-      imageUrl: "/lovable-uploads/b43073b7-44b5-4631-b30f-dc3671d1e301.png",
-      totalShares: 1000,
-      availableShares: 600,
-      performance: {
-        uptime: 98.7,
-        earnings: 2.9,
-        roi: 19.2,
-      },
-    },
-    {
-      id: "nexus-1",
-      name: "Nexus I",
-      price: 75,
-      location: "Addis Ababa, Ethiopia",
-      imageUrl: "/lovable-uploads/944059d9-4b2a-4ce4-a703-1df8d972e858.png",
-      totalShares: 2000,
-      availableShares: 1200,
-      performance: {
-        uptime: 99.8,
-        earnings: 3.6,
-        roi: 22.4,
-      },
-    },
-    {
-      id: "nexus-2",
-      name: "Nexus II",
-      price: 80,
-      location: "Kampala, Uganda",
-      imageUrl: "/lovable-uploads/b43073b7-44b5-4631-b30f-dc3671d1e301.png",
-      totalShares: 2000,
-      availableShares: 1800,
-      performance: {
-        uptime: 97.9,
-        earnings: 3.2,
-        roi: 20.1,
-      },
-    },
-  ];
+  useEffect(() => {
+    async function fetchTokenName() {
+      try {
+        const lucid = await Lucid(PROVIDER, NETWORK);
+        const policyId = mintingPolicyToId(mintingValidator);
+        const contractAddress = validatorToAddress(NETWORK, mintingValidator);
+        const utxos = await lucid.utxosAt(contractAddress);
+        utxos.map(async (utxo) => {
+          Object.entries(utxo.assets).map(([assetKey]) => {
+            if (assetKey.startsWith(policyId)) {
+              blockfrost.getMetadata(assetKey).then((metadata) => {
+                setAirNodes([...airNodes, metadata]);
+              });
+            }
+          });
+        });
+        console.log("metadata", airNodes);
+      } catch (error: any) {
+        console.log(error);
+      }
+    }
+
+    fetchTokenName();
+  }, []);
 
   const lendingOptions = [
     {

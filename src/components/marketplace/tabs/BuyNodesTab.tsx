@@ -2,22 +2,18 @@ import React from "react";
 import { SearchBar } from "../SearchBar";
 import { MarketplaceStats } from "../MarketplaceStats";
 import { Pagination } from "../Pagination";
-import AirNodeCard from "@/components/airnode/AirNodeCard";
+import AirNodeCard, {
+  AirNodePerformance,
+} from "@/components/airnode/AirNodeCard";
 
 interface BuyNodesTabProps {
   airNodes: Array<{
-    id: string;
     name: string;
+    image: string;
     location: string;
-    price: number;
-    imageUrl: string;
-    totalShares: number;
-    availableShares: number;
-    performance: {
-      uptime: number;
-      earnings: number;
-      roi: number;
-    };
+    airNodeId: string;
+    fractions: string;
+    performance?: AirNodePerformance;
   }>;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
@@ -35,9 +31,11 @@ export const BuyNodesTab: React.FC<BuyNodesTabProps> = ({
       <MarketplaceStats />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {airNodes.map((node) => (
-          <AirNodeCard key={node.id} {...node} />
-        ))}
+        {airNodes.length === 0
+          ? "fetching available nodes"
+          : airNodes.map((node) => (
+              <AirNodeCard key={node.airNodeId} {...node} />
+            ))}
       </div>
 
       <Pagination />
