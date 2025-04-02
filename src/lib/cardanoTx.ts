@@ -10,7 +10,7 @@ import {
   validatorToAddress,
   validatorToScriptHash,
 } from "@lucid-evolution/lucid";
-import { NETWORK, PROVIDER } from "../config";
+import { NETWORK, OWNER, PROVIDER } from "../config";
 import {
   AirNodeValidator,
   marketplaceValidator,
@@ -190,7 +190,7 @@ export async function BuyTokenCardano(
     const address = await lucid.wallet().address();
     const marketplace_hash = validatorToScriptHash(marketplaceValidator);
     const validator = AirNodeValidator([
-      paymentCredentialOf(address).hash, //replace with owner Address
+      paymentCredentialOf(OWNER).hash, //replace with owner Address
       marketplace_hash,
     ]);
     const policyId = mintingPolicyToId(validator);
@@ -218,6 +218,9 @@ export async function BuyTokenCardano(
       .pay.ToAddress(address, {
         lovelace: 1n,
         [policyId + fromText(tokenName)]: fraction,
+      })
+      .pay.ToAddress(marketplaceAddress, {
+        lovelace: price * fraction,
       })
       .attach.Script(marketplaceValidator);
 
