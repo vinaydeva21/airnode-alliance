@@ -81,26 +81,26 @@ pub fn must_send_to_marketplace(
   find_script_outputs(outputs, script_hash, name, fractions)
 }
 
-pub fn validate_support_campaign(
-  tx: Transaction,
-  self_script: PolicyId,
-  datum: MinterDatum,
-) {
-  let Transaction { outputs, .. } = tx
-  let MinterDatum { name, goal, fraction } = datum
-  let fraction_amount = goal / fraction
+// pub fn validate_support_campaign(
+//   tx: Transaction,
+//   self_script: PolicyId,
+//   datum: MinterDatum,
+// ) {
+//   let Transaction { outputs, .. } = tx
+//   let MinterDatum { name, goal, fraction } = datum
+//   let fraction_amount = goal / fraction
 
-  let (backer_reward_token, script_reward_token) =
-    find_output_from_PID(outputs, self_script, name)
+//   let (backer_reward_token, script_reward_token) =
+//     find_output_from_PID(outputs, self_script, name)
 
-  let (backer_amount, script_token) =
-    find_output_from_addr(outputs, self_script, name)
+//   let (backer_amount, script_token) =
+//     find_output_from_addr(outputs, self_script, name)
 
-  and {
-    script_reward_token == script_token,
-    backer_amount / fraction_amount == backer_reward_token,
-  }
-}
+//   and {
+//     script_reward_token == script_token,
+//     backer_amount / fraction_amount == backer_reward_token,
+//   }
+// }
 
 pub fn find_output_from_PID(
   outputs: List<Output>,

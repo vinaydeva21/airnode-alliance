@@ -8,6 +8,9 @@ pub type StakeKeyHash =
 
 pub type MinterDatum {
   name: ByteArray,
-  goal: Int,
+  price: Int,
   fraction: Int,
 }
+
+pub type MarketplaceDatum =
+  MinterDatum
