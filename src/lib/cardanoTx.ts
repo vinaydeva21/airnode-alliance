@@ -8,12 +8,12 @@ import {
   paymentCredentialOf,
   UTxO,
   validatorToAddress,
+  validatorToScriptHash,
 } from "@lucid-evolution/lucid";
 import { NETWORK, PROVIDER } from "../config";
 import {
   AirNodeValidator,
   marketplaceValidator,
-  mintingValidator,
 } from "@/config/scripts/scripts";
 import { CampaignDatum, MarketplaceDatum } from "@/types/cardano";
 
@@ -27,36 +27,37 @@ export async function mintNFTCardano(
     const lucid = await Lucid(PROVIDER, NETWORK);
     lucid.selectWallet.fromAPI(walletApi);
     const address = await lucid.wallet().address();
-    // const mintingValidator: MintingPolicy = {
-    //   type: "PlutusV3",
-    //   script: mint_token_placeholder_mint,
-    // };
 
-    //     const contractAddress = validatorToAddress(NETWORK, validator);
-    //     const policyId = mintingPolicyToId(validator);
+    const marketplace_hash = validatorToScriptHash(marketplaceValidator);
 
-    const policyID = mintingPolicyToId(mintingValidator);
-    const policyId = policyID;
-    const contractAddress = validatorToAddress(NETWORK, mintingValidator);
-    console.log("adddr:", contractAddress);
-    //   const validator = AirNodeValidator([paymentCredentialOf(address).hash]);
-    //   const contractAddress = validatorToAddress(NETWORK, validator);
-    //   const policyId = mintingPolicyToId(validator);
+    const validator = AirNodeValidator([
+      paymentCredentialOf(address).hash,
+      marketplace_hash,
+    ]);
+    const contractAddress = validatorToAddress(NETWORK, validator);
+    const policyId = mintingPolicyToId(validator);
 
     const tokens = {
       [policyId + fromText(airNodeId)]: fractionCount,
     };
-    const redeemer = Data.void();
+    const redeemer = Data.to(
+      {
+        name: fromText(airNodeId),
+        price: 0n,
+        fraction: fractionCount,
+      },
+      MarketplaceDatum
+    );
 
     const tx = await lucid
       .newTx()
       .mintAssets(tokens, redeemer)
       .pay.ToContract(
         contractAddress,
-        { kind: "inline", value: Data.void() },
+        { kind: "inline", value: redeemer },
         { lovelace: 2_000_000n, ...tokens }
       )
-      .attach.MintingPolicy(mintingValidator)
+      .attach.MintingPolicy(validator)
       .attachMetadata(721, {
         [policyId]: {
           [airNodeId]: {
@@ -119,8 +120,14 @@ export async function listTokenCardano(
   try {
     const lucid = await Lucid(PROVIDER, NETWORK);
     lucid.selectWallet.fromAPI(walletApi);
-    const policyId = mintingPolicyToId(mintingValidator);
-    const contractAddress = validatorToAddress(NETWORK, mintingValidator);
+    const address = await lucid.wallet().address();
+    const marketplace_hash = validatorToScriptHash(marketplaceValidator);
+    const validator = AirNodeValidator([
+      paymentCredentialOf(address).hash, //replace with owner Address
+      marketplace_hash,
+    ]);
+    const policyId = mintingPolicyToId(validator);
+    const contractAddress = validatorToAddress(NETWORK, validator);
 
     const marketplaceAddress = validatorToAddress(
       NETWORK,
@@ -129,7 +136,7 @@ export async function listTokenCardano(
 
     const tokensBackToContract =
       utxo.assets[policyId + fromText(metadata.name)] - fraction;
-
+    console.log(metadata.name, fromText(metadata.name));
     const datum = Data.to(
       {
         name: fromText(metadata.name),
@@ -139,7 +146,7 @@ export async function listTokenCardano(
       MarketplaceDatum
     );
 
-    const redeemer = Data.void();
+    const redeemer = Data.to(fraction);
     const newTx = lucid
       .newTx()
       .collectFrom([utxo], redeemer)
@@ -148,7 +155,8 @@ export async function listTokenCardano(
         { kind: "inline", value: datum },
         { lovelace: 1n, [policyId + fromText(metadata.name)]: fraction }
       )
-      .attach.Script(mintingValidator);
+      .attach.Script(validator)
+      .addSigner(address);
 
     tokensBackToContract !== 0n &&
       newTx.pay.ToContract(
@@ -180,7 +188,12 @@ export async function BuyTokenCardano(
     const lucid = await Lucid(PROVIDER, NETWORK);
     lucid.selectWallet.fromAPI(walletApi);
     const address = await lucid.wallet().address();
-    const policyId = mintingPolicyToId(mintingValidator);
+    const marketplace_hash = validatorToScriptHash(marketplaceValidator);
+    const validator = AirNodeValidator([
+      paymentCredentialOf(address).hash, //replace with owner Address
+      marketplace_hash,
+    ]);
+    const policyId = mintingPolicyToId(validator);
     const marketplaceAddress = validatorToAddress(
       NETWORK,
       marketplaceValidator
