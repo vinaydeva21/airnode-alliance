@@ -4,7 +4,7 @@ use aiken/crypto.{ScriptHash, VerificationKeyHash}
 use cardano/address.{Address, Inline, Script, VerificationKey}
 use cardano/assets.{PolicyId}
 use cardano/transaction.{Output, Transaction}
-use types.{CampaignDatum, PaymentKeyHash, StakeKeyHash}
+use types.{MinterDatum, PaymentKeyHash, StakeKeyHash}
 
 pub fn must_be_signed_by(tx: Transaction, signer: VerificationKeyHash) -> Bool {
   // just expect 1 signer
@@ -16,14 +16,14 @@ pub fn must_send_to_script(outputs: List<Output>, addr: Address) {
   address.address == addr
 }
 
-pub fn reward_token(
+pub fn node_token_mint(
   tx: Transaction,
   self_script: PolicyId,
-  datum: CampaignDatum,
+  datum: MinterDatum,
 ) -> Bool {
-  let CampaignDatum { name, fraction, .. } = datum
+  let MinterDatum { name, fraction, .. } = datum
   let minted_tokens = tx.mint |> assets.tokens(self_script) |> dict.to_pairs()
-  [Pair(name, fraction)] == minted_tokens
+  ([Pair(name, fraction)] == minted_tokens)?
 }
 
 pub fn address_from_tuple(
@@ -56,8 +56,9 @@ pub fn find_script_outputs(
   outputs: List<Output>,
   script_hash: ScriptHash,
   name: ByteArray,
+  fractions: Int,
 ) {
-  expect [output1] =
+  expect [o] =
     outputs
       |> list.filter(
           fn(output) {
@@ -67,16 +68,16 @@ pub fn find_script_outputs(
             }
           },
         )
-  assets.quantity_of(output1.value, script_hash, name) == 1
+  (assets.quantity_of(o.value, script_hash, name) == fractions)?
 }
 
 pub fn validate_support_campaign(
   tx: Transaction,
   self_script: PolicyId,
-  datum: CampaignDatum,
+  datum: MinterDatum,
 ) {
   let Transaction { outputs, .. } = tx
-  let CampaignDatum { name, goal, fraction } = datum
+  let MinterDatum { name, goal, fraction } = datum
   let fraction_amount = goal / fraction
 
   let (backer_reward_token, script_reward_token) =

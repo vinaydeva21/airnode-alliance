@@ -6,7 +6,7 @@ pub type PaymentKeyHash =
 pub type StakeKeyHash =
   VerificationKeyHash
 
-pub type CampaignDatum {
+pub type MinterDatum {
   name: ByteArray,
   goal: Int,
   fraction: Int,
