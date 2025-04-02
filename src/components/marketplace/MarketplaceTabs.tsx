@@ -4,14 +4,18 @@ import { ShoppingCart, Wallet } from "lucide-react";
 import { BuyNodesTab } from "./tabs/BuyNodesTab";
 import { DeFiServicesTab } from "./tabs/DeFiServicesTab";
 import { AirNodePerformance } from "../airnode/AirNodeCard";
+import { UTxO } from "@lucid-evolution/lucid";
 
 interface AirNode {
-  name: string;
-  image: string;
-  location: string;
-  airNodeId: string;
-  fractions: number;
-  performance?: AirNodePerformance;
+  metadata: {
+    name: string;
+    image: string;
+    location: string;
+    airNodeId: string;
+    fractions: number;
+    performance?: AirNodePerformance;
+  };
+  utxo: UTxO;
 }
 
 interface LendingOption {

@@ -6,6 +6,7 @@ import { Info, ShoppingCart } from "lucide-react";
 import { NodeDetailsDialog } from "./NodeDetailsDialog";
 import { NodePurchaseDialog } from "./NodePurchaseDialog";
 import { NodeCollateralizeDialog } from "./NodeCollateralizeDialog";
+import { UTxO } from "@lucid-evolution/lucid";
 
 export interface AirNodePerformance {
   uptime: number;
@@ -21,6 +22,7 @@ export interface AirNodeProps {
   fractions: number;
   performance?: AirNodePerformance;
   className?: string;
+  utxo: UTxO;
 }
 
 const AirNodeCard: React.FC<AirNodeProps> = ({
@@ -29,12 +31,13 @@ const AirNodeCard: React.FC<AirNodeProps> = ({
   image = "not available",
   airNodeId = "not available",
   fractions = 0,
-  className = "",
   performance = {
     uptime: 99.2,
     earnings: 2.4,
     roi: 18.6,
   },
+  utxo,
+  className = "",
 }) => {
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [purchaseOpen, setPurchaseOpen] = useState(false);
