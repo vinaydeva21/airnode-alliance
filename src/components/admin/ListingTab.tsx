@@ -26,13 +26,20 @@ import { toast } from "sonner";
 import {
   Lucid,
   mintingPolicyToId,
+  paymentCredentialOf,
   validatorToAddress,
+  validatorToScriptHash,
+  WalletApi,
 } from "@lucid-evolution/lucid";
 import { NETWORK, PROVIDER } from "@/config";
-import { mintingValidator } from "@/config/scripts/scripts";
+import {
+  AirNodeValidator,
+  marketplaceValidator,
+} from "@/config/scripts/scripts";
 import { blockfrost } from "@/lib/blockfrost";
 import { listTokenCardano } from "@/lib/cardanoTx";
 import { useWeb3 } from "@/contexts/Web3Context";
+import { Wallet } from "ethers";
 
 // Mock fractionalized NFTs data
 const fractionData = [
@@ -95,8 +102,16 @@ export default function ListingTab() {
     async function fetchTokenName() {
       try {
         const lucid = await Lucid(PROVIDER, NETWORK);
-        const policyId = mintingPolicyToId(mintingValidator);
-        const contractAddress = validatorToAddress(NETWORK, mintingValidator);
+        lucid.selectWallet.fromAPI(web3State.chainId as unknown as WalletApi);
+        const address = await lucid.wallet().address();
+
+        const marketplace_hash = validatorToScriptHash(marketplaceValidator);
+        const validator = AirNodeValidator([
+          paymentCredentialOf(address).hash, //replace with owner Address
+          marketplace_hash,
+        ]);
+        const policyId = mintingPolicyToId(validator);
+        const contractAddress = validatorToAddress(NETWORK, validator);
         console.log(contractAddress);
         const utxos = await lucid.utxosAt(contractAddress);
         utxos.map(async (utxo) => {
