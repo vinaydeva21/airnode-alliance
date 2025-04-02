@@ -42,6 +42,7 @@ export const BuyNodesTab: React.FC<BuyNodesTabProps> = ({
                 key={node.metadata.airNodeId}
                 {...node.metadata}
                 utxo={node.utxo}
+                price={0}
               />
             ))}
       </div>
