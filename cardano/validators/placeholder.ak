@@ -1,11 +1,11 @@
-use aiken/crypto.{VerificationKeyHash}
+use aiken/crypto.{ScriptHash, VerificationKeyHash}
 use cardano/address.{Address, Script}
 use cardano/assets.{PolicyId}
 use cardano/transaction.{Input, Output, OutputReference, Transaction}
 use functions
 use types.{MinterDatum}
 
-validator airnode_minter(owner: VerificationKeyHash) {
+validator airnode_minter(owner: VerificationKeyHash, marketplace: ScriptHash) {
   mint(redeemer: MinterDatum, policyid: PolicyId, tx: Transaction) {
     let Transaction { outputs, .. } = tx
     let MinterDatum { name, fraction, .. } = redeemer
@@ -18,12 +18,27 @@ validator airnode_minter(owner: VerificationKeyHash) {
     }
   }
 
-  spend(_datum, _redeemer, o_ref: OutputReference, tx: Transaction) {
-    expect Some(Input { output: Output { address, .. }, .. }) =
-      transaction.find_input(tx.inputs, o_ref)
-    expect Script(self_script) = address.payment_credential
+  spend(
+    datum: Option<MinterDatum>,
+    _redeemer,
+    o_ref: OutputReference,
+    tx: Transaction,
+  ) {
+    expect Some(datum) = datum
+    let MinterDatum { name, fraction, .. } = datum
+    expect Some(script_input) = transaction.find_input(tx.inputs, o_ref)
+    expect Script(self_script) = script_input.output.address.payment_credential
     // functions.validate_support_campaign(tx, self_script, datum)
-    True
+    and {
+      functions.must_be_signed_by(tx, owner),
+      functions.must_send_to_marketplace(
+        script_input,
+        tx.outputs,
+        marketplace,
+        name,
+        fraction,
+      ),
+    }
   }
 
   else(_) {

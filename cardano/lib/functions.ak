@@ -3,7 +3,7 @@ use aiken/collection/list
 use aiken/crypto.{ScriptHash, VerificationKeyHash}
 use cardano/address.{Address, Inline, Script, VerificationKey}
 use cardano/assets.{PolicyId}
-use cardano/transaction.{Output, Transaction}
+use cardano/transaction.{Input, Output, Transaction}
 use types.{MinterDatum, PaymentKeyHash, StakeKeyHash}
 
 pub fn must_be_signed_by(tx: Transaction, signer: VerificationKeyHash) -> Bool {
@@ -69,6 +69,16 @@ pub fn find_script_outputs(
           },
         )
   (assets.quantity_of(o.value, script_hash, name) == fractions)?
+}
+
+pub fn must_send_to_marketplace(
+  input: Input,
+  outputs: List<Output>,
+  script_hash: ScriptHash,
+  name: ByteArray,
+  fractions: Int,
+) {
+  find_script_outputs(outputs, script_hash, name, fractions)
 }
 
 pub fn validate_support_campaign(
