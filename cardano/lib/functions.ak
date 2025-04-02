@@ -68,17 +68,32 @@ pub fn find_script_outputs(
             }
           },
         )
+  trace @"output": assets.quantity_of(o.value, script_hash, name)
+  trace @"fraction and name": fractions, name
   (assets.quantity_of(o.value, script_hash, name) == fractions)?
 }
 
 pub fn must_send_to_marketplace(
   input: Input,
   outputs: List<Output>,
-  script_hash: ScriptHash,
+  marketplace_hash: ScriptHash,
+  pid: PolicyId,
   name: ByteArray,
   fractions: Int,
 ) {
-  find_script_outputs(outputs, script_hash, name, fractions)
+  expect [o] =
+    outputs
+      |> list.filter(
+          fn(output) {
+            when output.address.payment_credential is {
+              Script(addr_script_hash) -> marketplace_hash == addr_script_hash
+              VerificationKey(_) -> False
+            }
+          },
+        )
+  trace @"output": assets.quantity_of(o.value, marketplace_hash, name)
+  trace @"fraction and name": fractions, name
+  (assets.quantity_of(o.value, pid, name) == fractions)?
 }
 
 pub fn validate_token_outputs(
