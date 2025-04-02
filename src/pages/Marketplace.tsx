@@ -7,13 +7,15 @@ import { MarketplaceTabs } from "@/components/marketplace/MarketplaceTabs";
 import {
   Lucid,
   mintingPolicyToId,
+  paymentCredentialOf,
   validatorToAddress,
+  validatorToScriptHash,
 } from "@lucid-evolution/lucid";
 import {
   marketplaceValidator,
-  mintingValidator,
+  AirNodeValidator,
 } from "@/config/scripts/scripts";
-import { NETWORK, PROVIDER } from "@/config";
+import { NETWORK, OWNER, PROVIDER } from "@/config";
 import { blockfrost } from "@/lib/blockfrost";
 
 const Marketplace = () => {
@@ -84,7 +86,12 @@ const Marketplace = () => {
     async function fetchTokenName() {
       try {
         const lucid = await Lucid(PROVIDER, NETWORK);
-        const policyId = mintingPolicyToId(mintingValidator);
+        const marketplace_hash = validatorToScriptHash(marketplaceValidator);
+        const validator = AirNodeValidator([
+          paymentCredentialOf(OWNER).hash, //replace with owner Address
+          marketplace_hash,
+        ]);
+        const policyId = mintingPolicyToId(validator);
         const contractAddress = validatorToAddress(
           NETWORK,
           marketplaceValidator

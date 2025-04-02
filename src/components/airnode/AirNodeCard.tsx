@@ -6,10 +6,20 @@ import { Info, ShoppingCart } from "lucide-react";
 import { NodeDetailsDialog } from "./NodeDetailsDialog";
 import { NodePurchaseDialog } from "./NodePurchaseDialog";
 import { NodeCollateralizeDialog } from "./NodeCollateralizeDialog";
-import { Data, Lucid, mintingPolicyToId, UTxO } from "@lucid-evolution/lucid";
+import {
+  Data,
+  Lucid,
+  mintingPolicyToId,
+  paymentCredentialOf,
+  UTxO,
+  validatorToScriptHash,
+} from "@lucid-evolution/lucid";
 import { MarketplaceDatum } from "@/types/cardano";
-import { NETWORK, PROVIDER } from "@/config";
-import { mintingValidator } from "@/config/scripts/scripts";
+import { NETWORK, OWNER, PROVIDER } from "@/config";
+import {
+  AirNodeValidator,
+  marketplaceValidator,
+} from "@/config/scripts/scripts";
 
 export interface AirNodePerformance {
   uptime: number;
@@ -58,7 +68,12 @@ const AirNodeCard: React.FC<AirNodeProps> = ({
       if (utxo === undefined) return;
       try {
         const lucid = await Lucid(PROVIDER, NETWORK);
-        const policyId = mintingPolicyToId(mintingValidator);
+        const marketplace_hash = validatorToScriptHash(marketplaceValidator);
+        const validator = AirNodeValidator([
+          paymentCredentialOf(OWNER).hash, //replace with owner Address
+          marketplace_hash,
+        ]);
+        const policyId = mintingPolicyToId(validator);
         const data = await lucid.datumOf(utxo);
         const datum = Data.castFrom(data, MarketplaceDatum);
         Object.entries(utxo.assets).map(([assetKey, qty]) => {

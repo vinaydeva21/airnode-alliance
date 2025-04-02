@@ -31,7 +31,7 @@ import {
   validatorToScriptHash,
   WalletApi,
 } from "@lucid-evolution/lucid";
-import { NETWORK, PROVIDER } from "@/config";
+import { NETWORK, OWNER, PROVIDER } from "@/config";
 import {
   AirNodeValidator,
   marketplaceValidator,
@@ -102,12 +102,10 @@ export default function ListingTab() {
     async function fetchTokenName() {
       try {
         const lucid = await Lucid(PROVIDER, NETWORK);
-        lucid.selectWallet.fromAPI(web3State.chainId as unknown as WalletApi);
-        const address = await lucid.wallet().address();
 
         const marketplace_hash = validatorToScriptHash(marketplaceValidator);
         const validator = AirNodeValidator([
-          paymentCredentialOf(address).hash, //replace with owner Address
+          paymentCredentialOf(OWNER).hash, //replace with owner Address
           marketplace_hash,
         ]);
         const policyId = mintingPolicyToId(validator);
@@ -115,11 +113,13 @@ export default function ListingTab() {
         console.log(contractAddress);
         const utxos = await lucid.utxosAt(contractAddress);
         utxos.map(async (utxo) => {
-          Object.entries(utxo.assets).map(([assetKey]) => {
+          Object.entries(utxo.assets).map(([assetKey, qty]) => {
             if (assetKey.startsWith(policyId)) {
               blockfrost.getMetadata(assetKey).then((metadata) => {
-                console.log(metadata);
-                setAirNodes((prev) => [...prev, { metadata, utxo }]);
+                setAirNodes((prev) => [
+                  ...prev,
+                  { metadata, utxo, availabletoken: qty },
+                ]);
               });
             }
           });
@@ -197,8 +197,8 @@ export default function ListingTab() {
                             key={airNode.metadata.airNodeId}
                             value={airNode.metadata.airNodeId}
                           >
-                            {airNode.metadata.name} (
-                            {airNode.metadata.fractions} fractions)
+                            {airNode.metadata.name} ({airNode.availabletoken}{" "}
+                            fractions)
                           </option>
                         ))}
                       </select>
