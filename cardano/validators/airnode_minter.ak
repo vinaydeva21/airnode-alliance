@@ -10,11 +10,10 @@ validator airnode_minter(owner: VerificationKeyHash, marketplace: ScriptHash) {
     let Transaction { outputs, .. } = tx
     let MinterDatum { name, fraction, .. } = redeemer
 
-    // let creator_address: Address = functions.address_from_tuple(creator)
     and {
-      functions.must_be_signed_by(tx, owner),
-      functions.find_script_outputs(outputs, policyid, name, fraction),
-      functions.node_token_mint(tx, policyid, redeemer),
+      functions.must_be_signed_by(tx, owner)?,
+      functions.find_script_outputs(outputs, policyid, name, fraction)?,
+      functions.node_token_mint(tx, policyid, redeemer)?,
     }
   }
 
@@ -30,14 +29,14 @@ validator airnode_minter(owner: VerificationKeyHash, marketplace: ScriptHash) {
     expect Script(self_script) = script_input.output.address.payment_credential
     // functions.validate_support_campaign(tx, self_script, datum)
     and {
-      functions.must_be_signed_by(tx, owner),
+      functions.must_be_signed_by(tx, owner)?,
       functions.must_send_to_marketplace(
         script_input,
         tx.outputs,
         marketplace,
         name,
         fraction,
-      ),
+      )?,
     }
   }
 
