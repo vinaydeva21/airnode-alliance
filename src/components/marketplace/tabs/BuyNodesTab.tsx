@@ -5,15 +5,19 @@ import { Pagination } from "../Pagination";
 import AirNodeCard, {
   AirNodePerformance,
 } from "@/components/airnode/AirNodeCard";
+import { UTxO } from "@lucid-evolution/lucid";
 
 interface BuyNodesTabProps {
   airNodes: Array<{
-    name: string;
-    image: string;
-    location: string;
-    airNodeId: string;
-    fractions: number;
-    performance?: AirNodePerformance;
+    metadata: {
+      name: string;
+      image: string;
+      location: string;
+      airNodeId: string;
+      fractions: number;
+      performance?: AirNodePerformance;
+    };
+    utxo: UTxO;
   }>;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
@@ -34,7 +38,11 @@ export const BuyNodesTab: React.FC<BuyNodesTabProps> = ({
         {airNodes.length === 0
           ? "fetching available nodes"
           : airNodes.map((node) => (
-              <AirNodeCard key={node.airNodeId} {...node} />
+              <AirNodeCard
+                key={node.metadata.airNodeId}
+                {...node.metadata}
+                utxo={node.utxo}
+              />
             ))}
       </div>
 

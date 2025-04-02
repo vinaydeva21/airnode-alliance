@@ -9,7 +9,10 @@ import {
   mintingPolicyToId,
   validatorToAddress,
 } from "@lucid-evolution/lucid";
-import { mintingValidator } from "@/config/scripts/scripts";
+import {
+  marketplaceValidator,
+  mintingValidator,
+} from "@/config/scripts/scripts";
 import { NETWORK, PROVIDER } from "@/config";
 import { blockfrost } from "@/lib/blockfrost";
 
@@ -77,17 +80,23 @@ const Marketplace = () => {
   // ];
 
   useEffect(() => {
+    console.log("useefefct");
     async function fetchTokenName() {
       try {
         const lucid = await Lucid(PROVIDER, NETWORK);
         const policyId = mintingPolicyToId(mintingValidator);
-        const contractAddress = validatorToAddress(NETWORK, mintingValidator);
+        const contractAddress = validatorToAddress(
+          NETWORK,
+          marketplaceValidator
+        );
+        console.log(contractAddress);
         const utxos = await lucid.utxosAt(contractAddress);
         utxos.map(async (utxo) => {
           Object.entries(utxo.assets).map(([assetKey]) => {
             if (assetKey.startsWith(policyId)) {
               blockfrost.getMetadata(assetKey).then((metadata) => {
-                setAirNodes([...airNodes, metadata]);
+                console.log(metadata);
+                setAirNodes((prev) => [...prev, { metadata, utxo }]);
               });
             }
           });
