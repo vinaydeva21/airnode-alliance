@@ -19,7 +19,7 @@ validator airnode_minter(owner: VerificationKeyHash, marketplace: ScriptHash) {
 
   spend(
     datum: Option<MinterDatum>,
-    _redeemer,
+    redeemer: Int,
     o_ref: OutputReference,
     tx: Transaction,
   ) {
@@ -34,8 +34,9 @@ validator airnode_minter(owner: VerificationKeyHash, marketplace: ScriptHash) {
         script_input,
         tx.outputs,
         marketplace,
+        self_script,
         name,
-        fraction,
+        redeemer,
       )?,
     }
   }
