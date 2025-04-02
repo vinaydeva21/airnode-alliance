@@ -6,10 +6,15 @@ import {
   Lucid,
   mintingPolicyToId,
   paymentCredentialOf,
+  UTxO,
   validatorToAddress,
 } from "@lucid-evolution/lucid";
 import { NETWORK, PROVIDER } from "../config";
-import { AirNodeValidator, mintingValidator } from "@/config/scripts/scripts";
+import {
+  AirNodeValidator,
+  marketplaceValidator,
+  mintingValidator,
+} from "@/config/scripts/scripts";
 import { CampaignDatum } from "@/types/cardano";
 
 export async function mintNFTCardano(
@@ -99,6 +104,53 @@ export async function mintNFTCardano(
     const signed = await tx.sign.withWallet().complete();
     const txHash = await signed.submit();
     console.log(txHash);
+  } catch (error: any) {
+    console.log(error);
+  }
+}
+
+export async function listTokenCardano(
+  utxo: UTxO,
+  metadata: any,
+  price: bigint,
+  fraction: bigint
+) {
+  try {
+    const lucid = await Lucid(PROVIDER, NETWORK);
+    const policyId = mintingPolicyToId(mintingValidator);
+    const contractAddress = validatorToAddress(NETWORK, mintingValidator);
+
+    const marketplaceAddress = validatorToAddress(
+      NETWORK,
+      marketplaceValidator
+    );
+
+    const tokensBackToContract =
+      utxo.assets[policyId + fromText(metadata.name)] - fraction;
+
+    const newTx = lucid
+      .newTx()
+      .collectFrom([utxo])
+      .pay.ToContract(
+        marketplaceAddress,
+        { kind: "inline", value: Data.void() }, // add dtum as price and quantity
+        { lovelace: 1n, [policyId + fromText(metadata.name)]: fraction }
+      );
+
+    tokensBackToContract !== 0n &&
+      newTx.pay.ToContract(
+        contractAddress,
+        { kind: "inline", value: Data.void() },
+        {
+          lovelace: 1n,
+          [policyId + fromText(metadata.name)]: tokensBackToContract,
+        }
+      );
+    const tx = await newTx.complete();
+    const signed = await tx.sign.withWallet().complete();
+    const txHash = await signed.submit();
+    console.log(txHash);
+    return txHash;
   } catch (error: any) {
     console.log(error);
   }
