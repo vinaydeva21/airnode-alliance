@@ -99,6 +99,7 @@ pub fn must_send_to_marketplace(
 pub fn validate_token_outputs(
   tx: Transaction,
   self_script: PolicyId,
+  pid: PolicyId,
   datum: MinterDatum,
   available_tokens: Int,
   tkn: ByteArray,
@@ -106,7 +107,7 @@ pub fn validate_token_outputs(
   let Transaction { outputs, .. } = tx
   let MinterDatum { name, price, fraction } = datum
   let (buyer_token_qty, script_token_qty) =
-    find_output_from_PID(outputs, self_script, name)
+    find_output_from_PID(outputs, pid, name)
 
   let lovelace = find_script_output_lovelace(outputs, self_script, name)
   //   and {
@@ -133,7 +134,7 @@ pub fn find_output_from_PID(
         !dict.is_empty(has_reward_token)
       },
     )
-
+  trace @"token_output": token_output
   expect Some(buyer_output) = list.at(token_output, 0)
   let script_token_qty =
     when list.at(token_output, 1) is {
@@ -151,11 +152,14 @@ pub fn find_script_output_lovelace(
   name: ByteArray,
 ) {
   let address = Address(Script(self_script), None)
-  expect [script_output] = transaction.find_script_outputs(outputs, self_script)
-  assets.lovelace_of(script_output.value)
+  let script_output = transaction.find_script_outputs(outputs, self_script)
+  expect Some(script_o) = list.at(script_output, 0)
+  assets.lovelace_of(script_o.value)
 }
 
 pub fn input_token(input: Input) {
-  expect [(pid, tkn, qty)] = assets.flatten(input.output.value)
+  trace @"flatten": assets.flatten(input.output.value)
+  expect [(ada, ada_n, lovelace),
+    (pid, tkn, qty)] = assets.flatten(input.output.value)
   (pid, tkn, qty)
 }
