@@ -11,7 +11,9 @@ validator marketplace {
     oref: OutputReference,
     tx: Transaction,
   ) {
-    let Transaction { inputs, outputs } = tx
+    let Transaction { inputs, outputs, .. } = tx
+    expect Some(script_input) = transaction.find_input(inputs, oref)
+    let (pid, tkn, qty) = functions.input_token(script_input)
     True
   }
 
