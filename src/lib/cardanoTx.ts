@@ -168,3 +168,61 @@ export async function listTokenCardano(
     console.log(error);
   }
 }
+
+export async function BuyTokenCardano(
+  utxo: UTxO,
+  fraction: bigint,
+  price: bigint,
+  tokenName: string,
+  walletApi: any
+) {
+  try {
+    const lucid = await Lucid(PROVIDER, NETWORK);
+    lucid.selectWallet.fromAPI(walletApi);
+    const address = await lucid.wallet().address();
+    const policyId = mintingPolicyToId(mintingValidator);
+    const marketplaceAddress = validatorToAddress(
+      NETWORK,
+      marketplaceValidator
+    );
+
+    const tokensBackToContract =
+      utxo.assets[policyId + fromText(tokenName)] - fraction;
+
+    const datum = Data.to(
+      {
+        name: fromText(tokenName),
+        price: price * 1_000_000n,
+        fraction,
+      },
+      MarketplaceDatum
+    );
+
+    const redeemer = Data.void();
+    const newTx = lucid
+      .newTx()
+      .collectFrom([utxo], redeemer)
+      .pay.ToAddress(address, {
+        lovelace: 1n,
+        [policyId + fromText(tokenName)]: fraction,
+      })
+      .attach.Script(marketplaceValidator);
+
+    tokensBackToContract !== 0n &&
+      newTx.pay.ToContract(
+        marketplaceAddress,
+        { kind: "inline", value: Data.void() },
+        {
+          lovelace: 1n,
+          [policyId + fromText(tokenName)]: tokensBackToContract,
+        }
+      );
+    const tx = await newTx.complete();
+    const signed = await tx.sign.withWallet().complete();
+    const txHash = await signed.submit();
+    console.log(txHash);
+    return txHash;
+  } catch (error: any) {
+    console.log(error);
+  }
+}

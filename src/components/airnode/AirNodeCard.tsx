@@ -9,7 +9,6 @@ import { NodeCollateralizeDialog } from "./NodeCollateralizeDialog";
 import { Data, Lucid, mintingPolicyToId, UTxO } from "@lucid-evolution/lucid";
 import { MarketplaceDatum } from "@/types/cardano";
 import { NETWORK, PROVIDER } from "@/config";
-import { set } from "date-fns";
 import { mintingValidator } from "@/config/scripts/scripts";
 
 export interface AirNodePerformance {
@@ -50,7 +49,9 @@ const AirNodeCard: React.FC<AirNodeProps> = ({
   const [collateralOpen, setCollateralOpen] = useState(false);
   const [shareAmount, setShareAmount] = useState(1);
   const [datum, setDatum] = useState<MarketplaceDatum>();
-  const [availableFraction, setAvailableFraction] = useState<number>(0);
+  const [availableFraction, setAvailableFraction] = useState<number | null>(
+    null
+  );
 
   useEffect(() => {
     async function fetchTokenName() {
@@ -89,7 +90,7 @@ const AirNodeCard: React.FC<AirNodeProps> = ({
               variant="secondary"
               className="bg-ana-darkblue/80 hover:bg-ana-darkblue border-ana-purple/20 text-white"
             >
-              {"availableShares"}/{"totalShares"} Available
+              {availableFraction}/{datum?.fraction || 0} Available
             </Badge>
           </div>
           <div className="absolute bottom-2 left-2 flex gap-1">
@@ -119,7 +120,9 @@ const AirNodeCard: React.FC<AirNodeProps> = ({
             </div>
             <div className="text-right">
               <div className="text-sm text-white/70">Price</div>
-              <div className="text-lg font-semibold text-white">${"price"}</div>
+              <div className="text-lg font-semibold text-white">
+                ${datum?.price ? Number(datum.price / 1_000_000n) : price}
+              </div>
             </div>
           </div>
 
@@ -145,16 +148,16 @@ const AirNodeCard: React.FC<AirNodeProps> = ({
         </CardContent>
       </Card>
 
-      {/* <NodeDetailsDialog
+      <NodeDetailsDialog
         open={detailsOpen}
         onOpenChange={setDetailsOpen}
         node={{
-          airNodeId,
+          id: airNodeId,
           name,
           location,
-          price,
-          totalShares,
-          availableShares,
+          price: datum?.price ? Number(datum.price / 1_000_000n) : price,
+          totalShares: Number(datum?.fraction) || fractions,
+          availableShares: availableFraction || fractions,
           performance,
         }}
         onBuy={() => {
@@ -165,15 +168,22 @@ const AirNodeCard: React.FC<AirNodeProps> = ({
           setDetailsOpen(false);
           setCollateralOpen(true);
         }}
-      /> */}
+      />
 
-      {/* <NodePurchaseDialog
+      <NodePurchaseDialog
         open={purchaseOpen}
         onOpenChange={setPurchaseOpen}
-        node={{ id, name, price, availableShares, performance }}
+        node={{
+          id: airNodeId,
+          name,
+          price: datum?.price ? Number(datum.price / 1_000_000n) : price,
+          availableShares: availableFraction || fractions,
+          performance,
+        }}
+        utxo={utxo}
         shareAmount={shareAmount}
         setShareAmount={setShareAmount}
-      /> */}
+      />
 
       <NodeCollateralizeDialog
         open={collateralOpen}
