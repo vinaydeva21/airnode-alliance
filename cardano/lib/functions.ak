@@ -81,26 +81,29 @@ pub fn must_send_to_marketplace(
   find_script_outputs(outputs, script_hash, name, fractions)
 }
 
-// pub fn validate_support_campaign(
-//   tx: Transaction,
-//   self_script: PolicyId,
-//   datum: MinterDatum,
-// ) {
-//   let Transaction { outputs, .. } = tx
-//   let MinterDatum { name, goal, fraction } = datum
-//   let fraction_amount = goal / fraction
+pub fn validate_token_outputs(
+  tx: Transaction,
+  self_script: PolicyId,
+  datum: MinterDatum,
+  available_tokens: Int,
+  tkn: ByteArray,
+) {
+  let Transaction { outputs, .. } = tx
+  let MinterDatum { name, price, fraction } = datum
+  let (buyer_token_qty, script_token_qty) =
+    find_output_from_PID(outputs, self_script, name)
 
-//   let (backer_reward_token, script_reward_token) =
-//     find_output_from_PID(outputs, self_script, name)
-
-//   let (backer_amount, script_token) =
-//     find_output_from_addr(outputs, self_script, name)
-
-//   and {
-//     script_reward_token == script_token,
-//     backer_amount / fraction_amount == backer_reward_token,
-//   }
-// }
+  let lovelace = find_script_output_lovelace(outputs, self_script, name)
+  //   and {
+  //     script_reward_token == script_token,
+  //     backer_amount / price == backer_reward_token,
+  //   }
+  and {
+    (tkn == name)?,
+    (available_tokens == buyer_token_qty + script_token_qty)?,
+    (lovelace >= price * buyer_token_qty)?,
+  }
+}
 
 pub fn find_output_from_PID(
   outputs: List<Output>,
@@ -116,28 +119,28 @@ pub fn find_output_from_PID(
       },
     )
 
-  expect Some(supporter_output) = list.at(token_output, 0)
-  let script_token =
+  expect Some(buyer_output) = list.at(token_output, 0)
+  let script_token_qty =
     when list.at(token_output, 1) is {
       Some(script_output) ->
         assets.quantity_of(script_output.value, policy_id, name)
       None -> 0
     }
-  let reward_token_to_backer =
-    assets.quantity_of(supporter_output.value, policy_id, name)
-  // let script_token = assets.quantity_of(script_output.value, policy_id, name)
-  (reward_token_to_backer, script_token)
+  let buyer_token_qty = assets.quantity_of(buyer_output.value, policy_id, name)
+  (buyer_token_qty, script_token_qty)
 }
 
-pub fn find_output_from_addr(
+pub fn find_script_output_lovelace(
   outputs: List<Output>,
-  self_script: PolicyId,
+  self_script: ScriptHash,
   name: ByteArray,
 ) {
   let address = Address(Script(self_script), None)
-  expect [script_output,
-    backers_amount_output] =
-    list.filter(outputs, fn(output) { output.address == address })
-  let script_token = assets.quantity_of(script_output.value, self_script, name)
-  (assets.lovelace_of(backers_amount_output.value), script_token)
+  expect [script_output] = transaction.find_script_outputs(outputs, self_script)
+  assets.lovelace_of(script_output.value)
+}
+
+pub fn input_token(input: Input) {
+  expect [(pid, tkn, qty)] = assets.flatten(input.output.value)
+  (pid, tkn, qty)
 }
