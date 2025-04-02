@@ -32,6 +32,7 @@ import { NETWORK, PROVIDER } from "@/config";
 import { mintingValidator } from "@/config/scripts/scripts";
 import { blockfrost } from "@/lib/blockfrost";
 import { listTokenCardano } from "@/lib/cardanoTx";
+import { useWeb3 } from "@/contexts/Web3Context";
 
 // Mock fractionalized NFTs data
 const fractionData = [
@@ -62,8 +63,8 @@ const formSchema = z.object({
   }),
 
   listingType: z.enum(["sale", "auction"]),
-  price: z.coerce.number().min(0.01, {
-    message: "Price must be at least 0.01.",
+  price: z.coerce.number().min(1, {
+    message: "Price must be at least 1.",
   }),
   quantity: z.coerce.number().int().min(1, {
     message: "Quantity must be at least 1.",
@@ -72,6 +73,8 @@ const formSchema = z.object({
 });
 
 export default function ListingTab() {
+  const { web3State } = useWeb3();
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { listForSale, loading } = useMarketplace();
   const [airNodes, setAirNodes] = useState<any[]>([]);
@@ -80,7 +83,7 @@ export default function ListingTab() {
     defaultValues: {
       airNode: { utxo: {}, metadata: {} },
       listingType: "sale",
-      price: 0.1,
+      price: 1,
       quantity: 100,
       duration: 7,
     },
@@ -121,9 +124,11 @@ export default function ListingTab() {
     try {
       // await listForSale(values.fractionId, values.price);
       await listTokenCardano(
-        values.airNode,
+        values.airNode.utxo,
+        values.airNode.metadata,
         BigInt(values.price),
-        BigInt(values.quantity)
+        BigInt(values.quantity),
+        web3State.chainId
       );
       toast.success(
         `Successfully listed ${values.quantity} fractions for ${values.listingType}`
@@ -227,7 +232,7 @@ export default function ListingTab() {
                         <Input
                           className="pl-10"
                           type="number"
-                          step="0.01"
+                          step="1"
                           {...field}
                         />
                       </div>

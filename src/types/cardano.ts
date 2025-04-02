@@ -92,6 +92,17 @@ export const ConfigDatumSchema = Data.Object({
 
 export type ConfigDatum = Data.Static<typeof ConfigDatumSchema>;
 export const ConfigDatum = ConfigDatumSchema as unknown as ConfigDatum;
+
+//  ---------------------Marketplace Datum------------------------
+export const MarketplaceDatumSchema = Data.Object({
+  name: Data.Bytes(),
+  price: Data.Integer(),
+  fraction: Data.Integer(),
+});
+
+export type MarketplaceDatum = Data.Static<typeof MarketplaceDatumSchema>;
+export const MarketplaceDatum =
+  MarketplaceDatumSchema as unknown as MarketplaceDatum;
 //#endregion
 
 //#region Redeemer

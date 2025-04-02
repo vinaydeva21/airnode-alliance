@@ -15,7 +15,7 @@ import {
   marketplaceValidator,
   mintingValidator,
 } from "@/config/scripts/scripts";
-import { CampaignDatum } from "@/types/cardano";
+import { CampaignDatum, MarketplaceDatum } from "@/types/cardano";
 
 export async function mintNFTCardano(
   airNodeId: string,
@@ -113,10 +113,12 @@ export async function listTokenCardano(
   utxo: UTxO,
   metadata: any,
   price: bigint,
-  fraction: bigint
+  fraction: bigint,
+  walletApi: any
 ) {
   try {
     const lucid = await Lucid(PROVIDER, NETWORK);
+    lucid.selectWallet.fromAPI(walletApi);
     const policyId = mintingPolicyToId(mintingValidator);
     const contractAddress = validatorToAddress(NETWORK, mintingValidator);
 
@@ -128,14 +130,25 @@ export async function listTokenCardano(
     const tokensBackToContract =
       utxo.assets[policyId + fromText(metadata.name)] - fraction;
 
+    const datum = Data.to(
+      {
+        name: fromText(metadata.name),
+        price: price * 1_000_000n,
+        fraction,
+      },
+      MarketplaceDatum
+    );
+
+    const redeemer = Data.void();
     const newTx = lucid
       .newTx()
-      .collectFrom([utxo])
+      .collectFrom([utxo], redeemer)
       .pay.ToContract(
         marketplaceAddress,
-        { kind: "inline", value: Data.void() }, // add dtum as price and quantity
+        { kind: "inline", value: datum },
         { lovelace: 1n, [policyId + fromText(metadata.name)]: fraction }
-      );
+      )
+      .attach.Script(mintingValidator);
 
     tokensBackToContract !== 0n &&
       newTx.pay.ToContract(
