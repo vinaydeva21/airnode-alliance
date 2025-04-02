@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -6,7 +6,11 @@ import { Info, ShoppingCart } from "lucide-react";
 import { NodeDetailsDialog } from "./NodeDetailsDialog";
 import { NodePurchaseDialog } from "./NodePurchaseDialog";
 import { NodeCollateralizeDialog } from "./NodeCollateralizeDialog";
-import { UTxO } from "@lucid-evolution/lucid";
+import { Data, Lucid, mintingPolicyToId, UTxO } from "@lucid-evolution/lucid";
+import { MarketplaceDatum } from "@/types/cardano";
+import { NETWORK, PROVIDER } from "@/config";
+import { set } from "date-fns";
+import { mintingValidator } from "@/config/scripts/scripts";
 
 export interface AirNodePerformance {
   uptime: number;
@@ -20,9 +24,10 @@ export interface AirNodeProps {
   location: string;
   airNodeId: string;
   fractions: number;
+  price: number;
   performance?: AirNodePerformance;
   className?: string;
-  utxo: UTxO;
+  utxo?: UTxO;
 }
 
 const AirNodeCard: React.FC<AirNodeProps> = ({
@@ -30,6 +35,7 @@ const AirNodeCard: React.FC<AirNodeProps> = ({
   location = "not available",
   image = "not available",
   airNodeId = "not available",
+  price = 0,
   fractions = 0,
   performance = {
     uptime: 99.2,
@@ -43,6 +49,30 @@ const AirNodeCard: React.FC<AirNodeProps> = ({
   const [purchaseOpen, setPurchaseOpen] = useState(false);
   const [collateralOpen, setCollateralOpen] = useState(false);
   const [shareAmount, setShareAmount] = useState(1);
+  const [datum, setDatum] = useState<MarketplaceDatum>();
+  const [availableFraction, setAvailableFraction] = useState<number>(0);
+
+  useEffect(() => {
+    async function fetchTokenName() {
+      if (utxo === undefined) return;
+      try {
+        const lucid = await Lucid(PROVIDER, NETWORK);
+        const policyId = mintingPolicyToId(mintingValidator);
+        const data = await lucid.datumOf(utxo);
+        const datum = Data.castFrom(data, MarketplaceDatum);
+        Object.entries(utxo.assets).map(([assetKey, qty]) => {
+          if (assetKey.startsWith(policyId)) {
+            setAvailableFraction(Number(qty));
+          }
+        });
+        setDatum(datum);
+      } catch (error: any) {
+        console.log(error);
+      }
+    }
+
+    fetchTokenName();
+  }, []);
   return (
     <>
       <Card
@@ -145,13 +175,17 @@ const AirNodeCard: React.FC<AirNodeProps> = ({
         setShareAmount={setShareAmount}
       /> */}
 
-      {/* <NodeCollateralizeDialog
+      <NodeCollateralizeDialog
         open={collateralOpen}
         onOpenChange={setCollateralOpen}
-        node={{ id, name, price }}
+        node={{
+          id: airNodeId,
+          name,
+          price: datum?.price ? Number(datum.price / 1_000_000n) : price,
+        }}
         shareAmount={shareAmount}
         setShareAmount={setShareAmount}
-      /> */}
+      />
     </>
   );
 };
