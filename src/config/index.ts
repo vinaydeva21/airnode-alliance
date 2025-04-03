@@ -7,4 +7,5 @@ const NETWORKx = process.env.NEXT_PUBLIC_CARDANO_NETWORK as Network;
 export const NETWORK: Network = NETWORKx;
 export const PROVIDER: Provider = new Blockfrost(BF_URL, BF_PID);
 export const OWNER =
-  "addr_test1qrlq53qjd2yxx4lqj29526fn2uyl9fe7julp4shkgqm3m4dpvpz9h24n9ttq5f4d2xunltqy3yfphmr29uw4kwxt0h9qadh7tj";
+  "addr_test1qz8uszw3ttxjvjllacn3zmm36as88v3vprsar59arqqwdxxhx2u93sjnxtcdjkhctzydqcwvqg9xkfjaf7l260xzw4hspfkj73";
+// vinay address
