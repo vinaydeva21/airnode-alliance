@@ -1,10 +1,25 @@
+"use client";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Divide, Info } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -27,7 +42,7 @@ const formSchema = z.object({
 
 export default function FractionalizationTab() {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -38,15 +53,17 @@ export default function FractionalizationTab() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
-    
+
     try {
       // In a real app, this would call a contract method
       console.log("Fractionalizing NFT:", values);
-      
+
       // Simulate async operation
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      toast.success(`Successfully fractionalized ${values.airNodeId} into ${values.fractionCount} fractions`);
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      toast.success(
+        `Successfully fractionalized ${values.airNodeId} into ${values.fractionCount} fractions`
+      );
       toast.info("Fractions ready to be listed on the marketplace");
       form.reset();
     } catch (error) {
@@ -66,7 +83,8 @@ export default function FractionalizationTab() {
             Fractionalize AirNode NFT
           </CardTitle>
           <CardDescription>
-            Split an AirNode NFT into fractions that can be listed on the marketplace
+            Split an AirNode NFT into fractions that can be listed on the
+            marketplace
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -79,12 +97,12 @@ export default function FractionalizationTab() {
                   <FormItem>
                     <FormLabel>Select AirNode NFT</FormLabel>
                     <FormControl>
-                      <select 
+                      <select
                         className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         {...field}
                       >
                         <option value="">Select an AirNode</option>
-                        {mockNFTs.map(nft => (
+                        {mockNFTs.map((nft) => (
                           <option key={nft.id} value={nft.id}>
                             {nft.name} - {nft.location}
                           </option>
@@ -98,7 +116,7 @@ export default function FractionalizationTab() {
                   </FormItem>
                 )}
               />
-              
+
               <FormField
                 control={form.control}
                 name="fractionCount"
@@ -115,19 +133,15 @@ export default function FractionalizationTab() {
                   </FormItem>
                 )}
               />
-              
-              <Button 
-                type="submit" 
-                className="w-full" 
-                disabled={isSubmitting}
-              >
+
+              <Button type="submit" className="w-full" disabled={isSubmitting}>
                 {isSubmitting ? "Processing..." : "Fractionalize NFT"}
               </Button>
             </form>
           </Form>
         </CardContent>
       </Card>
-      
+
       <div className="space-y-6">
         <Card className="bg-card/30 backdrop-blur-sm border-ana-purple/20">
           <CardHeader>
@@ -138,10 +152,11 @@ export default function FractionalizationTab() {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm">
-              Fractionalization splits a single NFT into multiple fractions, each represented by a token. 
-              This allows partial ownership of valuable assets and increases liquidity.
+              Fractionalization splits a single NFT into multiple fractions,
+              each represented by a token. This allows partial ownership of
+              valuable assets and increases liquidity.
             </p>
-            
+
             <div className="rounded-md bg-ana-purple/10 p-3 border border-ana-purple/20">
               <h4 className="font-medium mb-2">Benefits</h4>
               <ul className="text-sm space-y-1">
@@ -163,7 +178,7 @@ export default function FractionalizationTab() {
                 </li>
               </ul>
             </div>
-            
+
             <div className="mt-4">
               <h4 className="font-medium mb-2">Fraction Distribution</h4>
               <div className="h-12 w-full rounded-md overflow-hidden flex">
@@ -191,7 +206,7 @@ export default function FractionalizationTab() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card className="bg-card/30 backdrop-blur-sm border-ana-purple/20">
           <CardHeader>
             <CardTitle className="text-lg">Fractionalization Process</CardTitle>
@@ -204,37 +219,45 @@ export default function FractionalizationTab() {
                 </div>
                 <div className="flex-1">
                   <p className="font-medium">Select NFT to fractionalize</p>
-                  <p className="text-sm text-muted-foreground">Choose a minted AirNode NFT from your collection</p>
+                  <p className="text-sm text-muted-foreground">
+                    Choose a minted AirNode NFT from your collection
+                  </p>
                 </div>
               </li>
-              
+
               <li className="flex items-start gap-2">
                 <div className="h-6 w-6 rounded-full bg-ana-purple flex items-center justify-center text-white text-sm font-medium">
                   2
                 </div>
                 <div className="flex-1">
                   <p className="font-medium">Set fraction parameters</p>
-                  <p className="text-sm text-muted-foreground">Define number of fractions and initial price</p>
+                  <p className="text-sm text-muted-foreground">
+                    Define number of fractions and initial price
+                  </p>
                 </div>
               </li>
-              
+
               <li className="flex items-start gap-2">
                 <div className="h-6 w-6 rounded-full bg-ana-purple flex items-center justify-center text-white text-sm font-medium">
                   3
                 </div>
                 <div className="flex-1">
                   <p className="font-medium">Confirm transaction</p>
-                  <p className="text-sm text-muted-foreground">Approve the smart contract interaction</p>
+                  <p className="text-sm text-muted-foreground">
+                    Approve the smart contract interaction
+                  </p>
                 </div>
               </li>
-              
+
               <li className="flex items-start gap-2">
                 <div className="h-6 w-6 rounded-full bg-ana-purple flex items-center justify-center text-white text-sm font-medium">
                   4
                 </div>
                 <div className="flex-1">
                   <p className="font-medium">List on marketplace</p>
-                  <p className="text-sm text-muted-foreground">Make fractions available for purchase</p>
+                  <p className="text-sm text-muted-foreground">
+                    Make fractions available for purchase
+                  </p>
                 </div>
               </li>
             </ol>
