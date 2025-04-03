@@ -7,12 +7,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Web3Provider } from "@/contexts/Web3Context";
 import { RainbowKitWrapper } from "@/contexts/RainbowKitProvider";
-import Index from "../pages/Index";
-import Marketplace from "../pages/Marketplace";
-import Dashboard from "../pages/Dashboard";
-import Governance from "../pages/Governance";
-import Admin from "../pages/Admin";
-import NotFound from "../pages/NotFound";
+import Index from "../airnode_pages/Index";
+import Marketplace from "../airnode_pages/Marketplace";
+import Dashboard from "../airnode_pages/Dashboard";
+import Governance from "../airnode_pages/Governance";
+import Admin from "../airnode_pages/Admin";
+// import NotFound from "../pages/NotFound";
 
 const queryClient = new QueryClient();
 
@@ -30,7 +30,7 @@ const App = () => (
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/governance" element={<Governance />} />
               <Route path="/admin" element={<Admin />} />
-              <Route path="*" element={<NotFound />} />
+              {/* <Route path="*" element={<NotFound />} /> */}
             </Routes>
           </BrowserRouter>
         </TooltipProvider>

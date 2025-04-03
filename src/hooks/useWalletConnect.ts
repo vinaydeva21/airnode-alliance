@@ -36,7 +36,7 @@ export const useWalletConnect = () => {
   // Initialize Ethereum provider and set up event listeners
   useEffect(() => {
     const initProvider = async () => {
-      if (checkIfEvmWalletIsInstalled()) {
+      if (checkIfEvmWalletIsInstalled() && window.ethereum) {
         const ethersProvider = new ethers.BrowserProvider(window.ethereum);
         setProvider(ethersProvider);
 

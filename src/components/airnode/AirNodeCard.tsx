@@ -170,7 +170,7 @@ const AirNodeCard: React.FC<AirNodeProps> = ({
           id: airNodeId,
           name,
           location,
-          price: datum?.price ? Number(datum.price / 1_000_000n) : price,
+          price: datum?.price ? Number(datum.price) : price,
           totalShares: Number(datum?.fraction) || fractions,
           availableShares: availableFraction || fractions,
           performance,

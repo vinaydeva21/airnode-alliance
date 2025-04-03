@@ -39,7 +39,7 @@ export interface Reward {
 
 export interface Web3State {
   account: string | null;
-  chainId: number | null;
+  chainId: number | null | undefined;
   connected: boolean;
 }
 
