@@ -45,17 +45,21 @@ export const NodePurchaseDialog: React.FC<NodePurchaseProps> = ({
         description: `an error occurred while fetching the UTxO`,
       });
     } else {
+      console.log("node.price", node.price, "\n shareAmount", shareAmount);
       await BuyTokenCardano(
         utxo,
         BigInt(shareAmount),
-        BigInt(node.price * shareAmount * 1_000_000),
+        BigInt(node.price * 1_000_000),
         node.name,
         web3State.chainId
       );
       toast.success(
         `Purchase initiated for ${shareAmount} shares of ${node.name}`,
         {
-          description: `Total cost: $${(node.price * shareAmount).toFixed(2)}`,
+          description: `Total cost: $${(
+            (node.price * shareAmount) /
+            1_000_000
+          ).toFixed(2)}`,
         }
       );
     }

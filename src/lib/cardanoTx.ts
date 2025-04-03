@@ -147,6 +147,8 @@ export async function listTokenCardano(
     );
 
     const redeemer = Data.to(fraction);
+    const oldDatumData = await lucid.datumOf(utxo);
+    const oldDatum = Data.castFrom(oldDatumData, MarketplaceDatum);
     const newTx = lucid
       .newTx()
       .collectFrom([utxo], redeemer)
@@ -161,7 +163,7 @@ export async function listTokenCardano(
     tokensBackToContract !== 0n &&
       newTx.pay.ToContract(
         contractAddress,
-        { kind: "inline", value: Data.void() },
+        { kind: "inline", value: Data.to(oldDatum, MarketplaceDatum) },
         {
           lovelace: 1n,
           [policyId + fromText(metadata.name)]: tokensBackToContract,
@@ -202,14 +204,9 @@ export async function BuyTokenCardano(
     const tokensBackToContract =
       utxo.assets[policyId + fromText(tokenName)] - fraction;
 
-    const datum = Data.to(
-      {
-        name: fromText(tokenName),
-        price: price * 1_000_000n,
-        fraction,
-      },
-      MarketplaceDatum
-    );
+    const oldDatumData = await lucid.datumOf(utxo);
+    const oldDatum = Data.castFrom(oldDatumData, MarketplaceDatum);
+    const datum = Data.to(oldDatum, MarketplaceDatum);
 
     const redeemer = Data.void();
     const newTx = lucid
@@ -227,7 +224,7 @@ export async function BuyTokenCardano(
     tokensBackToContract !== 0n &&
       newTx.pay.ToContract(
         marketplaceAddress,
-        { kind: "inline", value: Data.void() },
+        { kind: "inline", value: datum },
         {
           lovelace: 1n,
           [policyId + fromText(tokenName)]: tokensBackToContract,

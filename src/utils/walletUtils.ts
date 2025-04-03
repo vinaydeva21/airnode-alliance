@@ -75,6 +75,10 @@ export const connectToEvmWallet = async () => {
   }
 
   try {
+    if (!window.ethereum) {
+      toast.error("Please install MetaMask or another web3 wallet");
+      return null;
+    }
     const accounts = await window.ethereum.request({
       method: "eth_requestAccounts",
     });
@@ -107,7 +111,7 @@ export const connectToEvmWallet = async () => {
 };
 
 export function hexToBech32(data: string) {
-  const bytes = [];
+  const bytes: number[] = [];
   for (let i = 0; i < data.length; i += 2) {
     bytes.push(parseInt(data.substring(i, i + 2), 16));
   }
