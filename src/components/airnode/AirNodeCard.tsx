@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -65,26 +67,26 @@ const AirNodeCard: React.FC<AirNodeProps> = ({
 
   useEffect(() => {
     async function fetchTokenName() {
-      if (utxo === undefined) return;
-      try {
-        const lucid = await Lucid(PROVIDER, NETWORK);
-        const marketplace_hash = validatorToScriptHash(marketplaceValidator);
-        const validator = AirNodeValidator([
-          paymentCredentialOf(OWNER).hash, //replace with owner Address
-          marketplace_hash,
-        ]);
-        const policyId = mintingPolicyToId(validator);
-        const data = await lucid.datumOf(utxo);
-        const datum = Data.castFrom(data, MarketplaceDatum);
-        Object.entries(utxo.assets).map(([assetKey, qty]) => {
-          if (assetKey.startsWith(policyId)) {
-            setAvailableFraction(Number(qty));
-          }
-        });
-        setDatum(datum);
-      } catch (error: any) {
-        console.log(error);
-      }
+      if (!utxo) return;
+      // try {
+      // const lucid = await Lucid(PROVIDER, NETWORK);
+      //   const marketplace_hash = validatorToScriptHash(marketplaceValidator);
+      //   const validator = AirNodeValidator([
+      //     paymentCredentialOf(OWNER).hash, //replace with owner Address
+      //     marketplace_hash,
+      //   ]);
+      //   const policyId = mintingPolicyToId(validator);
+      //   const data = await lucid.datumOf(utxo);
+      //   const datum = Data.castFrom(data, MarketplaceDatum);
+      //   Object.entries(utxo.assets).map(([assetKey, qty]) => {
+      //     if (assetKey.startsWith(policyId)) {
+      //       setAvailableFraction(Number(qty));
+      //     }
+      //   });
+      //   setDatum(datum);
+      // } catch (error: any) {
+      // console.log(error);
+      // }
     }
 
     fetchTokenName();

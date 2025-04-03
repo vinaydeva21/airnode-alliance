@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: "export",
+  // output: "export",
   // target: "serverless",
   eslint: {
     // Warning: This allows production builds to successfully complete even if
