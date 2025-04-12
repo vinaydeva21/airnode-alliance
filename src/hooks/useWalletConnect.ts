@@ -35,6 +35,7 @@ export const useWalletConnect = () => {
                 ...prev,
                 account: accounts[0],
               }));
+              toast.info(`Account changed to ${accounts[0].substring(0, 6)}...${accounts[0].substring(accounts[0].length - 4)}`);
             }
           });
 
@@ -44,6 +45,7 @@ export const useWalletConnect = () => {
               ...prev,
               chainId: decimalChainId,
             }));
+            toast.info(`Network changed to chainId: ${decimalChainId}`);
             window.location.reload();
           });
         }
@@ -65,14 +67,50 @@ export const useWalletConnect = () => {
     try {
       setWalletType(walletId);
 
-      // Handle MetaMask or Web3 Modal Connect
-      if (walletId === "metamask" || walletId === "wmc") {
+      // Handle MetaMask specific connection
+      if (walletId === "metamask") {
+        if (!window.ethereum?.isMetaMask) {
+          toast.error("MetaMask not detected. Please install the MetaMask extension.");
+          return;
+        }
+        
+        try {
+          // Request account access
+          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+          
+          const chainIdHex = await window.ethereum.request({ method: 'eth_chainId' });
+          const chainId = parseInt(chainIdHex as string, 16);
+          
+          if (accounts && accounts.length > 0) {
+            setWeb3State({
+              account: accounts[0],
+              chainId: chainId,
+              connected: true,
+            });
+            
+            // Display success message
+            toast.success("MetaMask Connected", {
+              description: `Address: ${accounts[0].substring(0, 6)}...${accounts[0].substring(accounts[0].length - 4)}`,
+            });
+            
+            // Create provider
+            const ethersProvider = new ethers.BrowserProvider(window.ethereum);
+            setProvider(ethersProvider);
+          }
+        } catch (error) {
+          console.error("MetaMask connection error:", error);
+          toast.error("Failed to connect to MetaMask");
+        }
+        return;
+      }
+      // Handle generic Web3 Modal Connect
+      else if (walletId === "wmc") {
         const evmWalletState = await connectToEvmWallet();
         if (evmWalletState) {
           setWeb3State(evmWalletState);
         }
       }
-      // Handle Yoroi wallet
+      // Handle Cardano wallets
       else if (walletId === "yoroi" || walletId === "lace") {
         const yoroiWalletState = await connectToCardanoWallet(walletId);
         if (yoroiWalletState) {

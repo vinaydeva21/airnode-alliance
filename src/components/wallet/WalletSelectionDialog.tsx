@@ -11,6 +11,7 @@ import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { toast } from "sonner";
 import { WalletInfo } from "./WalletData";
 import { Separator } from "@/components/ui/separator";
+import { Wallet } from "lucide-react";
 
 interface WalletSelectionDialogProps {
   open: boolean;
@@ -30,6 +31,19 @@ export const WalletSelectionDialog: React.FC<WalletSelectionDialogProps> = ({
   // Filter wallets by network
   const cardanoWallets = wallets.filter(wallet => wallet.network === "cardano");
 
+  // Check if MetaMask is installed
+  const isMetaMaskInstalled = typeof window !== 'undefined' && !!window.ethereum?.isMetaMask;
+
+  const handleMetaMaskConnect = () => {
+    if (isMetaMaskInstalled) {
+      onConnect("metamask");
+    } else {
+      // Redirect to MetaMask website for installation
+      toast.info("MetaMask not found. Redirecting to download page...");
+      window.open("https://metamask.io/download/", "_blank");
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-ana-darkblue border-ana-purple/30 text-white max-w-sm">
@@ -44,6 +58,21 @@ export const WalletSelectionDialog: React.FC<WalletSelectionDialogProps> = ({
           {/* Ethereum Network Section */}
           <div>
             <h3 className="text-sm font-medium text-white/70 mb-2">Ethereum Network</h3>
+            
+            {/* MetaMask Option */}
+            <button
+              onClick={handleMetaMaskConnect}
+              className="flex w-full items-center justify-between p-3 rounded-lg border border-ana-purple/20 hover:bg-ana-purple/20 transition-colors mb-3"
+            >
+              <div className="flex items-center gap-3">
+                <div className="text-2xl">🦊</div>
+                <span className="font-medium">MetaMask</span>
+              </div>
+              <div className="text-ana-purple">
+                {isMetaMaskInstalled ? "Connect" : "Install"}
+              </div>
+            </button>
+            
             <button
               onClick={() => {
                 if (openConnectModal) {
