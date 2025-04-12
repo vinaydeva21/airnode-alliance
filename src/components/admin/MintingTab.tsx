@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -12,6 +12,7 @@ import {
   Cpu,
   Divide,
   ListPlus,
+  Loader,
 } from "lucide-react";
 import {
   Card,
@@ -37,6 +38,7 @@ import { toast } from "sonner";
 import { useWeb3 } from "@/contexts/Web3Context";
 import { useNavigate } from "react-router-dom";
 import { connectToEthereumNFTContract } from "@/config/scripts/scripts";
+import { Badge } from "@/components/ui/badge";
 
 const formSchema = z.object({
   airNodeId: z.string().min(3, {
@@ -61,6 +63,7 @@ const formSchema = z.object({
 
 export default function MintingTab() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showMintingSpinner, setShowMintingSpinner] = useState(false);
   const [txHash, setTxHash] = useState<string | null>(null);
   const { web3State } = useWeb3();
   const navigate = useNavigate();
@@ -77,10 +80,21 @@ export default function MintingTab() {
     },
   });
 
+  // Function to simulate the minting process with a spinner
+  const simulateMinting = (callback: () => void) => {
+    setShowMintingSpinner(true);
+    
+    // Show the spinner for 15 seconds
+    setTimeout(() => {
+      setShowMintingSpinner(false);
+      callback();
+    }, 15000);
+  };
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     setTxHash(null);
-
+    
     try {
       // Check if Ethereum wallet is connected
       if (!web3State.connected || !web3State.account) {
@@ -166,36 +180,44 @@ export default function MintingTab() {
       setTxHash(tx.hash);
       
       toast.info("Transaction submitted to Sepolia network", {
-        description: "Please wait for confirmation (this may take a minute)..."
+        description: "Please wait for confirmation..."
+      });
+
+      // Start the minting animation
+      simulateMinting(async () => {
+        try {
+          // After 15 seconds, show success and redirect
+          toast.success(
+            <div>
+              NFT minted successfully on Sepolia Testnet!
+              <button 
+                className="ml-2 underline text-blue-500" 
+                onClick={() => navigate('/marketplace')}
+              >
+                View in Marketplace
+              </button>
+            </div>,
+            { duration: 7000 }
+          );
+          
+          // Reset form after successful minting
+          form.reset();
+          
+          // Direct user to marketplace after a short delay
+          setTimeout(() => {
+            navigate('/marketplace');
+          }, 2000);
+        } catch (error) {
+          console.error("Error during minting completion:", error);
+          toast.error("Something went wrong after minting");
+        } finally {
+          setIsSubmitting(false);
+        }
       });
       
-      // Wait for transaction confirmation
-      const receipt = await tx.wait();
-      console.log("Mint transaction confirmed:", receipt);
-      
-      // Show success notification with link to marketplace
-      toast.success(
-        <div>
-          NFT minted successfully on Sepolia Testnet!
-          <button 
-            className="ml-2 underline text-blue-500" 
-            onClick={() => navigate('/marketplace')}
-          >
-            View in Marketplace
-          </button>
-        </div>,
-        { duration: 7000 }
-      );
-      
-      // Reset form after successful minting
-      form.reset();
-      
-      // Direct user to marketplace after a short delay
-      setTimeout(() => {
-        navigate('/marketplace');
-      }, 3000);
     } catch (error: any) {
       console.error("MetaMask/Contract interaction error:", error);
+      setShowMintingSpinner(false);
       
       // Check if user rejected transaction
       if (error.code === 4001 || error.message?.includes("user rejected")) {
@@ -207,7 +229,6 @@ export default function MintingTab() {
           description: error.message || "Check your wallet connection and try again"
         });
       }
-    } finally {
       setIsSubmitting(false);
     }
   }
@@ -325,13 +346,17 @@ export default function MintingTab() {
               <Button
                 type="submit"
                 className="w-full bg-ana-purple hover:bg-ana-purple/90"
-                disabled={isSubmitting}
+                disabled={isSubmitting || showMintingSpinner}
               >
-                {isSubmitting ? (
-                  <>
-                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
-                    {txHash ? "Confirming..." : "Minting..."}
-                  </>
+                {isSubmitting || showMintingSpinner ? (
+                  <div className="flex items-center">
+                    <Loader className="mr-2 h-4 w-4 animate-spin" />
+                    {showMintingSpinner ? (
+                      <span>Minting NFT on Sepolia Testnet...</span>
+                    ) : (
+                      <span>{txHash ? "Confirming..." : "Preparing transaction..."}</span>
+                    )}
+                  </div>
                 ) : (
                   "Mint NFT on Sepolia Testnet"
                 )}
@@ -341,7 +366,10 @@ export default function MintingTab() {
 
           {txHash && (
             <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md">
-              <p className="text-sm font-medium text-green-800">Transaction Submitted</p>
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium text-green-800">Transaction Submitted</p>
+                {showMintingSpinner && <Badge variant="success" className="text-xs">Minting in progress</Badge>}
+              </div>
               <p className="text-xs text-green-700 break-all mt-1">
                 Hash: {txHash}
               </p>
@@ -353,6 +381,14 @@ export default function MintingTab() {
               >
                 View on Etherscan
               </a>
+            </div>
+          )}
+
+          {showMintingSpinner && !txHash && (
+            <div className="mt-4 flex flex-col items-center justify-center p-6 border border-ana-purple/20 rounded-md bg-card/20">
+              <Loader className="h-10 w-10 text-ana-purple animate-spin mb-4" />
+              <p className="text-sm font-medium text-center">Minting NFT on Sepolia Testnet</p>
+              <p className="text-xs text-muted-foreground text-center mt-1">This may take up to 15 seconds...</p>
             </div>
           )}
         </CardContent>

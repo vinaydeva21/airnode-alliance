@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { TrendingUp, ShoppingCart, Wallet, Coins } from "lucide-react";
 import Navbar from "@/components/Navbar";
@@ -141,15 +142,15 @@ const Marketplace = () => {
             const newNodes = mintedNFTs.map(nft => ({
               id: nft.airNodeId || `token-${nft.tokenId}`,
               name: `AirNode ${nft.airNodeId || nft.tokenId}`,
-              location: "Ethereum Network",
+              location: nft.location || "Ethereum Network",
               price: 50,
               imageUrl: "/lovable-uploads/944059d9-4b2a-4ce4-a703-1df8d972e858.png",
               totalShares: parseInt(nft.fractions) || 1000,
               availableShares: parseInt(nft.fractions) || 1000,
               performance: {
-                uptime: 99.0,
-                earnings: 2.5,
-                roi: 18.0,
+                uptime: nft.performance?.uptime || 99.0,
+                earnings: nft.performance?.earnings || 2.5,
+                roi: nft.performance?.roi || 18.0,
               },
               isNewlyMinted: true,
               timestamp: nft.timestamp || Date.now()
@@ -164,6 +165,13 @@ const Marketplace = () => {
               
               setAirNodes(sortedNodes);
               console.log("Updated airNodes with newly minted NFTs:", sortedNodes);
+              
+              // Show a notification for new NFTs
+              if (filteredNewNodes.length > 0) {
+                toast.success(`${filteredNewNodes.length} new AirNode${filteredNewNodes.length > 1 ? 's' : ''} added to marketplace`, {
+                  description: "Your minted NFTs are now available for purchase"
+                });
+              }
             }
           }
         } catch (error) {

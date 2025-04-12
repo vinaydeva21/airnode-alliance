@@ -1,20 +1,14 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Info, ShoppingCart } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { BarChart3, MapPin, Settings } from "lucide-react";
 import { NodeDetailsDialog } from "./NodeDetailsDialog";
 import { NodePurchaseDialog } from "./NodePurchaseDialog";
-import { NodeCollateralizeDialog } from "./NodeCollateralizeDialog";
 
-export interface AirNodePerformance {
-  uptime: number;
-  earnings: number;
-  roi: number;
-}
-
-export interface AirNodeProps {
+interface AirNodeCardProps {
   id: string;
   name: string;
   location: string;
@@ -22,11 +16,16 @@ export interface AirNodeProps {
   imageUrl: string;
   totalShares: number;
   availableShares: number;
-  className?: string;
-  performance?: AirNodePerformance;
+  performance: {
+    uptime: number;
+    earnings: number;
+    roi: number;
+  };
+  isNewlyMinted?: boolean;
+  timestamp?: number;
 }
 
-const AirNodeCard: React.FC<AirNodeProps> = ({
+const AirNodeCard: React.FC<AirNodeCardProps> = ({
   id,
   name,
   location,
@@ -34,105 +33,113 @@ const AirNodeCard: React.FC<AirNodeProps> = ({
   imageUrl,
   totalShares,
   availableShares,
-  className = "",
-  performance = {
-    uptime: 99.2,
-    earnings: 2.4,
-    roi: 18.6
-  }
+  performance,
+  isNewlyMinted,
+  timestamp
 }) => {
-  const [detailsOpen, setDetailsOpen] = useState(false);
-  const [purchaseOpen, setPurchaseOpen] = useState(false);
-  const [collateralOpen, setCollateralOpen] = useState(false);
-  const [shareAmount, setShareAmount] = useState(1);
+  const availabilityPercentage = (availableShares / totalShares) * 100;
+  const timeAgo = timestamp ? getTimeAgo(timestamp) : '';
+
+  function getTimeAgo(timestamp: number): string {
+    const now = Date.now();
+    const secondsAgo = Math.floor((now - timestamp) / 1000);
+    
+    if (secondsAgo < 60) return 'Just now';
+    if (secondsAgo < 3600) return `${Math.floor(secondsAgo / 60)}m ago`;
+    if (secondsAgo < 86400) return `${Math.floor(secondsAgo / 3600)}h ago`;
+    return `${Math.floor(secondsAgo / 86400)}d ago`;
+  }
 
   return (
-    <>
-      <Card className={`overflow-hidden airnode-card transition-all hover:shadow-lg hover:shadow-ana-purple/10 ${className}`}>
-        <div className="relative h-48 overflow-hidden">
-          <img 
-            src={imageUrl || "/placeholder.svg"} 
-            alt={name} 
-            className="w-full h-full object-cover transition-transform hover:scale-105 duration-500"
-          />
-          <div className="absolute top-2 right-2">
-            <Badge variant="secondary" className="bg-ana-darkblue/80 hover:bg-ana-darkblue border-ana-purple/20 text-white">
-              {availableShares}/{totalShares} Available
-            </Badge>
-          </div>
-          <div className="absolute bottom-2 left-2 flex gap-1">
-            <Badge variant="outline" className="bg-green-500/20 text-green-300 border-green-500/30">
-              {performance.uptime}% Uptime
-            </Badge>
-            <Badge variant="outline" className="bg-ana-purple/20 text-ana-purple border-ana-purple/30">
-              {performance.roi}% ROI
-            </Badge>
+    <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg border border-ana-purple/20 bg-card/30 backdrop-blur-sm">
+      <div className="relative">
+        <img
+          src={imageUrl}
+          alt={name}
+          className="w-full h-40 object-cover"
+        />
+        {isNewlyMinted && (
+          <Badge 
+            variant="success" 
+            className="absolute top-2 right-2 font-medium"
+          >
+            New
+          </Badge>
+        )}
+        <div className="absolute bottom-0 w-full px-3 py-2 bg-gradient-to-t from-black/70 to-transparent">
+          <h3 className="text-white font-bold">{name}</h3>
+          <div className="flex items-center text-white/80 text-xs">
+            <MapPin size={12} className="mr-1" /> {location}
           </div>
         </div>
-        <CardContent className="p-4">
-          <div className="flex justify-between items-start mb-3">
-            <div>
-              <h3 className="font-semibold text-white">{name}</h3>
-              <p className="text-sm text-white/70">{location}</p>
-            </div>
-            <div className="text-right">
-              <div className="text-sm text-white/70">Price</div>
-              <div className="text-lg font-semibold text-white">${price}</div>
-            </div>
+      </div>
+
+      <CardContent className="p-4">
+        <div className="mb-4">
+          <div className="flex justify-between text-sm mb-1">
+            <span className="text-muted-foreground">Available</span>
+            <span>
+              {availableShares.toLocaleString()} / {totalShares.toLocaleString()} shares
+            </span>
           </div>
-          
-          <div className="flex justify-between mt-4">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="gap-1 bg-transparent border-ana-purple/30 hover:bg-ana-purple/10"
-              onClick={() => setDetailsOpen(true)}
-            >
-              <Info size={14} />
-              Details
+          <Progress value={availabilityPercentage} className="h-2" />
+        </div>
+
+        <div className="grid grid-cols-3 gap-2 mb-4">
+          <div className="bg-card/30 p-2 rounded">
+            <div className="text-xs text-muted-foreground">Uptime</div>
+            <div className="font-medium">{performance.uptime}%</div>
+          </div>
+          <div className="bg-card/30 p-2 rounded">
+            <div className="text-xs text-muted-foreground">Earnings</div>
+            <div className="font-medium">${performance.earnings}/day</div>
+          </div>
+          <div className="bg-card/30 p-2 rounded">
+            <div className="text-xs text-muted-foreground">ROI</div>
+            <div className="font-medium">{performance.roi}%</div>
+          </div>
+        </div>
+
+        <div className="flex justify-between items-center mb-3">
+          <div>
+            <span className="text-sm text-muted-foreground">Price per share</span>
+            <div className="font-bold text-lg">${price}</div>
+          </div>
+          {timeAgo && (
+            <Badge variant="outline" className="text-xs">
+              {timeAgo}
+            </Badge>
+          )}
+        </div>
+
+        <div className="flex items-center gap-2">
+          <NodeDetailsDialog
+            airNodeId={id}
+            name={name}
+            location={location}
+            performance={performance}
+            totalShares={totalShares}
+            availableShares={availableShares}
+            price={price}
+          >
+            <Button size="sm" variant="outline" className="flex-1">
+              <Settings size={16} className="mr-1" /> Details
             </Button>
-            <Button 
-              size="sm"
-              className="gap-1"
-              onClick={() => setPurchaseOpen(true)}
-            >
-              <ShoppingCart size={14} />
+          </NodeDetailsDialog>
+
+          <NodePurchaseDialog
+            airNodeId={id}
+            name={name}
+            price={price}
+            availableShares={availableShares}
+          >
+            <Button size="sm" className="flex-1 bg-ana-purple hover:bg-ana-purple/90">
               Buy Shares
             </Button>
-          </div>
-        </CardContent>
-      </Card>
-      
-      <NodeDetailsDialog 
-        open={detailsOpen}
-        onOpenChange={setDetailsOpen}
-        node={{id, name, location, price, totalShares, availableShares, performance}}
-        onBuy={() => {
-          setDetailsOpen(false);
-          setPurchaseOpen(true);
-        }}
-        onCollateralize={() => {
-          setDetailsOpen(false);
-          setCollateralOpen(true);
-        }}
-      />
-      
-      <NodePurchaseDialog
-        open={purchaseOpen}
-        onOpenChange={setPurchaseOpen}
-        node={{id, name, price, availableShares, performance}}
-        shareAmount={shareAmount}
-        setShareAmount={setShareAmount}
-      />
-      
-      <NodeCollateralizeDialog
-        open={collateralOpen}
-        onOpenChange={setCollateralOpen}
-        node={{id, name, price}}
-        shareAmount={shareAmount}
-        setShareAmount={setShareAmount}
-      />
-    </>
+          </NodePurchaseDialog>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
