@@ -92,7 +92,7 @@ export const WalletSelectionDialog: React.FC<WalletSelectionDialogProps> = ({
                   toast.error("Rainbow Kit connection not available");
                 }
               }}
-              className="flex w-full items-center justify-between p-3 rounded-lg border border-ana-purple/20 hover:bg-ana-purple/20 transition-colors"
+              className="flex w-full items-center justify-between p-3 rounded-lg border border-ana-purple/20 hover:bg-ana-purple/20 transition-colors mb-3"
             >
               <div className="flex items-center gap-3">
                 <div className="text-2xl">🌈</div>
@@ -102,6 +102,29 @@ export const WalletSelectionDialog: React.FC<WalletSelectionDialogProps> = ({
                 </div>
               </div>
               <div className="text-ana-purple">Connect</div>
+            </button>
+            
+            {/* Additional MetaMask Option - Below Rainbow Kit */}
+            <button
+              onClick={handleMetaMaskConnect}
+              className="flex w-full items-center justify-between p-3 rounded-lg border border-ana-purple/20 hover:bg-ana-purple/20 transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <div className="text-2xl">🦊</div>
+                <div>
+                  <span className="font-medium">MetaMask Direct</span>
+                  <p className="text-xs text-white/70">Connect directly to MetaMask</p>
+                </div>
+              </div>
+              <div className="text-ana-purple flex items-center">
+                {isMetaMaskInstalled ? (
+                  "Connect"
+                ) : (
+                  <>
+                    Install <ExternalLink size={14} className="ml-1" />
+                  </>
+                )}
+              </div>
             </button>
           </div>
           
