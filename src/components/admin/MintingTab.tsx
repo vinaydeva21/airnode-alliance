@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -83,7 +84,9 @@ export default function MintingTab() {
     try {
       // Check if Ethereum wallet is connected
       if (!web3State.connected || !web3State.account) {
-        toast.error("Please connect your Ethereum wallet first");
+        toast.error("Please connect your wallet first", {
+          description: "Connect your MetaMask wallet to mint NFTs"
+        });
         setIsSubmitting(false);
         return;
       }
@@ -100,13 +103,14 @@ export default function MintingTab() {
         fractions: BigInt(values.fractionCount),
       };
       
-      console.log("Minting NFT on Ethereum with:", {
+      console.log("Preparing to mint NFT on Ethereum with:", {
         airNodeId: values.airNodeId,
         fractionCount: values.fractionCount,
         metadata
       });
       
-      // Connect directly to the NFT contract
+      // Connect directly to the NFT contract - this will trigger MetaMask
+      toast.info("Connecting to blockchain...");
       const nftContract = await connectToEthereumNFTContract();
       
       if (!nftContract) {
@@ -122,12 +126,14 @@ export default function MintingTab() {
           earnings: values.earnings,
           roi: values.roi
         },
-        totalFractions: values.fractionCount
+        totalFractions: values.fractionCount,
+        network: "Sepolia Testnet",
+        timestamp: new Date().toISOString()
       });
       
       const metadataURI = `data:application/json;base64,${btoa(metadataJSON)}`;
       
-      // Convert metadata to contract format
+      // Convert metadata to contract format - using precise numeric conversions for blockchain
       const metadataStruct = {
         airNodeId: metadata.airNodeId,
         location: metadata.location,
@@ -139,28 +145,38 @@ export default function MintingTab() {
         fractions: values.fractionCount,
       };
       
-      toast.info("Please confirm the transaction in your wallet...");
+      toast.info("Please confirm the transaction in your MetaMask wallet", {
+        description: "A wallet confirmation popup should appear shortly"
+      });
       
-      // This will trigger the MetaMask popup
+      console.log("Sending mint transaction to blockchain...");
+      
+      // This will explicitly trigger the MetaMask popup for transaction confirmation
       const tx = await nftContract.mintNFT(
         metadata.airNodeId,
         values.fractionCount,
         metadataURI,
-        metadataStruct
+        metadataStruct,
+        { 
+          gasLimit: 3000000 // Explicitly set higher gas limit to avoid failures
+        }
       );
       
-      toast.info("Transaction submitted, waiting for confirmation...");
       console.log("Mint transaction submitted:", tx.hash);
-      
       setTxHash(tx.hash);
+      
+      toast.info("Transaction submitted to Sepolia network", {
+        description: "Please wait for confirmation (this may take a minute)..."
+      });
       
       // Wait for transaction confirmation
       const receipt = await tx.wait();
       console.log("Mint transaction confirmed:", receipt);
       
+      // Show success notification with link to marketplace
       toast.success(
         <div>
-          NFT minted successfully!
+          NFT minted successfully on Sepolia Testnet!
           <button 
             className="ml-2 underline text-blue-500" 
             onClick={() => navigate('/marketplace')}
@@ -168,10 +184,10 @@ export default function MintingTab() {
             View in Marketplace
           </button>
         </div>,
-        { duration: 5000 }
+        { duration: 7000 }
       );
       
-      // Reset form
+      // Reset form after successful minting
       form.reset();
       
       // Direct user to marketplace after a short delay
@@ -179,8 +195,18 @@ export default function MintingTab() {
         navigate('/marketplace');
       }, 3000);
     } catch (error: any) {
-      console.error("Contract interaction error:", error);
-      toast.error(error.message || "Failed to mint NFT. Please check your wallet and try again.");
+      console.error("MetaMask/Contract interaction error:", error);
+      
+      // Check if user rejected transaction
+      if (error.code === 4001 || error.message?.includes("user rejected")) {
+        toast.error("Transaction was rejected in wallet", {
+          description: "You canceled the transaction in MetaMask"
+        });
+      } else {
+        toast.error("Failed to mint NFT", { 
+          description: error.message || "Check your wallet connection and try again"
+        });
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -304,10 +330,10 @@ export default function MintingTab() {
                 {isSubmitting ? (
                   <>
                     <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
-                    Minting...
+                    {txHash ? "Confirming..." : "Minting..."}
                   </>
                 ) : (
-                  "Mint NFT on Ethereum"
+                  "Mint NFT on Sepolia Testnet"
                 )}
               </Button>
             </form>
@@ -315,10 +341,18 @@ export default function MintingTab() {
 
           {txHash && (
             <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md">
-              <p className="text-sm font-medium text-green-800">Transaction Successful</p>
+              <p className="text-sm font-medium text-green-800">Transaction Submitted</p>
               <p className="text-xs text-green-700 break-all mt-1">
                 Hash: {txHash}
               </p>
+              <a 
+                href={`https://sepolia.etherscan.io/tx/${txHash}`}
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-xs text-blue-600 hover:underline mt-1 inline-block"
+              >
+                View on Etherscan
+              </a>
             </div>
           )}
         </CardContent>
@@ -399,6 +433,10 @@ export default function MintingTab() {
                 <span className="font-medium">5G + Backup LTE</span>
               </li>
               <li className="flex justify-between">
+                <span className="text-muted-foreground">Network</span>
+                <span className="font-medium">Sepolia Testnet</span>
+              </li>
+              <li className="flex justify-between">
                 <span className="text-muted-foreground">Power</span>
                 <span className="font-medium">Solar + Battery Backup</span>
               </li>
@@ -407,7 +445,7 @@ export default function MintingTab() {
           <CardFooter>
             <p className="text-xs text-muted-foreground">
               All AirNodes use energy-efficient hardware with redundant
-              connectivity
+              connectivity on Sepolia Testnet
             </p>
           </CardFooter>
         </Card>
