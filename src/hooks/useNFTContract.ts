@@ -75,12 +75,36 @@ export const useNFTContract = () => {
         })
         .filter((event: any) => event && event.name === "AirNodeMinted")[0];
       
+      let tokenId = "latest";
       if (mintEvent) {
-        const tokenId = mintEvent.args[0];
+        tokenId = mintEvent.args[0];
+      }
+      
+      // Store the minted NFT in localStorage for persistence during the session
+      const existingNFTs = JSON.parse(localStorage.getItem('mintedNFTs') || '[]');
+      const newNFT = {
+        id: tokenId.toString(),
+        name: metadata.airNodeId,
+        location: metadata.location,
+        fractionalized: false,
+        metadata: {
+          performance: {
+            uptime: metadata.performance.uptime,
+            earnings: metadata.performance.earnings,
+            roi: metadata.performance.roi
+          },
+          totalFractions: metadata.totalFractions
+        }
+      };
+      
+      localStorage.setItem('mintedNFTs', JSON.stringify([...existingNFTs, newNFT]));
+      
+      if (mintEvent) {
         toast.success(`NFT minted successfully with ID: ${tokenId}`);
         return { tokenId, transactionHash: receipt.hash };
       } else {
         toast.success("NFT minted successfully");
+        return { tokenId: "latest", transactionHash: receipt.hash };
       }
     } catch (error) {
       console.error('Mint error:', error);

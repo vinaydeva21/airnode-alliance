@@ -7,24 +7,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useMarketplace } from "@/hooks/useMarketplace";
 import { useFractionalization } from "@/hooks/useFractionalization";
 import { useWeb3 } from "@/contexts/Web3Context";
+import { useUserNFTs } from "@/hooks/useUserNFTs";
 import { toast } from "sonner";
-
-interface FractionData {
-  id: string;
-  nftId: string;
-  name: string;
-  count: number;
-}
-
-// Mock data for fractions
-const fractionData = [
-  { id: "fraction-portal-180-001", nftId: "portal-180", name: "Portal 180 #001", count: 1000 },
-  { id: "fraction-portal-360-001", nftId: "portal-360", name: "Portal 360 #001", count: 1000 },
-  { id: "fraction-nexus-1-001", nftId: "nexus-1", name: "Nexus I #001", count: 2000 },
-];
 
 const formSchema = z.object({
   fractionId: z.string().min(1, {
@@ -42,20 +30,18 @@ const formSchema = z.object({
 
 export default function ListingTab() {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [fractions, setFractions] = useState<FractionData[]>([]);
+  const [fractions, setFractions] = useState<any[]>([]);
   const { web3State } = useWeb3();
   const { listForSale, loading } = useMarketplace();
   const { getAllFractionIds, getFractionDetails } = useFractionalization();
+  const { nfts, loading: loadingNFTs, fetchUserNFTs } = useUserNFTs();
   
-  // Fetch available fractions
   useEffect(() => {
     const fetchFractions = async () => {
       if (web3State.connected) {
         try {
-          // Try to get fractions from the contract
           const fractionIds = await getAllFractionIds();
           
-          // If we have real fractions, process them
           if (fractionIds && fractionIds.length > 0) {
             const fractionDetails = await Promise.all(
               fractionIds.map(async (id) => {
@@ -70,19 +56,54 @@ export default function ListingTab() {
             );
             setFractions(fractionDetails);
           } else {
-            // Fallback to mock data
-            setFractions(fractionData);
+            const mockFractions = nfts
+              .filter(nft => nft.fractionalized)
+              .map(nft => ({
+                id: `fraction-${nft.name.toLowerCase()}-001`,
+                nftId: nft.id,
+                name: `${nft.name} Fractions`,
+                count: 1000
+              }));
+            
+            if (mockFractions.length === 0) {
+              mockFractions.push(
+                { id: "fraction-portal-180-001", nftId: "portal-180", name: "Portal 180 #001", count: 1000 },
+                { id: "fraction-portal-360-001", nftId: "portal-360", name: "Portal 360 #001", count: 1000 },
+                { id: "fraction-nexus-1-001", nftId: "nexus-1", name: "Nexus I #001", count: 2000 }
+              );
+            }
+            
+            setFractions(mockFractions);
           }
         } catch (error) {
           console.error("Error fetching fractions:", error);
-          // Fallback to mock data
-          setFractions(fractionData);
+          
+          const mockFractions = nfts
+            .filter(nft => nft.fractionalized)
+            .map(nft => ({
+              id: `fraction-${nft.name.toLowerCase()}-001`,
+              nftId: nft.id,
+              name: `${nft.name} Fractions`,
+              count: 1000
+            }));
+          
+          if (mockFractions.length === 0) {
+            mockFractions.push(
+              { id: "fraction-portal-180-001", nftId: "portal-180", name: "Portal 180 #001", count: 1000 },
+              { id: "fraction-portal-360-001", nftId: "portal-360", name: "Portal 360 #001", count: 1000 },
+              { id: "fraction-nexus-1-001", nftId: "nexus-1", name: "Nexus I #001", count: 2000 }
+            );
+          }
+          
+          setFractions(mockFractions);
         }
       }
     };
     
-    fetchFractions();
-  }, [web3State.connected]);
+    fetchUserNFTs().then(() => {
+      fetchFractions();
+    });
+  }, [web3State.connected, nfts.length]);
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -101,7 +122,6 @@ export default function ListingTab() {
     setIsSubmitting(true);
     
     try {
-      // Call the contract to list the fractions
       await listForSale(values.fractionId, values.price, values.quantity);
       
       toast.success(`Successfully listed ${values.quantity} fractions for ${values.listingType}`);
@@ -136,20 +156,33 @@ export default function ListingTab() {
                   <FormItem>
                     <FormLabel>Select Fractionalized NFT</FormLabel>
                     <FormControl>
-                      <select 
-                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                        {...field}
+                      <Select 
+                        onValueChange={field.onChange} 
+                        defaultValue={field.value}
+                        disabled={loadingNFTs}
                       >
-                        <option value="">Select a fractionalized NFT</option>
-                        {fractionData.map(fraction => (
-                          <option key={fraction.id} value={fraction.id}>
-                            {fraction.name} ({fraction.count} fractions)
-                          </option>
-                        ))}
-                      </select>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a fractionalized NFT" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {loadingNFTs ? (
+                            <SelectItem value="loading" disabled>Loading fractions...</SelectItem>
+                          ) : fractions.length > 0 ? (
+                            fractions.map(fraction => (
+                              <SelectItem key={fraction.id} value={fraction.id}>
+                                {fraction.name} ({fraction.count} fractions)
+                              </SelectItem>
+                            ))
+                          ) : (
+                            <SelectItem value="none" disabled>No fractions available</SelectItem>
+                          )}
+                        </SelectContent>
+                      </Select>
                     </FormControl>
                     <FormDescription>
-                      Choose fractions to list on the marketplace
+                      {fractions.length === 0 ? 
+                        "You don't have any fractionalized NFTs yet. Fractionalize an NFT first." : 
+                        "Choose fractions to list on the marketplace"}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
