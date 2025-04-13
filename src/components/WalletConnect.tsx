@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { User, Wallet, ExternalLink, AlertCircle } from "lucide-react";
@@ -44,7 +43,6 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
     setConnecting(true);
     
     try {
-      // Connect to the wallet using Web3Context
       await connect(walletId);
       setWalletSelectionOpen(false);
     } catch (error) {
@@ -180,4 +178,3 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
 };
 
 export default WalletConnect;
-
