@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Web3State } from "@/types/blockchain";
 import { useAccount, useConnect, useDisconnect, useConfig } from "wagmi";
@@ -34,15 +33,9 @@ export const useWalletConnect = () => {
         connected: true,
       });
 
-      // Check if we're on Sepolia, if not prompt to switch
+      // Keep network check for automatic switching, but remove toast notifications
       if (chainId && chainId !== sepolia.id) {
-        toast.warning("Wrong network detected", {
-          description: "Please switch to Sepolia test network",
-          action: {
-            label: "Switch",
-            onClick: () => switchToSepolia(),
-          },
-        });
+        switchToSepolia();
       }
     }
   }, [address, chainId, isConnected]);
@@ -72,17 +65,9 @@ export const useWalletConnect = () => {
             chainId: decimalChainId,
           }));
           
-          // Check if new chain is Sepolia
+          // Keep automatic switching without visual notifications
           if (decimalChainId !== sepolia.id) {
-            toast.warning("Wrong network detected", {
-              description: "Please switch to Sepolia test network",
-              action: {
-                label: "Switch",
-                onClick: () => switchToSepolia(),
-              },
-            });
-          } else {
-            toast.success("Connected to Sepolia test network");
+            switchToSepolia();
           }
         });
       }
@@ -98,22 +83,18 @@ export const useWalletConnect = () => {
     };
   }, []);
 
-  // Switch to Sepolia network
+  // Switch to Sepolia network (keep functionality but remove UI elements)
   const switchToSepolia = async () => {
     try {
-      // In Wagmi v2, we don't have switchNetworkAsync readily available
-      // We'll use the native window.ethereum method
       if (window.ethereum) {
         await window.ethereum.request({
           method: "wallet_switchEthereumChain",
           params: [{ chainId: `0x${sepolia.id.toString(16)}` }],
         });
-        toast.success("Switched to Sepolia test network");
       }
     } catch (error: any) {
       console.error("Failed to switch network:", error);
       
-      // If the chain hasn't been added to MetaMask, add it
       if (error.code === 4902 && window.ethereum) {
         try {
           await window.ethereum.request({
@@ -134,10 +115,7 @@ export const useWalletConnect = () => {
           });
         } catch (addError) {
           console.error("Failed to add Sepolia network:", addError);
-          toast.error("Failed to add Sepolia network to wallet");
         }
-      } else {
-        toast.error("Failed to switch network");
       }
     }
   };
@@ -153,7 +131,7 @@ export const useWalletConnect = () => {
         if (evmWalletState) {
           setWeb3State(evmWalletState);
           
-          // Check if we need to switch to Sepolia
+          // Check if we need to switch to Sepolia - keep this for auto-switching
           if (evmWalletState.chainId !== sepolia.id) {
             await switchToSepolia();
           }

@@ -55,7 +55,7 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
     handleConnect("metamask");
   };
 
-  const isOnCorrectNetwork = web3State.chainId === sepolia.id;
+  // Removed isOnCorrectNetwork flag and related switch network badge
 
   return (
     <div className={className}>
@@ -92,15 +92,7 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
         </div>
       ) : (
         <div className="flex items-center gap-2">
-          {!isOnCorrectNetwork && (
-            <Badge 
-              variant="outline" 
-              className="bg-yellow-500/20 text-yellow-400 border-yellow-500/50 flex items-center gap-1 cursor-pointer hover:bg-yellow-500/30"
-              onClick={switchToSepolia}
-            >
-              Switch to Sepolia
-            </Badge>
-          )}
+          {/* Removed Switch to Sepolia badge completely */}
           <WalletDropdownMenu
             walletName={"Web3 Wallet"}
             address={truncateAddress(web3State.account || "")}
@@ -159,4 +151,3 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
 };
 
 export default WalletConnect;
-
