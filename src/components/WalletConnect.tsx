@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { User, Wallet, ChevronRight, AlertCircle } from "lucide-react";
+import { User, Wallet, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { 
   Dialog,
@@ -63,6 +63,10 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
     handleConnect("metamask");
   };
 
+  const handleCardanoNetworkSwitch = () => {
+    window.location.href = "https://airnode-alliance.netlify.app/";
+  };
+
   const isOnCorrectNetwork = web3State.chainId === sepolia.id;
 
   return (
@@ -82,7 +86,7 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
           </Button>
           <Button
             onClick={() => setWalletSelectionOpen(true)}
-            className="bg-ana-purple hover:bg-ana-purple/90"
+            className="bg-ana-purple hover:bg-ana-purple/90 mr-2"
             disabled={connecting}
           >
             {connecting ? (
@@ -96,6 +100,14 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
                 Connect Wallet
               </>
             )}
+          </Button>
+          <Button
+            variant="outline"
+            onClick={handleCardanoNetworkSwitch}
+            className="bg-ana-darkblue/50 border-ana-purple/30 text-white flex items-center gap-1"
+          >
+            <ExternalLink size={16} className="mr-1" />
+            Switch Cardano Network
           </Button>
         </div>
       ) : (
@@ -168,3 +180,4 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
 };
 
 export default WalletConnect;
+
