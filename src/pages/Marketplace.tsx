@@ -41,8 +41,8 @@ const Marketplace = () => {
                 location: location.charAt(0).toUpperCase() + location.slice(1),
                 price: listing.price,
                 imageUrl: "/lovable-uploads/944059d9-4b2a-4ce4-a703-1df8d972e858.png",
-                totalShares: details?.totalFractions.toNumber() || 1000,
-                availableShares: parseInt(listing.quantity),
+                totalShares: details?.totalFractions?.toNumber() || 1000,
+                availableShares: parseInt(listing.quantity || "100"),
                 performance: {
                   uptime: 99.2,
                   earnings: 2.4,
@@ -56,24 +56,37 @@ const Marketplace = () => {
           if (transformedNodes.length === 0) {
             // Get fractionalized NFTs from localStorage
             const fractionalized = JSON.parse(localStorage.getItem('fractionalized') || '[]');
+            const localListings = JSON.parse(localStorage.getItem('listings') || '[]');
             
-            if (fractionalized.length > 0) {
-              const mockNodes = fractionalized.map((fraction: any) => ({
-                id: fraction.id,
-                name: fraction.id.split('-')[0].charAt(0).toUpperCase() + fraction.id.split('-')[0].slice(1),
-                location: "Listed Location",
-                price: fraction.price,
-                imageUrl: "/lovable-uploads/944059d9-4b2a-4ce4-a703-1df8d972e858.png",
-                totalShares: fraction.count,
-                availableShares: fraction.count,
-                performance: {
-                  uptime: 99.2,
-                  earnings: 2.4,
-                  roi: 18.6
-                }
-              }));
+            console.log("Local storage listings:", localListings);
+            console.log("Fractionalized NFTs:", fractionalized);
+            
+            if (localListings.length > 0) {
+              const mockNodes = localListings
+                .filter((listing: any) => listing.isActive !== false)
+                .map((listing: any) => {
+                  const fractionInfo = fractionalized.find((f: any) => f.id === listing.fractionId) || {};
+                  const name = listing.fractionId.split('-')[0] || "AirNode";
+                  const location = listing.fractionId.split('-')[1] || "Unknown";
+                  
+                  return {
+                    id: listing.fractionId,
+                    name: name.charAt(0).toUpperCase() + name.slice(1),
+                    location: location.charAt(0).toUpperCase() + location.slice(1),
+                    price: parseFloat(listing.price),
+                    imageUrl: "/lovable-uploads/944059d9-4b2a-4ce4-a703-1df8d972e858.png",
+                    totalShares: fractionInfo.count || 1000,
+                    availableShares: parseInt(listing.quantity || "100"),
+                    performance: {
+                      uptime: 99.2,
+                      earnings: 2.4,
+                      roi: 18.6
+                    }
+                  };
+                });
               
-              setAirNodes([...mockNodes]);
+              console.log("Generated mock nodes:", mockNodes);
+              setAirNodes(mockNodes.length > 0 ? mockNodes : defaultAirNodes);
             } else {
               // Use default airNodes as final fallback
               setAirNodes(defaultAirNodes);
@@ -82,13 +95,84 @@ const Marketplace = () => {
             setAirNodes(transformedNodes);
           }
         } else {
-          // Use default airNodes as fallback
-          setAirNodes(defaultAirNodes);
+          // Check localStorage for fallback
+          const localListings = JSON.parse(localStorage.getItem('listings') || '[]');
+          const fractionalized = JSON.parse(localStorage.getItem('fractionalized') || '[]');
+          
+          console.log("Checking localStorage fallback. Listings:", localListings);
+          
+          if (localListings.length > 0) {
+            const mockNodes = localListings
+              .filter((listing: any) => listing.isActive !== false)
+              .map((listing: any) => {
+                const fractionInfo = fractionalized.find((f: any) => f.id === listing.fractionId) || {};
+                const name = listing.fractionId.split('-')[0] || "AirNode";
+                const location = listing.fractionId.split('-')[1] || "Unknown";
+                
+                return {
+                  id: listing.fractionId,
+                  name: name.charAt(0).toUpperCase() + name.slice(1),
+                  location: location.charAt(0).toUpperCase() + location.slice(1),
+                  price: parseFloat(listing.price),
+                  imageUrl: "/lovable-uploads/944059d9-4b2a-4ce4-a703-1df8d972e858.png",
+                  totalShares: fractionInfo.count || 1000,
+                  availableShares: parseInt(listing.quantity || "100"),
+                  performance: {
+                    uptime: 99.2,
+                    earnings: 2.4,
+                    roi: 18.6
+                  }
+                };
+              });
+            
+            console.log("Generated mock nodes from local listings:", mockNodes);
+            setAirNodes(mockNodes.length > 0 ? mockNodes : defaultAirNodes);
+          } else {
+            // Use default airNodes as fallback
+            setAirNodes(defaultAirNodes);
+          }
         }
       } catch (error) {
         console.error("Error fetching marketplace listings:", error);
         toast.error("Failed to load marketplace listings");
-        setAirNodes(defaultAirNodes);
+        
+        // Try localStorage as fallback
+        try {
+          const localListings = JSON.parse(localStorage.getItem('listings') || '[]');
+          const fractionalized = JSON.parse(localStorage.getItem('fractionalized') || '[]');
+          
+          if (localListings.length > 0) {
+            const mockNodes = localListings
+              .filter((listing: any) => listing.isActive !== false)
+              .map((listing: any) => {
+                const fractionInfo = fractionalized.find((f: any) => f.id === listing.fractionId) || {};
+                const name = listing.fractionId.split('-')[0] || "AirNode";
+                const location = listing.fractionId.split('-')[1] || "Unknown";
+                
+                return {
+                  id: listing.fractionId,
+                  name: name.charAt(0).toUpperCase() + name.slice(1),
+                  location: location.charAt(0).toUpperCase() + location.slice(1),
+                  price: parseFloat(listing.price),
+                  imageUrl: "/lovable-uploads/944059d9-4b2a-4ce4-a703-1df8d972e858.png",
+                  totalShares: fractionInfo.count || 1000,
+                  availableShares: parseInt(listing.quantity || "100"),
+                  performance: {
+                    uptime: 99.2,
+                    earnings: 2.4,
+                    roi: 18.6
+                  }
+                };
+              });
+            
+            setAirNodes(mockNodes.length > 0 ? mockNodes : defaultAirNodes);
+          } else {
+            setAirNodes(defaultAirNodes);
+          }
+        } catch (fallbackError) {
+          console.error("Fallback error:", fallbackError);
+          setAirNodes(defaultAirNodes);
+        }
       } finally {
         setLoading(false);
       }

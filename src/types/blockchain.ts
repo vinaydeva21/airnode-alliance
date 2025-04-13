@@ -1,4 +1,3 @@
-
 // Smart Contract Interfaces
 export interface NFTMetadata {
   airNodeId: string;
@@ -29,6 +28,8 @@ export interface MarketplaceListing {
   price: number;
   type: "sale" | "lease";
   leaseDuration?: number;
+  quantity?: string;
+  listingTime?: Date;
 }
 
 export interface Reward {

@@ -16,12 +16,12 @@ export const RainbowKitWrapper: React.FC<RainbowKitWrapperProps> = ({
   // Define all chains we want to support as a readonly array, with Sepolia as the first/default
   const chains = [sepolia, mainnet, polygon, optimism, arbitrum] as const;
   
-  // Get connectors for wallets from RainbowKit
+  // Get connectors for wallets from RainbowKit - in v2 syntax
   const { connectors } = getDefaultWallets({
     projectId,
     appName: 'AirNode Alliance',
-    // We need to use the correct format for chains parameter in v2
-    chains: [...chains]
+    // We need to specify chains according to v2 API
+    chains
   });
 
   // Create wagmi config - in v2 we need to include chains as a readonly array
