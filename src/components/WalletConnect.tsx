@@ -1,14 +1,8 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { User, Wallet, ExternalLink, AlertCircle } from "lucide-react";
+import { User, Wallet } from "lucide-react";
 import { toast } from "sonner";
-import { 
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription
-} from "@/components/ui/dialog";
 import { AuthDialog } from "./wallet/AuthDialog";
 import { StakingDialog } from "./wallet/StakingDialog";
 import { TransactionHistoryDialog } from "./wallet/TransactionHistoryDialog";
@@ -61,10 +55,6 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
     handleConnect("metamask");
   };
 
-  const handleCardanoNetworkSwitch = () => {
-    window.location.href = "https://airnode-alliance.netlify.app/";
-  };
-
   const isOnCorrectNetwork = web3State.chainId === sepolia.id;
 
   return (
@@ -99,14 +89,6 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
               </>
             )}
           </Button>
-          <Button
-            variant="outline"
-            onClick={handleCardanoNetworkSwitch}
-            className="bg-ana-darkblue/50 border-ana-purple/30 text-white flex items-center gap-1"
-          >
-            <ExternalLink size={16} className="mr-1" />
-            Switch Cardano Network
-          </Button>
         </div>
       ) : (
         <div className="flex items-center gap-2">
@@ -116,7 +98,6 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
               className="bg-yellow-500/20 text-yellow-400 border-yellow-500/50 flex items-center gap-1 cursor-pointer hover:bg-yellow-500/30"
               onClick={switchToSepolia}
             >
-              <AlertCircle size={12} className="mr-1" />
               Switch to Sepolia
             </Badge>
           )}
@@ -178,3 +159,4 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
 };
 
 export default WalletConnect;
+
