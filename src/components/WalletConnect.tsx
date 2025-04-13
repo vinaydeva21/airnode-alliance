@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { User, Wallet, ExternalLink } from "lucide-react";
+import { User, Wallet, ExternalLink, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { 
   Dialog,
