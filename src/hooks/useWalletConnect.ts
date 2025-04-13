@@ -1,7 +1,8 @@
 
 import { useState, useEffect } from "react";
 import { Web3State } from "@/types/blockchain";
-import { useAccount, useConnect, useDisconnect, useNetwork, useSwitchNetwork } from "wagmi";
+import { useAccount, useConnect, useDisconnect, useConfig } from "wagmi";
+import { sepolia } from "wagmi/chains";
 import { ethers } from "ethers";
 import { toast } from "sonner";
 import {
@@ -9,7 +10,6 @@ import {
   connectToEvmWallet,
   connectToCardanoWallet,
 } from "@/utils/walletUtils";
-import { sepolia } from "wagmi/chains";
 
 export const useWalletConnect = () => {
   const [web3State, setWeb3State] = useState<Web3State>({
@@ -23,8 +23,7 @@ export const useWalletConnect = () => {
   const { address, chainId, isConnected } = useAccount();
   const { connectAsync, connectors } = useConnect();
   const { disconnectAsync } = useDisconnect();
-  const { chain } = useNetwork();
-  const { switchNetworkAsync } = useSwitchNetwork();
+  const config = useConfig();
 
   // Update web3State when wagmi account changes
   useEffect(() => {
@@ -102,11 +101,9 @@ export const useWalletConnect = () => {
   // Switch to Sepolia network
   const switchToSepolia = async () => {
     try {
-      if (switchNetworkAsync) {
-        await switchNetworkAsync(sepolia.id);
-        toast.success("Switched to Sepolia test network");
-      } else if (window.ethereum) {
-        // Fallback to direct request if wagmi's switchNetwork is not available
+      // In Wagmi v2, we don't have switchNetworkAsync readily available
+      // We'll use the native window.ethereum method
+      if (window.ethereum) {
         await window.ethereum.request({
           method: "wallet_switchEthereumChain",
           params: [{ chainId: `0x${sepolia.id.toString(16)}` }],
