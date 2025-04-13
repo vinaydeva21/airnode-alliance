@@ -12,6 +12,16 @@ export interface WalletProviderProps {
   children: React.ReactNode;
 }
 
+// Add contract types
+export interface AirNodeContractConfig {
+  airNodeNFTAddress: string;
+  airNodeNFTAbi: any[];
+  fractionalizationAddress: string;
+  fractionalizationAbi: any[];
+  marketplaceAddress: string;
+  marketplaceAbi: any[];
+}
+
 declare global {
   interface Window {
     ethereum?: {
