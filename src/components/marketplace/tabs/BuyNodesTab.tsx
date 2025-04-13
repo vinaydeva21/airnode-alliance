@@ -1,9 +1,9 @@
-
 import React from "react";
 import { SearchBar } from "../SearchBar";
 import { MarketplaceStats } from "../MarketplaceStats";
 import { Pagination } from "../Pagination";
 import AirNodeCard from "@/components/airnode/AirNodeCard";
+import { useUserNFTs } from "@/hooks/useUserNFTs";
 
 interface BuyNodesTabProps {
   airNodes: Array<{
@@ -31,6 +31,24 @@ export const BuyNodesTab: React.FC<BuyNodesTabProps> = ({
   setSearchQuery,
   loading = false
 }) => {
+  // Get user NFTs to help with name recognition
+  const { nfts } = useUserNFTs();
+  
+  // Map over the airNodes to ensure proper naming
+  const displayNodes = airNodes.map(node => {
+    // Try to find the original NFT name from user's minted NFTs
+    const originalNFT = nfts.find(nft => 
+      // Check if this is a fraction of one of the user's NFTs
+      nft.fractionalized && node.id.includes(nft.id)
+    );
+    
+    // If found, use the original name, otherwise keep current name
+    return {
+      ...node,
+      name: originalNFT ? originalNFT.name : node.name
+    };
+  });
+
   return (
     <div>
       <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
@@ -42,8 +60,8 @@ export const BuyNodesTab: React.FC<BuyNodesTabProps> = ({
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {airNodes.length > 0 ? (
-            airNodes.map((node) => (
+          {displayNodes.length > 0 ? (
+            displayNodes.map((node) => (
               <AirNodeCard key={node.id} {...node} />
             ))
           ) : (
