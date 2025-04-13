@@ -1,6 +1,7 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { User, Wallet, ChevronRight } from "lucide-react";
+import { User, Wallet, ChevronRight, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { 
   Dialog,
@@ -22,13 +23,15 @@ import {
   truncateAddress,
 } from "./wallet/WalletData";
 import { useWeb3 } from "@/contexts/Web3Context";
+import { Badge } from "@/components/ui/badge";
+import { sepolia } from "wagmi/chains";
 
 interface WalletConnectProps {
   className?: string;
 }
 
 const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
-  const { web3State, connect, disconnect } = useWeb3();
+  const { web3State, connect, disconnect, switchToSepolia } = useWeb3();
   const [stakeDialogOpen, setStakeDialogOpen] = useState(false);
   const [transactionHistoryOpen, setTransactionHistoryOpen] = useState(false);
   const [myAssetsDialogOpen, setMyAssetsDialogOpen] = useState(false);
@@ -59,6 +62,8 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
   const handleAuthSuccess = () => {
     handleConnect("metamask");
   };
+
+  const isOnCorrectNetwork = web3State.chainId === sepolia.id;
 
   return (
     <div className={className}>
@@ -94,18 +99,30 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
           </Button>
         </div>
       ) : (
-        <WalletDropdownMenu
-          walletName={"Web3 Wallet"}
-          address={truncateAddress(web3State.account || "")}
-          anaBalance={DEFAULT_WALLET_ASSETS.tokens.ana}
-          stakedAna={DEFAULT_WALLET_ASSETS.tokens.anaStaked}
-          pendingRewards={DEFAULT_WALLET_ASSETS.tokens.usdc}
-          votingPower={3250}
-          onDisconnect={handleDisconnect}
-          onAssetsClick={() => setMyAssetsDialogOpen(true)}
-          onStakeClick={() => setStakeDialogOpen(true)}
-          onHistoryClick={() => setTransactionHistoryOpen(true)}
-        />
+        <div className="flex items-center gap-2">
+          {!isOnCorrectNetwork && (
+            <Badge 
+              variant="outline" 
+              className="bg-yellow-500/20 text-yellow-400 border-yellow-500/50 flex items-center gap-1 cursor-pointer hover:bg-yellow-500/30"
+              onClick={switchToSepolia}
+            >
+              <AlertCircle size={12} className="mr-1" />
+              Switch to Sepolia
+            </Badge>
+          )}
+          <WalletDropdownMenu
+            walletName={"Web3 Wallet"}
+            address={truncateAddress(web3State.account || "")}
+            anaBalance={DEFAULT_WALLET_ASSETS.tokens.ana}
+            stakedAna={DEFAULT_WALLET_ASSETS.tokens.anaStaked}
+            pendingRewards={DEFAULT_WALLET_ASSETS.tokens.usdc}
+            votingPower={3250}
+            onDisconnect={handleDisconnect}
+            onAssetsClick={() => setMyAssetsDialogOpen(true)}
+            onStakeClick={() => setStakeDialogOpen(true)}
+            onHistoryClick={() => setTransactionHistoryOpen(true)}
+          />
+        </div>
       )}
       
       <AuthDialog

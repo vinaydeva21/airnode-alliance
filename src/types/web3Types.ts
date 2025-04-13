@@ -8,6 +8,7 @@ export interface Web3ContextType {
   contracts: ContractInteractions | null;
   connect: (walletId: string) => Promise<void>;
   disconnect: () => void;
+  switchToSepolia: () => Promise<void>;
 }
 
 export interface WalletProviderProps {

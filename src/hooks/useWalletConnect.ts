@@ -1,6 +1,7 @@
+
 import { useState, useEffect } from "react";
 import { Web3State } from "@/types/blockchain";
-import { useAccount, useConnect, useDisconnect } from "wagmi";
+import { useAccount, useConnect, useDisconnect, useNetwork, useSwitchNetwork } from "wagmi";
 import { ethers } from "ethers";
 import { toast } from "sonner";
 import {
@@ -8,6 +9,7 @@ import {
   connectToEvmWallet,
   connectToCardanoWallet,
 } from "@/utils/walletUtils";
+import { sepolia } from "wagmi/chains";
 
 export const useWalletConnect = () => {
   const [web3State, setWeb3State] = useState<Web3State>({
@@ -21,6 +23,8 @@ export const useWalletConnect = () => {
   const { address, chainId, isConnected } = useAccount();
   const { connectAsync, connectors } = useConnect();
   const { disconnectAsync } = useDisconnect();
+  const { chain } = useNetwork();
+  const { switchNetworkAsync } = useSwitchNetwork();
 
   // Update web3State when wagmi account changes
   useEffect(() => {
@@ -30,6 +34,17 @@ export const useWalletConnect = () => {
         chainId: chainId,
         connected: true,
       });
+
+      // Check if we're on Sepolia, if not prompt to switch
+      if (chainId && chainId !== sepolia.id) {
+        toast.warning("Wrong network detected", {
+          description: "Please switch to Sepolia test network",
+          action: {
+            label: "Switch",
+            onClick: () => switchToSepolia(),
+          },
+        });
+      }
     }
   }, [address, chainId, isConnected]);
 
@@ -57,7 +72,19 @@ export const useWalletConnect = () => {
             ...prev,
             chainId: decimalChainId,
           }));
-          window.location.reload();
+          
+          // Check if new chain is Sepolia
+          if (decimalChainId !== sepolia.id) {
+            toast.warning("Wrong network detected", {
+              description: "Please switch to Sepolia test network",
+              action: {
+                label: "Switch",
+                onClick: () => switchToSepolia(),
+              },
+            });
+          } else {
+            toast.success("Connected to Sepolia test network");
+          }
         });
       }
     };
@@ -72,6 +99,52 @@ export const useWalletConnect = () => {
     };
   }, []);
 
+  // Switch to Sepolia network
+  const switchToSepolia = async () => {
+    try {
+      if (switchNetworkAsync) {
+        await switchNetworkAsync(sepolia.id);
+        toast.success("Switched to Sepolia test network");
+      } else if (window.ethereum) {
+        // Fallback to direct request if wagmi's switchNetwork is not available
+        await window.ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: `0x${sepolia.id.toString(16)}` }],
+        });
+        toast.success("Switched to Sepolia test network");
+      }
+    } catch (error: any) {
+      console.error("Failed to switch network:", error);
+      
+      // If the chain hasn't been added to MetaMask, add it
+      if (error.code === 4902 && window.ethereum) {
+        try {
+          await window.ethereum.request({
+            method: "wallet_addEthereumChain",
+            params: [
+              {
+                chainId: `0x${sepolia.id.toString(16)}`,
+                chainName: "Sepolia Test Network",
+                nativeCurrency: {
+                  name: "Sepolia ETH",
+                  symbol: "ETH",
+                  decimals: 18,
+                },
+                rpcUrls: ["https://rpc.sepolia.org"],
+                blockExplorerUrls: ["https://sepolia.etherscan.io"],
+              },
+            ],
+          });
+        } catch (addError) {
+          console.error("Failed to add Sepolia network:", addError);
+          toast.error("Failed to add Sepolia network to wallet");
+        }
+      } else {
+        toast.error("Failed to switch network");
+      }
+    }
+  };
+
   // Connect function
   const connect = async (walletId: string) => {
     try {
@@ -82,6 +155,11 @@ export const useWalletConnect = () => {
         const evmWalletState = await connectToEvmWallet();
         if (evmWalletState) {
           setWeb3State(evmWalletState);
+          
+          // Check if we need to switch to Sepolia
+          if (evmWalletState.chainId !== sepolia.id) {
+            await switchToSepolia();
+          }
         }
       }
       // Handle Yoroi wallet
@@ -122,5 +200,6 @@ export const useWalletConnect = () => {
     provider,
     connect,
     disconnect,
+    switchToSepolia,
   };
 };
