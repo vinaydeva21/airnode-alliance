@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useWeb3 } from '@/contexts/Web3Context';
 import { getAirNodeNFTContract } from '@/utils/contractHelpers';
@@ -11,6 +10,7 @@ export interface UserNFT {
   location: string;
   metadata?: any;
   fractionalized?: boolean;
+  tokenId?: string;
 }
 
 export const useUserNFTs = () => {

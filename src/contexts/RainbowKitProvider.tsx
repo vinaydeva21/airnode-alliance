@@ -1,5 +1,5 @@
 
-import { RainbowKitProvider, getDefaultWallets, connectorsForWallets } from '@rainbow-me/rainbowkit';
+import { RainbowKitProvider, getDefaultWallets } from '@rainbow-me/rainbowkit';
 import { http, createConfig, WagmiProvider } from 'wagmi';
 import { mainnet, polygon, optimism, arbitrum, sepolia } from 'wagmi/chains';
 import '@rainbow-me/rainbowkit/styles.css';
@@ -20,8 +20,6 @@ export const RainbowKitWrapper: React.FC<RainbowKitWrapperProps> = ({
   const { connectors } = getDefaultWallets({
     projectId,
     appName: 'AirNode Alliance',
-    // We need to specify chains according to v2 API
-    chains
   });
 
   // Create wagmi config - in v2 we need to include chains as a readonly array

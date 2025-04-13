@@ -32,13 +32,38 @@ const Marketplace = () => {
             listings.map(async (listing) => {
               // Get fraction details
               const details = await getFractionDetails(listing.fractionId);
-              const name = listing.fractionId.split('-')[0] || "AirNode";
-              const location = listing.fractionId.split('-')[1] || "Unknown";
+              
+              // Get NFT name from localStorage for accurate naming
+              const mintedNFTs = JSON.parse(localStorage.getItem('mintedNFTs') || '[]');
+              const fractionalized = JSON.parse(localStorage.getItem('fractionalized') || '[]');
+              
+              // Find the original NFT this fraction belongs to
+              const relatedNFT = mintedNFTs.find((nft: any) => 
+                fractionalized.some((f: any) => 
+                  f.id === listing.fractionId && f.tokenId === nft.id
+                )
+              );
+              
+              // Use the actual NFT name if available, or extract from fractionId
+              let name, location;
+              if (relatedNFT) {
+                name = relatedNFT.name;
+                location = relatedNFT.location;
+              } else {
+                // Fallback to parsing from fractionId
+                const parts = listing.fractionId.split('-');
+                name = parts[0] || "AirNode";
+                location = parts[1] || "Unknown";
+                
+                // Capitalize first letter
+                name = name.charAt(0).toUpperCase() + name.slice(1);
+                location = location.charAt(0).toUpperCase() + location.slice(1);
+              }
               
               return {
                 id: listing.fractionId,
-                name: name.charAt(0).toUpperCase() + name.slice(1),
-                location: location.charAt(0).toUpperCase() + location.slice(1),
+                name: name,
+                location: location,
                 price: listing.price,
                 imageUrl: "/lovable-uploads/944059d9-4b2a-4ce4-a703-1df8d972e858.png",
                 totalShares: details?.totalFractions?.toNumber() || 1000,
@@ -57,22 +82,41 @@ const Marketplace = () => {
             // Get fractionalized NFTs from localStorage
             const fractionalized = JSON.parse(localStorage.getItem('fractionalized') || '[]');
             const localListings = JSON.parse(localStorage.getItem('listings') || '[]');
+            const mintedNFTs = JSON.parse(localStorage.getItem('mintedNFTs') || '[]');
             
             console.log("Local storage listings:", localListings);
             console.log("Fractionalized NFTs:", fractionalized);
+            console.log("Minted NFTs:", mintedNFTs);
             
             if (localListings.length > 0) {
               const mockNodes = localListings
                 .filter((listing: any) => listing.isActive !== false)
                 .map((listing: any) => {
                   const fractionInfo = fractionalized.find((f: any) => f.id === listing.fractionId) || {};
-                  const name = listing.fractionId.split('-')[0] || "AirNode";
-                  const location = listing.fractionId.split('-')[1] || "Unknown";
+                  
+                  // Find the original NFT this fraction belongs to
+                  const relatedNFT = mintedNFTs.find((nft: any) => 
+                    fractionInfo.tokenId === nft.id
+                  );
+                  
+                  let name, location;
+                  if (relatedNFT) {
+                    name = relatedNFT.name;
+                    location = relatedNFT.location;
+                  } else {
+                    const parts = listing.fractionId.split('-');
+                    name = parts[0] || "AirNode";
+                    location = parts[1] || "Unknown";
+                    
+                    // Capitalize first letter
+                    name = name.charAt(0).toUpperCase() + name.slice(1);
+                    location = location.charAt(0).toUpperCase() + location.slice(1);
+                  }
                   
                   return {
                     id: listing.fractionId,
-                    name: name.charAt(0).toUpperCase() + name.slice(1),
-                    location: location.charAt(0).toUpperCase() + location.slice(1),
+                    name: name,
+                    location: location,
                     price: parseFloat(listing.price),
                     imageUrl: "/lovable-uploads/944059d9-4b2a-4ce4-a703-1df8d972e858.png",
                     totalShares: fractionInfo.count || 1000,
@@ -98,6 +142,7 @@ const Marketplace = () => {
           // Check localStorage for fallback
           const localListings = JSON.parse(localStorage.getItem('listings') || '[]');
           const fractionalized = JSON.parse(localStorage.getItem('fractionalized') || '[]');
+          const mintedNFTs = JSON.parse(localStorage.getItem('mintedNFTs') || '[]');
           
           console.log("Checking localStorage fallback. Listings:", localListings);
           
@@ -106,13 +151,30 @@ const Marketplace = () => {
               .filter((listing: any) => listing.isActive !== false)
               .map((listing: any) => {
                 const fractionInfo = fractionalized.find((f: any) => f.id === listing.fractionId) || {};
-                const name = listing.fractionId.split('-')[0] || "AirNode";
-                const location = listing.fractionId.split('-')[1] || "Unknown";
+                
+                // Find the original NFT this fraction belongs to
+                const relatedNFT = mintedNFTs.find((nft: any) => 
+                  fractionInfo.tokenId === nft.id
+                );
+                
+                let name, location;
+                if (relatedNFT) {
+                  name = relatedNFT.name;
+                  location = relatedNFT.location;
+                } else {
+                  const parts = listing.fractionId.split('-');
+                  name = parts[0] || "AirNode";
+                  location = parts[1] || "Unknown";
+                  
+                  // Capitalize first letter
+                  name = name.charAt(0).toUpperCase() + name.slice(1);
+                  location = location.charAt(0).toUpperCase() + location.slice(1);
+                }
                 
                 return {
                   id: listing.fractionId,
-                  name: name.charAt(0).toUpperCase() + name.slice(1),
-                  location: location.charAt(0).toUpperCase() + location.slice(1),
+                  name: name,
+                  location: location,
                   price: parseFloat(listing.price),
                   imageUrl: "/lovable-uploads/944059d9-4b2a-4ce4-a703-1df8d972e858.png",
                   totalShares: fractionInfo.count || 1000,
@@ -140,19 +202,37 @@ const Marketplace = () => {
         try {
           const localListings = JSON.parse(localStorage.getItem('listings') || '[]');
           const fractionalized = JSON.parse(localStorage.getItem('fractionalized') || '[]');
+          const mintedNFTs = JSON.parse(localStorage.getItem('mintedNFTs') || '[]');
           
           if (localListings.length > 0) {
             const mockNodes = localListings
               .filter((listing: any) => listing.isActive !== false)
               .map((listing: any) => {
                 const fractionInfo = fractionalized.find((f: any) => f.id === listing.fractionId) || {};
-                const name = listing.fractionId.split('-')[0] || "AirNode";
-                const location = listing.fractionId.split('-')[1] || "Unknown";
+                
+                // Find the original NFT this fraction belongs to
+                const relatedNFT = mintedNFTs.find((nft: any) => 
+                  fractionInfo.tokenId === nft.id
+                );
+                
+                let name, location;
+                if (relatedNFT) {
+                  name = relatedNFT.name;
+                  location = relatedNFT.location;
+                } else {
+                  const parts = listing.fractionId.split('-');
+                  name = parts[0] || "AirNode";
+                  location = parts[1] || "Unknown";
+                  
+                  // Capitalize first letter
+                  name = name.charAt(0).toUpperCase() + name.slice(1);
+                  location = location.charAt(0).toUpperCase() + location.slice(1);
+                }
                 
                 return {
                   id: listing.fractionId,
-                  name: name.charAt(0).toUpperCase() + name.slice(1),
-                  location: location.charAt(0).toUpperCase() + location.slice(1),
+                  name: name,
+                  location: location,
                   price: parseFloat(listing.price),
                   imageUrl: "/lovable-uploads/944059d9-4b2a-4ce4-a703-1df8d972e858.png",
                   totalShares: fractionInfo.count || 1000,
