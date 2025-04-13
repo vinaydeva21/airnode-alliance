@@ -4,11 +4,17 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { BarChart3, MapPin, Settings } from "lucide-react";
+import { MapPin, Settings } from "lucide-react";
 import { NodeDetailsDialog } from "./NodeDetailsDialog";
 import { NodePurchaseDialog } from "./NodePurchaseDialog";
 
-interface AirNodeCardProps {
+export interface AirNodePerformance {
+  uptime: number;
+  earnings: number;
+  roi: number;
+}
+
+export interface AirNodeCardProps {
   id: string;
   name: string;
   location: string;
@@ -16,11 +22,7 @@ interface AirNodeCardProps {
   imageUrl: string;
   totalShares: number;
   availableShares: number;
-  performance: {
-    uptime: number;
-    earnings: number;
-    roi: number;
-  };
+  performance: AirNodePerformance;
   isNewlyMinted?: boolean;
   timestamp?: number;
 }
