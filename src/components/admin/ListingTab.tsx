@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,6 +18,13 @@ interface FractionData {
   name: string;
   count: number;
 }
+
+// Mock data for fractions
+const fractionData = [
+  { id: "fraction-portal-180-001", nftId: "portal-180", name: "Portal 180 #001", count: 1000 },
+  { id: "fraction-portal-360-001", nftId: "portal-360", name: "Portal 360 #001", count: 1000 },
+  { id: "fraction-nexus-1-001", nftId: "nexus-1", name: "Nexus I #001", count: 2000 },
+];
 
 const formSchema = z.object({
   fractionId: z.string().min(1, {
@@ -65,20 +71,12 @@ export default function ListingTab() {
             setFractions(fractionDetails);
           } else {
             // Fallback to mock data
-            setFractions([
-              { id: "fraction-portal-180-001", nftId: "portal-180", name: "Portal 180 #001", count: 1000 },
-              { id: "fraction-portal-360-001", nftId: "portal-360", name: "Portal 360 #001", count: 1000 },
-              { id: "fraction-nexus-1-001", nftId: "nexus-1", name: "Nexus I #001", count: 2000 },
-            ]);
+            setFractions(fractionData);
           }
         } catch (error) {
           console.error("Error fetching fractions:", error);
           // Fallback to mock data
-          setFractions([
-            { id: "fraction-portal-180-001", nftId: "portal-180", name: "Portal 180 #001", count: 1000 },
-            { id: "fraction-portal-360-001", nftId: "portal-360", name: "Portal 360 #001", count: 1000 },
-            { id: "fraction-nexus-1-001", nftId: "nexus-1", name: "Nexus I #001", count: 2000 },
-          ]);
+          setFractions(fractionData);
         }
       }
     };

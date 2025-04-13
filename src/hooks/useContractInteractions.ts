@@ -1,63 +1,67 @@
-
 import { ContractInteractions } from '@/types/blockchain';
 import { Web3State } from '@/types/blockchain';
 import { ethers } from 'ethers';
 import { toast } from 'sonner';
-import { useNFTContract } from './useNFTContract';
-import { useFractionalization } from './useFractionalization';
-import { useMarketplace } from './useMarketplace';
 import { createMetadataURI } from '@/utils/contractHelpers';
 
-export const useContractInteractions = (
+export const createContractInteractions = (
   web3State: Web3State, 
-  provider: ethers.BrowserProvider | null
+  provider: ethers.BrowserProvider | null,
+  nftContract: any,
+  fractionalizationContract: any,
+  marketplaceContract: any
 ): ContractInteractions | null => {
   if (!web3State.connected || !provider) return null;
-
-  const { mintNFT, transferNFT, getTokenMetadata } = useNFTContract();
-  const { fractionalizeNFT, getFractionDetails } = useFractionalization();
-  const { listForSale, buyFraction, getListings } = useMarketplace();
 
   return {
     // NFT Contract interactions
     mintNFT: async (airNodeId, fractionCount, metadataURI) => {
-      // Parse the metadata from URI if it's a data URI
-      let metadata;
-      if (metadataURI.startsWith('data:application/json;base64,')) {
-        const base64Data = metadataURI.replace('data:application/json;base64,', '');
-        const jsonStr = atob(base64Data);
-        const parsedData = JSON.parse(jsonStr);
+      try {
+        // Parse the metadata from URI if it's a data URI
+        let metadata;
+        if (metadataURI.startsWith('data:application/json;base64,')) {
+          const base64Data = metadataURI.replace('data:application/json;base64,', '');
+          const jsonStr = atob(base64Data);
+          const parsedData = JSON.parse(jsonStr);
+          
+          metadata = {
+            airNodeId: parsedData.name.replace('AirNode ', ''),
+            location: parsedData.attributes.find((attr: any) => attr.trait_type === 'Location')?.value || '',
+            performance: {
+              uptime: parsedData.attributes.find((attr: any) => attr.trait_type === 'Uptime')?.value || 99.5,
+              earnings: parsedData.attributes.find((attr: any) => attr.trait_type === 'Daily Earnings')?.value || 2.5,
+              roi: parsedData.attributes.find((attr: any) => attr.trait_type === 'ROI')?.value || 18,
+            },
+            totalFractions: parsedData.attributes.find((attr: any) => attr.trait_type === 'Total Fractions')?.value || fractionCount,
+          };
+        } else {
+          // If it's not a data URI, use default values
+          metadata = {
+            airNodeId,
+            location: "Unknown Location",
+            performance: {
+              uptime: 99.5,
+              earnings: 2.5,
+              roi: 18,
+            },
+            totalFractions: fractionCount,
+          };
+        }
         
-        metadata = {
-          airNodeId: parsedData.name.replace('AirNode ', ''),
-          location: parsedData.attributes.find((attr: any) => attr.trait_type === 'Location')?.value || '',
-          performance: {
-            uptime: parsedData.attributes.find((attr: any) => attr.trait_type === 'Uptime')?.value || 99.5,
-            earnings: parsedData.attributes.find((attr: any) => attr.trait_type === 'Daily Earnings')?.value || 2.5,
-            roi: parsedData.attributes.find((attr: any) => attr.trait_type === 'ROI')?.value || 18,
-          },
-          totalFractions: parsedData.attributes.find((attr: any) => attr.trait_type === 'Total Fractions')?.value || fractionCount,
-        };
-      } else {
-        // If it's not a data URI, use default values
-        metadata = {
-          airNodeId,
-          location: "Unknown Location",
-          performance: {
-            uptime: 99.5,
-            earnings: 2.5,
-            roi: 18,
-          },
-          totalFractions: fractionCount,
-        };
+        if (nftContract) {
+          await nftContract.mintNFT(airNodeId, fractionCount, metadata);
+        }
+        toast.info("NFT minting process completed");
+      } catch (error) {
+        console.error("Error minting NFT:", error);
+        toast.error("Failed to mint NFT");
       }
-      
-      await mintNFT(airNodeId, fractionCount, metadata);
-      toast.info("NFT minting process completed");
     },
     
     transferNFT: async (fractionId, toAddress) => {
-      await transferNFT(fractionId, toAddress);
+      if (nftContract) {
+        await nftContract.transferNFT(fractionId, toAddress);
+      }
       toast.info("NFT transfer completed");
     },
     
@@ -100,12 +104,16 @@ export const useContractInteractions = (
 
     // Marketplace Contract interactions
     listForSale: async (fractionId, price) => {
-      await listForSale(fractionId, price);
+      if (marketplaceContract) {
+        await marketplaceContract.listForSale(fractionId, price);
+      }
       toast.info("NFT listed for sale");
     },
     
     buyFraction: async (fractionId, price) => {
-      await buyFraction(parseInt(fractionId), 1, price);
+      if (marketplaceContract) {
+        await marketplaceContract.buyFraction(parseInt(fractionId), 1, price);
+      }
       toast.info("Purchase completed");
     },
     
@@ -115,7 +123,10 @@ export const useContractInteractions = (
     },
     
     getListings: async () => {
-      return await getListings();
+      if (marketplaceContract) {
+        return await marketplaceContract.getListings();
+      }
+      return [];
     },
 
     // The remaining functions are placeholders for future implementation

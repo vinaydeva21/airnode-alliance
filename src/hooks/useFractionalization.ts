@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useWeb3 } from '@/contexts/Web3Context';
 import { toast } from 'sonner';
+import { ethers } from 'ethers';
 import { getAirNodeFractionalizationContract, formatContractError } from '@/utils/contractHelpers';
 
 export const useFractionalization = () => {

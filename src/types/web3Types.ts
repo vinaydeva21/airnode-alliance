@@ -1,8 +1,10 @@
 
 import { ContractInteractions, Web3State } from "@/types/blockchain";
+import { ethers } from "ethers";
 
 export interface Web3ContextType {
   web3State: Web3State;
+  provider: ethers.BrowserProvider | null;
   contracts: ContractInteractions | null;
   connect: (walletId: string) => Promise<void>;
   disconnect: () => void;

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,6 +23,13 @@ const formSchema = z.object({
     message: "Price per fraction must be at least 0.01.",
   }),
 });
+
+// Mock NFT data for demonstration
+const mockNFTs = [
+  { id: "1", name: "Portal 180", location: "Nairobi, Kenya" },
+  { id: "2", name: "Portal 360", location: "Lagos, Nigeria" },
+  { id: "3", name: "Nexus I", location: "Addis Ababa, Ethiopia" },
+];
 
 interface NFTOption {
   id: string;

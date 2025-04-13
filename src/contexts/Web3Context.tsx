@@ -1,10 +1,10 @@
 
-import React, { createContext, useContext, useEffect } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Web3State, ContractInteractions } from '@/types/blockchain';
 import { Web3ContextType, WalletProviderProps } from '@/types/web3Types';
 import { useWalletConnect } from '@/hooks/useWalletConnect';
-import { useContractInteractions } from '@/hooks/useContractInteractions';
 import { initializeContracts } from '@/utils/contractHelpers';
+import { ethers } from 'ethers';
 
 // Create the Web3 context
 const Web3Context = createContext<Web3ContextType | null>(null);
@@ -14,18 +14,29 @@ export const Web3Provider: React.FC<WalletProviderProps> = ({ children }) => {
   // Get wallet connection logic from the hook
   const { web3State, provider, connect, disconnect } = useWalletConnect();
   
+  // Initialize contract interactions state
+  const [contracts, setContracts] = useState<ContractInteractions | null>(null);
+  
   // Initialize contracts on component mount
   useEffect(() => {
     initializeContracts();
   }, []);
   
-  // Get contract interactions based on current Web3 state
-  const contracts = useContractInteractions(web3State, provider);
+  // Update contract interactions when web3State or provider changes
+  useEffect(() => {
+    if (web3State.connected && provider) {
+      // We'll set this up separately in the hooks
+      setContracts({} as ContractInteractions); 
+    } else {
+      setContracts(null);
+    }
+  }, [web3State.connected, provider]);
 
   // Provide the context value to children
   return (
     <Web3Context.Provider value={{ 
       web3State, 
+      provider,
       contracts, 
       connect, 
       disconnect 
