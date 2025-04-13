@@ -1,16 +1,104 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TrendingUp, ShoppingCart, Wallet, Coins } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import NetworkBackground from "@/components/NetworkBackground";
 import { MarketplaceTabs } from "@/components/marketplace/MarketplaceTabs";
+import { useMarketplace } from "@/hooks/useMarketplace";
+import { useFractionalization } from "@/hooks/useFractionalization";
+import { toast } from "sonner";
 
 const Marketplace = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("buy");
+  const [airNodes, setAirNodes] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   
-  const airNodes = [
+  const { getListings } = useMarketplace();
+  const { getFractionDetails } = useFractionalization();
+  
+  // Fetch marketplace listings when component mounts
+  useEffect(() => {
+    async function fetchListings() {
+      try {
+        setLoading(true);
+        // Try to get listings from contract
+        const listings = await getListings();
+        
+        // Transform listings to AirNode format
+        if (listings && listings.length > 0) {
+          const transformedNodes = await Promise.all(
+            listings.map(async (listing) => {
+              // Get fraction details
+              const details = await getFractionDetails(listing.fractionId);
+              const name = listing.fractionId.split('-')[0] || "AirNode";
+              const location = listing.fractionId.split('-')[1] || "Unknown";
+              
+              return {
+                id: listing.fractionId,
+                name: name.charAt(0).toUpperCase() + name.slice(1),
+                location: location.charAt(0).toUpperCase() + location.slice(1),
+                price: listing.price,
+                imageUrl: "/lovable-uploads/944059d9-4b2a-4ce4-a703-1df8d972e858.png",
+                totalShares: details?.totalFractions.toNumber() || 1000,
+                availableShares: parseInt(listing.quantity),
+                performance: {
+                  uptime: 99.2,
+                  earnings: 2.4,
+                  roi: 18.6
+                }
+              };
+            })
+          );
+          
+          // Fallback to localStorage if no contract listings
+          if (transformedNodes.length === 0) {
+            // Get fractionalized NFTs from localStorage
+            const fractionalized = JSON.parse(localStorage.getItem('fractionalized') || '[]');
+            
+            if (fractionalized.length > 0) {
+              const mockNodes = fractionalized.map((fraction: any) => ({
+                id: fraction.id,
+                name: fraction.id.split('-')[0].charAt(0).toUpperCase() + fraction.id.split('-')[0].slice(1),
+                location: "Listed Location",
+                price: fraction.price,
+                imageUrl: "/lovable-uploads/944059d9-4b2a-4ce4-a703-1df8d972e858.png",
+                totalShares: fraction.count,
+                availableShares: fraction.count,
+                performance: {
+                  uptime: 99.2,
+                  earnings: 2.4,
+                  roi: 18.6
+                }
+              }));
+              
+              setAirNodes([...mockNodes]);
+            } else {
+              // Use default airNodes as final fallback
+              setAirNodes(defaultAirNodes);
+            }
+          } else {
+            setAirNodes(transformedNodes);
+          }
+        } else {
+          // Use default airNodes as fallback
+          setAirNodes(defaultAirNodes);
+        }
+      } catch (error) {
+        console.error("Error fetching marketplace listings:", error);
+        toast.error("Failed to load marketplace listings");
+        setAirNodes(defaultAirNodes);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    fetchListings();
+  }, []);
+  
+  // Default AirNodes as fallback
+  const defaultAirNodes = [
     {
       id: "portal-180",
       name: "Portal 180",
@@ -114,6 +202,7 @@ const Marketplace = () => {
             lendingOptions={lendingOptions}
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
+            loading={loading}
           />
         </div>
       </div>

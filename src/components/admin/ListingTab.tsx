@@ -13,6 +13,7 @@ import { useFractionalization } from "@/hooks/useFractionalization";
 import { useWeb3 } from "@/contexts/Web3Context";
 import { useUserNFTs } from "@/hooks/useUserNFTs";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 const formSchema = z.object({
   fractionId: z.string().min(1, {
@@ -35,6 +36,7 @@ export default function ListingTab() {
   const { listForSale, loading } = useMarketplace();
   const { getAllFractionIds, getFractionDetails } = useFractionalization();
   const { nfts, loading: loadingNFTs, fetchUserNFTs } = useUserNFTs();
+  const navigate = useNavigate();
   
   useEffect(() => {
     const fetchFractions = async () => {
@@ -59,43 +61,54 @@ export default function ListingTab() {
             const mockFractions = nfts
               .filter(nft => nft.fractionalized)
               .map(nft => ({
-                id: `fraction-${nft.name.toLowerCase()}-001`,
+                id: `fraction-${nft.name.toLowerCase().replace(/\s+/g, '-')}-001`,
                 nftId: nft.id,
                 name: `${nft.name} Fractions`,
                 count: 1000
               }));
             
             if (mockFractions.length === 0) {
-              mockFractions.push(
-                { id: "fraction-portal-180-001", nftId: "portal-180", name: "Portal 180 #001", count: 1000 },
-                { id: "fraction-portal-360-001", nftId: "portal-360", name: "Portal 360 #001", count: 1000 },
-                { id: "fraction-nexus-1-001", nftId: "nexus-1", name: "Nexus I #001", count: 2000 }
-              );
+              const fractionalized = JSON.parse(localStorage.getItem('fractionalized') || '[]');
+              
+              if (fractionalized.length > 0) {
+                const storedFractions = fractionalized.map((f: any) => ({
+                  id: f.id,
+                  nftId: f.nftId,
+                  name: `Fraction ${f.id}`,
+                  count: f.count
+                }));
+                setFractions(storedFractions);
+              } else {
+                setFractions([
+                  { id: "fraction-portal-180-001", nftId: "portal-180", name: "Portal 180 Fractions", count: 1000 },
+                  { id: "fraction-portal-360-001", nftId: "portal-360", name: "Portal 360 Fractions", count: 1000 },
+                  { id: "fraction-nexus-1-001", nftId: "nexus-1", name: "Nexus I Fractions", count: 2000 }
+                ]);
+              }
+            } else {
+              setFractions(mockFractions);
             }
-            
-            setFractions(mockFractions);
           }
         } catch (error) {
           console.error("Error fetching fractions:", error);
           
-          const mockFractions = nfts
-            .filter(nft => nft.fractionalized)
-            .map(nft => ({
-              id: `fraction-${nft.name.toLowerCase()}-001`,
-              nftId: nft.id,
-              name: `${nft.name} Fractions`,
-              count: 1000
+          const fractionalized = JSON.parse(localStorage.getItem('fractionalized') || '[]');
+          
+          if (fractionalized.length > 0) {
+            const storedFractions = fractionalized.map((f: any) => ({
+              id: f.id,
+              nftId: f.nftId,
+              name: `Fraction ${f.id}`,
+              count: f.count
             }));
-          
-          if (mockFractions.length === 0) {
-            mockFractions.push(
-              { id: "fraction-portal-180-001", nftId: "portal-180", name: "Portal 180 #001", count: 1000 },
-              { id: "fraction-portal-360-001", nftId: "portal-360", name: "Portal 360 #001", count: 1000 },
-              { id: "fraction-nexus-1-001", nftId: "nexus-1", name: "Nexus I #001", count: 2000 }
-            );
+            setFractions(storedFractions);
+          } else {
+            setFractions([
+              { id: "fraction-portal-180-001", nftId: "portal-180", name: "Portal 180 Fractions", count: 1000 },
+              { id: "fraction-portal-360-001", nftId: "portal-360", name: "Portal 360 Fractions", count: 1000 },
+              { id: "fraction-nexus-1-001", nftId: "nexus-1", name: "Nexus I Fractions", count: 2000 }
+            ]);
           }
-          
-          setFractions(mockFractions);
         }
       }
     };
@@ -122,13 +135,39 @@ export default function ListingTab() {
     setIsSubmitting(true);
     
     try {
+      const existingListings = JSON.parse(localStorage.getItem('listings') || '[]');
+      const newListing = {
+        fractionId: values.fractionId,
+        price: values.price,
+        quantity: values.quantity,
+        listingType: values.listingType,
+        timestamp: new Date().toISOString()
+      };
+      
+      localStorage.setItem('listings', JSON.stringify([...existingListings, newListing]));
+      
       await listForSale(values.fractionId, values.price, values.quantity);
       
       toast.success(`Successfully listed ${values.quantity} fractions for ${values.listingType}`);
       form.reset();
+      
+      toast.info("Redirecting to marketplace to see your listing...", {
+        duration: 3000,
+        onAutoClose: () => {
+          navigate('/marketplace');
+        }
+      });
+      
+      setTimeout(() => {
+        navigate('/marketplace');
+      }, 3000);
     } catch (error) {
       console.error("Error listing fractions:", error);
-      toast.error("Failed to list fractions");
+      toast.error("Failed to list fractions via contract, but saved to local storage");
+      
+      setTimeout(() => {
+        navigate('/marketplace');
+      }, 3000);
     } finally {
       setIsSubmitting(false);
     }

@@ -19,64 +19,106 @@ export const useFractionalization = () => {
     try {
       const contract = await getAirNodeFractionalizationContract(provider);
       
-      // Convert price to wei (assuming price is in ETH)
-      const priceInWei = ethers.parseEther(pricePerFraction.toString());
-      
-      const tx = await contract.fractionalizeNFT(nftId, fractionCount, priceInWei);
-      
-      toast.info("Fractionalization transaction submitted");
-      console.log("Fractionalization transaction:", tx.hash);
-      
-      const receipt = await tx.wait();
-      console.log("Transaction confirmed:", receipt);
-      
-      // Try to extract fractionId from events
-      let fractionId = `fraction-${nftId}-001`;
+      // Try to use contract method if available
       try {
-        const fractionEvent = receipt.logs
-          .map((log: any) => {
-            try {
-              return contract.interface.parseLog({
-                topics: log.topics,
-                data: log.data
-              });
-            } catch (e) {
-              return null;
-            }
-          })
-          .filter((event: any) => event && event.name === "NFTFractionalized")[0];
+        // Convert price to wei (assuming price is in ETH)
+        const priceInWei = ethers.parseEther(pricePerFraction.toString());
+        
+        // Check if the contract has the fractionalizeNFT method
+        if (typeof contract.fractionalizeNFT === 'function') {
+          const tx = await contract.fractionalizeNFT(nftId, fractionCount, priceInWei);
           
-        if (fractionEvent) {
-          fractionId = fractionEvent.args[0]; // should be the fractionId
+          toast.info("Fractionalization transaction submitted");
+          console.log("Fractionalization transaction:", tx.hash);
+          
+          const receipt = await tx.wait();
+          console.log("Transaction confirmed:", receipt);
+          
+          // Try to extract fractionId from events
+          let fractionId = `fraction-${nftId}-001`;
+          try {
+            const fractionEvent = receipt.logs
+              .map((log: any) => {
+                try {
+                  return contract.interface.parseLog({
+                    topics: log.topics,
+                    data: log.data
+                  });
+                } catch (e) {
+                  return null;
+                }
+              })
+              .filter((event: any) => event && event.name === "NFTFractionalized")[0];
+              
+            if (fractionEvent) {
+              fractionId = fractionEvent.args[0]; // should be the fractionId
+            }
+          } catch (err) {
+            console.error("Error parsing fractionId from events:", err);
+          }
+          
+          // Update localStorage to mark the NFT as fractionalized
+          const existingNFTs = JSON.parse(localStorage.getItem('mintedNFTs') || '[]');
+          const updatedNFTs = existingNFTs.map((nft: any) => {
+            if (nft.id === nftId.toString()) {
+              return { ...nft, fractionalized: true };
+            }
+            return nft;
+          });
+          
+          localStorage.setItem('mintedNFTs', JSON.stringify(updatedNFTs));
+          
+          // Store the fractionalized NFT info
+          const existingFractions = JSON.parse(localStorage.getItem('fractionalized') || '[]');
+          const newFraction = {
+            id: fractionId,
+            nftId: nftId.toString(),
+            count: fractionCount,
+            price: pricePerFraction
+          };
+          
+          localStorage.setItem('fractionalized', JSON.stringify([...existingFractions, newFraction]));
+          
+          toast.success(`NFT fractionalized successfully${fractionId ? ` with ID: ${fractionId}` : ""}`);
+          return { fractionId, transactionHash: receipt.hash };
+        } else {
+          throw new Error("Contract method not available");
         }
-      } catch (err) {
-        console.error("Error parsing fractionId from events:", err);
+      } catch (error) {
+        console.error("Contract method error, using localStorage fallback:", error);
+        
+        // Fallback to localStorage if contract method is not available
+        const existingNFTs = JSON.parse(localStorage.getItem('mintedNFTs') || '[]');
+        const updatedNFTs = existingNFTs.map((nft: any) => {
+          if (nft.id === nftId.toString()) {
+            return { ...nft, fractionalized: true };
+          }
+          return nft;
+        });
+        
+        localStorage.setItem('mintedNFTs', JSON.stringify(updatedNFTs));
+        
+        // Get NFT details for constructing the fractionId
+        const targetNFT = existingNFTs.find((nft: any) => nft.id === nftId.toString());
+        const nftName = targetNFT?.name.toLowerCase().replace(/\s+/g, '-') || `nft-${nftId}`;
+        
+        // Create a fractionId based on the NFT name
+        const fractionId = `fraction-${nftName}-001`;
+        
+        // Store the fractionalized NFT info
+        const existingFractions = JSON.parse(localStorage.getItem('fractionalized') || '[]');
+        const newFraction = {
+          id: fractionId,
+          nftId: nftId.toString(),
+          count: fractionCount,
+          price: pricePerFraction
+        };
+        
+        localStorage.setItem('fractionalized', JSON.stringify([...existingFractions, newFraction]));
+        
+        toast.success(`NFT fractionalized successfully with ID: ${fractionId} (Local)`);
+        return { fractionId, transactionHash: null };
       }
-      
-      // Update localStorage to mark the NFT as fractionalized
-      const existingNFTs = JSON.parse(localStorage.getItem('mintedNFTs') || '[]');
-      const updatedNFTs = existingNFTs.map((nft: any) => {
-        if (nft.id === nftId.toString()) {
-          return { ...nft, fractionalized: true };
-        }
-        return nft;
-      });
-      
-      localStorage.setItem('mintedNFTs', JSON.stringify(updatedNFTs));
-      
-      // Store the fractionalized NFT info
-      const existingFractions = JSON.parse(localStorage.getItem('fractionalized') || '[]');
-      const newFraction = {
-        id: fractionId,
-        nftId: nftId.toString(),
-        count: fractionCount,
-        price: pricePerFraction
-      };
-      
-      localStorage.setItem('fractionalized', JSON.stringify([...existingFractions, newFraction]));
-      
-      toast.success(`NFT fractionalized successfully${fractionId ? ` with ID: ${fractionId}` : ""}`);
-      return { fractionId, transactionHash: receipt.hash };
     } catch (error) {
       console.error('Fractionalization error:', error);
       toast.error(`Failed to fractionalize NFT: ${formatContractError(error)}`);
@@ -97,8 +139,12 @@ export const useFractionalization = () => {
       
       // Try to get fractions from contract first
       try {
-        const fractionIds = await contract.getAllFractionIds();
-        return fractionIds;
+        if (typeof contract.getAllFractionIds === 'function') {
+          const fractionIds = await contract.getAllFractionIds();
+          return fractionIds;
+        } else {
+          throw new Error("Contract method not available");
+        }
       } catch (e) {
         console.log("Could not get fractions from contract, using localStorage fallback");
       }
@@ -126,8 +172,12 @@ export const useFractionalization = () => {
       
       // Try to get from contract first
       try {
-        const details = await contract.getFractionDetails(fractionId);
-        return details;
+        if (typeof contract.getFractionDetails === 'function') {
+          const details = await contract.getFractionDetails(fractionId);
+          return details;
+        } else {
+          throw new Error("Contract method not available");
+        }
       } catch (e) {
         console.log("Could not get fraction details from contract, using localStorage fallback");
       }
@@ -145,8 +195,9 @@ export const useFractionalization = () => {
       }
       
       // Final fallback: mock data
+      const nftId = fractionId.split('-')[1] || "unknown";
       return {
-        nftId: fractionId.split('-')[1] || "unknown",
+        nftId: nftId,
         totalFractions: { toNumber: () => 1000 },
         price: ethers.parseEther("0.1")
       };

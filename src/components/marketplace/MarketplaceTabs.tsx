@@ -37,6 +37,7 @@ interface MarketplaceTabsProps {
   lendingOptions: LendingOption[];
   searchQuery: string;
   setSearchQuery: (query: string) => void;
+  loading?: boolean;
 }
 
 export const MarketplaceTabs: React.FC<MarketplaceTabsProps> = ({
@@ -45,7 +46,8 @@ export const MarketplaceTabs: React.FC<MarketplaceTabsProps> = ({
   airNodes,
   lendingOptions,
   searchQuery,
-  setSearchQuery
+  setSearchQuery,
+  loading = false
 }) => {
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-10">
@@ -64,7 +66,8 @@ export const MarketplaceTabs: React.FC<MarketplaceTabsProps> = ({
         <BuyNodesTab 
           airNodes={airNodes} 
           searchQuery={searchQuery} 
-          setSearchQuery={setSearchQuery} 
+          setSearchQuery={setSearchQuery}
+          loading={loading}
         />
       </TabsContent>
       
