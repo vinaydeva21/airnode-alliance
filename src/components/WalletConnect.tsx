@@ -1,8 +1,15 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { User, Wallet } from "lucide-react";
+import { User, Wallet, ChevronRight, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import { 
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription
+} from "@/components/ui/dialog";
 import { AuthDialog } from "./wallet/AuthDialog";
 import { StakingDialog } from "./wallet/StakingDialog";
 import { TransactionHistoryDialog } from "./wallet/TransactionHistoryDialog";
@@ -37,6 +44,7 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
     setConnecting(true);
     
     try {
+      // Connect to the wallet using Web3Context
       await connect(walletId);
       setWalletSelectionOpen(false);
     } catch (error) {
@@ -55,7 +63,7 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
     handleConnect("metamask");
   };
 
-  // Removed isOnCorrectNetwork flag and related switch network badge
+  const isOnCorrectNetwork = web3State.chainId === sepolia.id;
 
   return (
     <div className={className}>
@@ -74,7 +82,7 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
           </Button>
           <Button
             onClick={() => setWalletSelectionOpen(true)}
-            className="bg-ana-purple hover:bg-ana-purple/90 mr-2"
+            className="bg-ana-purple hover:bg-ana-purple/90"
             disabled={connecting}
           >
             {connecting ? (
@@ -92,7 +100,16 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
         </div>
       ) : (
         <div className="flex items-center gap-2">
-          {/* Removed Switch to Sepolia badge completely */}
+          {!isOnCorrectNetwork && (
+            <Badge 
+              variant="outline" 
+              className="bg-yellow-500/20 text-yellow-400 border-yellow-500/50 flex items-center gap-1 cursor-pointer hover:bg-yellow-500/30"
+              onClick={switchToSepolia}
+            >
+              <AlertCircle size={12} className="mr-1" />
+              Switch to Sepolia
+            </Badge>
+          )}
           <WalletDropdownMenu
             walletName={"Web3 Wallet"}
             address={truncateAddress(web3State.account || "")}
