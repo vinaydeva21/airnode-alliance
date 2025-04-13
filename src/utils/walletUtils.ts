@@ -2,21 +2,22 @@
 import { toast } from "sonner";
 import { bech32 } from "bech32";
 
+// We won't redeclare the Window interface here to avoid conflicts
+// The types are already defined in src/types/web3Types.ts
+
 // Check if different wallet types are installed
 export const checkIfEvmWalletIsInstalled = (): boolean => {
-  return typeof window !== 'undefined' && !!window.ethereum;
+  return window.ethereum !== undefined;
 };
 
 export const checkIfCaradanoWalletIsInstalled = (
   walletName: "yoroi" | "lace" | "nami"
 ): boolean => {
-  return typeof window !== 'undefined' && !!window.cardano && !!window.cardano[walletName];
+  return window.cardano && window.cardano[walletName] !== undefined;
 };
 
 // Connect to Cardano wallets
-export const connectToCardanoWallet = async (
-  walletName: "yoroi" | "lace" | "nami"
-) => {
+export const connectToCardanoWallet = async (walletName: "yoroi" | "lace" | "nami") => {
   if (!checkIfCaradanoWalletIsInstalled(walletName)) {
     toast.error(
       `${
@@ -27,17 +28,8 @@ export const connectToCardanoWallet = async (
   }
 
   try {
-    // Safe access to cardano wallet
-    if (typeof window === 'undefined' || !window.cardano) {
-      throw new Error(`Cardano API not available`);
-    }
-    
-    const cardanoWallet = window.cardano[walletName];
-    if (!cardanoWallet) {
-      throw new Error(`${walletName} wallet not available`);
-    }
-    
-    const walletApi = await cardanoWallet.enable();
+    // Type assertion to handle dynamic wallet access 
+    const walletApi = await (window.cardano as any)[walletName].enable();
     const addressHex = await walletApi.getChangeAddress();
 
     const address = hexToBech32(addressHex);
@@ -55,7 +47,7 @@ export const connectToCardanoWallet = async (
 
     return {
       account: address,
-      chainId: 0, // Use a default chainId for Cardano
+      chainId: null,
       connected: true,
     };
   } catch (error) {
@@ -82,11 +74,6 @@ export const connectToEvmWallet = async () => {
   }
 
   try {
-    // Safe access to ethereum object
-    if (typeof window === 'undefined' || !window.ethereum) {
-      throw new Error("Ethereum object not available");
-    }
-    
     const accounts = await window.ethereum.request({
       method: "eth_requestAccounts",
     });
@@ -94,9 +81,9 @@ export const connectToEvmWallet = async () => {
     const chainIdHex = await window.ethereum.request({
       method: "eth_chainId",
     });
-    const chainId = parseInt(chainIdHex as string, 16);
+    const chainId = parseInt(chainIdHex, 16);
 
-    if (accounts && accounts.length > 0) {
+    if (accounts.length > 0) {
       toast.success("Wallet connected", {
         description: `Address: ${accounts[0].substring(
           0,
@@ -119,11 +106,11 @@ export const connectToEvmWallet = async () => {
 };
 
 export function hexToBech32(data: string) {
-  const bytes: number[] = [];
+  const bytes = [];
   for (let i = 0; i < data.length; i += 2) {
     bytes.push(parseInt(data.substring(i, i + 2), 16));
   }
-  const words = bech32.toWords(new Uint8Array(bytes));
+  const words = bech32.toWords(bytes);
   const bech32Address = bech32.encode("addr", words, 103);
   return bech32Address;
 }

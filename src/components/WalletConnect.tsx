@@ -1,14 +1,13 @@
-
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { User, Wallet, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
-import {
+import { 
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
+  DialogDescription
 } from "@/components/ui/dialog";
 import { AuthDialog } from "./wallet/AuthDialog";
 import { StakingDialog } from "./wallet/StakingDialog";
@@ -16,9 +15,9 @@ import { TransactionHistoryDialog } from "./wallet/TransactionHistoryDialog";
 import { MyAssetsDialog } from "./wallet/MyAssetsDialog";
 import { WalletDropdownMenu } from "./wallet/WalletDropdownMenu";
 import { WalletSelectionDialog } from "./wallet/WalletSelectionDialog";
-import {
-  MOCK_WALLETS,
-  MOCK_TRANSACTIONS,
+import { 
+  MOCK_WALLETS, 
+  MOCK_TRANSACTIONS, 
   DEFAULT_WALLET_ASSETS,
   truncateAddress,
 } from "./wallet/WalletData";
@@ -37,16 +36,10 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
   const [walletSelectionOpen, setWalletSelectionOpen] = useState(false);
   const [authTab, setAuthTab] = useState<"login" | "signup">("login");
   const [connecting, setConnecting] = useState(false);
-  const [isMetaMaskInstalled, setIsMetaMaskInstalled] = useState(false);
-
-  useEffect(() => {
-    // Check if MetaMask is installed when component mounts
-    setIsMetaMaskInstalled(typeof window !== 'undefined' && !!window.ethereum?.isMetaMask);
-  }, []);
 
   const handleConnect = async (walletId: string) => {
     setConnecting(true);
-
+    
     try {
       // Connect to the wallet using Web3Context
       await connect(walletId);
@@ -56,16 +49,6 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
       toast.error("Failed to connect to wallet");
     } finally {
       setConnecting(false);
-    }
-  };
-
-  const handleMetaMaskConnect = () => {
-    if (isMetaMaskInstalled) {
-      handleConnect("metamask");
-    } else {
-      // Redirect to MetaMask website for installation
-      toast.info("MetaMask not found. Redirecting to download page...");
-      window.open("https://metamask.io/download/", "_blank");
     }
   };
 
@@ -92,27 +75,6 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
             <User size={16} className="mr-1" />
             Login
           </Button>
-          
-          {isMetaMaskInstalled && (
-            <Button
-              onClick={handleMetaMaskConnect}
-              className="bg-orange-500 hover:bg-orange-600 text-white"
-              disabled={connecting}
-            >
-              {connecting ? (
-                <>
-                  <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
-                  Connecting...
-                </>
-              ) : (
-                <>
-                  <span className="mr-1">🦊</span>
-                  MetaMask
-                </>
-              )}
-            </Button>
-          )}
-          
           <Button
             onClick={() => setWalletSelectionOpen(true)}
             className="bg-ana-purple hover:bg-ana-purple/90"
@@ -133,7 +95,7 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
         </div>
       ) : (
         <WalletDropdownMenu
-          walletName={web3State.account?.includes("0x") ? "MetaMask" : "Web3 Wallet"}
+          walletName={"Web3 Wallet"}
           address={truncateAddress(web3State.account || "")}
           anaBalance={DEFAULT_WALLET_ASSETS.tokens.ana}
           stakedAna={DEFAULT_WALLET_ASSETS.tokens.anaStaked}
@@ -145,7 +107,7 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
           onHistoryClick={() => setTransactionHistoryOpen(true)}
         />
       )}
-
+      
       <AuthDialog
         open={authDialogOpen}
         onOpenChange={setAuthDialogOpen}
@@ -153,19 +115,19 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
         setActiveTab={setAuthTab}
         onSuccess={handleAuthSuccess}
       />
-
+      
       <StakingDialog
         open={stakeDialogOpen}
         onOpenChange={setStakeDialogOpen}
         availableAna={DEFAULT_WALLET_ASSETS.tokens.ana}
       />
-
+      
       <TransactionHistoryDialog
         open={transactionHistoryOpen}
         onOpenChange={setTransactionHistoryOpen}
         transactions={MOCK_TRANSACTIONS}
       />
-
+      
       <MyAssetsDialog
         open={myAssetsDialogOpen}
         onOpenChange={setMyAssetsDialogOpen}
@@ -178,7 +140,7 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
         }}
       />
 
-      <WalletSelectionDialog
+      <WalletSelectionDialog 
         open={walletSelectionOpen}
         onOpenChange={setWalletSelectionOpen}
         wallets={MOCK_WALLETS}
