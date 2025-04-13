@@ -30,7 +30,19 @@ export const useNFTContract = () => {
         totalFractions: metadata.totalFractions
       });
       
-      // Call the mintAirNode function
+      console.log("Contract methods:", Object.keys(contract));
+      console.log("Calling mintAirNode with params:", {
+        to: web3State.account,
+        airNodeId: metadata.airNodeId,
+        location: metadata.location,
+        uptime: Math.floor(metadata.performance.uptime * 10),
+        earnings: Math.floor(metadata.performance.earnings * 100),
+        roi: Math.floor(metadata.performance.roi * 10),
+        totalFractions: metadata.totalFractions,
+        metadataURI
+      });
+      
+      // Call the mintAirNode function with proper parameters
       const tx = await contract.mintAirNode(
         web3State.account, // recipient address (current wallet)
         metadata.airNodeId,

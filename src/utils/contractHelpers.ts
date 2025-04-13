@@ -17,11 +17,20 @@ export const initializeContracts = () => {
 export const getAirNodeNFTContract = async (provider: ethers.BrowserProvider) => {
   try {
     const signer = await provider.getSigner();
-    return new ethers.Contract(
+    
+    // Make sure this matches the ABI structure with the mintAirNode function
+    console.log("Creating NFT contract with address:", contractConfig.airNodeNFT.address);
+    console.log("ABI has mintAirNode:", contractConfig.airNodeNFT.abi.some((entry: any) => 
+      entry.name === "mintAirNode" && entry.type === "function"
+    ));
+    
+    const contract = new ethers.Contract(
       contractConfig.airNodeNFT.address,
       contractConfig.airNodeNFT.abi,
       signer
     );
+    
+    return contract;
   } catch (error) {
     toast.error("Failed to get AirNode NFT contract");
     console.error("Contract error:", error);

@@ -19,15 +19,18 @@ export const Web3Provider: React.FC<WalletProviderProps> = ({ children }) => {
   
   // Initialize contracts on component mount
   useEffect(() => {
+    console.log("Initializing contracts");
     initializeContracts();
   }, []);
   
   // Update contract interactions when web3State or provider changes
   useEffect(() => {
     if (web3State.connected && provider) {
+      console.log("Web3 state is connected, setting up contracts");
       // We'll set this up separately in the hooks
       setContracts({} as ContractInteractions); 
     } else {
+      console.log("Web3 state is disconnected, clearing contracts");
       setContracts(null);
     }
   }, [web3State.connected, provider]);
