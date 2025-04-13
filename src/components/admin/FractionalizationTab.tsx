@@ -7,10 +7,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { useNFTContract } from "@/hooks/useNFTContract";
 import { useFractionalization } from "@/hooks/useFractionalization";
 import { useWeb3 } from "@/contexts/Web3Context";
+import { useUserNFTs } from "@/hooks/useUserNFTs";
 
 const formSchema = z.object({
   airNodeId: z.string().min(1, {
@@ -24,43 +26,12 @@ const formSchema = z.object({
   }),
 });
 
-// Mock NFT data for demonstration
-const mockNFTs = [
-  { id: "1", name: "Portal 180", location: "Nairobi, Kenya" },
-  { id: "2", name: "Portal 360", location: "Lagos, Nigeria" },
-  { id: "3", name: "Nexus I", location: "Addis Ababa, Ethiopia" },
-];
-
-interface NFTOption {
-  id: string;
-  name: string;
-  location: string;
-}
-
 export default function FractionalizationTab() {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [availableNFTs, setAvailableNFTs] = useState<NFTOption[]>([]);
   const { web3State } = useWeb3();
   const { getTokenMetadata } = useNFTContract();
   const { fractionalizeNFT, loading } = useFractionalization();
-  
-  // Fetch available NFTs - in a real application, you would fetch this from the contract
-  useEffect(() => {
-    // This is a mock implementation - would be replaced with real contract calls
-    const fetchNFTs = async () => {
-      if (web3State.connected) {
-        // For demo purposes, we're using mock data
-        // In a real app, you would query the blockchain for NFTs owned by the user
-        setAvailableNFTs([
-          { id: "1", name: "Portal 180", location: "Nairobi, Kenya" },
-          { id: "2", name: "Portal 360", location: "Lagos, Nigeria" },
-          { id: "3", name: "Nexus I", location: "Addis Ababa, Ethiopia" },
-        ]);
-      }
-    };
-    
-    fetchNFTs();
-  }, [web3State.connected]);
+  const { nfts, loading: loadingNFTs, fetchUserNFTs } = useUserNFTs();
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -71,19 +42,25 @@ export default function FractionalizationTab() {
     },
   });
 
+  useEffect(() => {
+    if (web3State.connected) {
+      fetchUserNFTs();
+    }
+  }, [web3State.connected]);
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     
     try {
-      // Convert airNodeId (which is actually the tokenId) to a number
       const nftId = parseInt(values.airNodeId);
       
-      // Call the contract to fractionalize the NFT
       await fractionalizeNFT(nftId, values.fractionCount, values.pricePerFraction);
       
       toast.success(`Successfully fractionalized NFT into ${values.fractionCount} fractions`);
       toast.info("Fractions ready to be listed on the marketplace");
       form.reset();
+      
+      fetchUserNFTs();
     } catch (error) {
       console.error("Error fractionalizing NFT:", error);
       toast.error("Failed to fractionalize NFT");
@@ -113,21 +90,34 @@ export default function FractionalizationTab() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Select AirNode NFT</FormLabel>
-                    <FormControl>
-                      <select 
-                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                        {...field}
-                      >
-                        <option value="">Select an AirNode</option>
-                        {mockNFTs.map(nft => (
-                          <option key={nft.id} value={nft.id}>
-                            {nft.name} - {nft.location}
-                          </option>
-                        ))}
-                      </select>
-                    </FormControl>
+                    <Select 
+                      onValueChange={field.onChange} 
+                      defaultValue={field.value}
+                      disabled={loadingNFTs}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select an AirNode" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {loadingNFTs ? (
+                          <SelectItem value="loading" disabled>Loading NFTs...</SelectItem>
+                        ) : nfts.length > 0 ? (
+                          nfts.map(nft => (
+                            <SelectItem key={nft.id} value={nft.id}>
+                              {nft.name} - {nft.location}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <SelectItem value="none" disabled>No NFTs available</SelectItem>
+                        )}
+                      </SelectContent>
+                    </Select>
                     <FormDescription>
-                      Choose an NFT to fractionalize
+                      {nfts.length === 0 && !loadingNFTs ? 
+                        "You don't have any AirNode NFTs yet. Mint one first." : 
+                        "Choose an NFT to fractionalize"}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -174,7 +164,7 @@ export default function FractionalizationTab() {
               <Button 
                 type="submit" 
                 className="w-full" 
-                disabled={isSubmitting}
+                disabled={isSubmitting || nfts.length === 0}
               >
                 {isSubmitting ? "Processing..." : "Fractionalize NFT"}
               </Button>
