@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -9,14 +9,16 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useMarketplace } from "@/hooks/useMarketplace";
+import { useFractionalization } from "@/hooks/useFractionalization";
+import { useWeb3 } from "@/contexts/Web3Context";
 import { toast } from "sonner";
 
-// Mock fractionalized NFTs data
-const fractionData = [
-  { id: "fraction-portal-180-001", nftId: "portal-180", name: "Portal 180 #001", count: 1000 },
-  { id: "fraction-portal-360-001", nftId: "portal-360", name: "Portal 360 #001", count: 1000 },
-  { id: "fraction-nexus-1-001", nftId: "nexus-1", name: "Nexus I #001", count: 2000 },
-];
+interface FractionData {
+  id: string;
+  nftId: string;
+  name: string;
+  count: number;
+}
 
 const formSchema = z.object({
   fractionId: z.string().min(1, {
@@ -34,7 +36,55 @@ const formSchema = z.object({
 
 export default function ListingTab() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [fractions, setFractions] = useState<FractionData[]>([]);
+  const { web3State } = useWeb3();
   const { listForSale, loading } = useMarketplace();
+  const { getAllFractionIds, getFractionDetails } = useFractionalization();
+  
+  // Fetch available fractions
+  useEffect(() => {
+    const fetchFractions = async () => {
+      if (web3State.connected) {
+        try {
+          // Try to get fractions from the contract
+          const fractionIds = await getAllFractionIds();
+          
+          // If we have real fractions, process them
+          if (fractionIds && fractionIds.length > 0) {
+            const fractionDetails = await Promise.all(
+              fractionIds.map(async (id) => {
+                const details = await getFractionDetails(id);
+                return {
+                  id,
+                  nftId: details ? details.nftId.toString() : "unknown",
+                  name: `Fraction ${id}`,
+                  count: details ? details.totalFractions.toNumber() : 1000,
+                };
+              })
+            );
+            setFractions(fractionDetails);
+          } else {
+            // Fallback to mock data
+            setFractions([
+              { id: "fraction-portal-180-001", nftId: "portal-180", name: "Portal 180 #001", count: 1000 },
+              { id: "fraction-portal-360-001", nftId: "portal-360", name: "Portal 360 #001", count: 1000 },
+              { id: "fraction-nexus-1-001", nftId: "nexus-1", name: "Nexus I #001", count: 2000 },
+            ]);
+          }
+        } catch (error) {
+          console.error("Error fetching fractions:", error);
+          // Fallback to mock data
+          setFractions([
+            { id: "fraction-portal-180-001", nftId: "portal-180", name: "Portal 180 #001", count: 1000 },
+            { id: "fraction-portal-360-001", nftId: "portal-360", name: "Portal 360 #001", count: 1000 },
+            { id: "fraction-nexus-1-001", nftId: "nexus-1", name: "Nexus I #001", count: 2000 },
+          ]);
+        }
+      }
+    };
+    
+    fetchFractions();
+  }, [web3State.connected]);
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -53,7 +103,9 @@ export default function ListingTab() {
     setIsSubmitting(true);
     
     try {
-      await listForSale(values.fractionId, values.price);
+      // Call the contract to list the fractions
+      await listForSale(values.fractionId, values.price, values.quantity);
+      
       toast.success(`Successfully listed ${values.quantity} fractions for ${values.listingType}`);
       form.reset();
     } catch (error) {

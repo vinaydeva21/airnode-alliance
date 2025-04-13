@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -9,13 +9,9 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-
-// Mock data - in a real app, this would come from a contract call
-const mockNFTs = [
-  { id: "portal-180", name: "Portal 180", location: "Nairobi, Kenya" },
-  { id: "portal-360", name: "Portal 360", location: "Lagos, Nigeria" },
-  { id: "nexus-1", name: "Nexus I", location: "Addis Ababa, Ethiopia" },
-];
+import { useNFTContract } from "@/hooks/useNFTContract";
+import { useFractionalization } from "@/hooks/useFractionalization";
+import { useWeb3 } from "@/contexts/Web3Context";
 
 const formSchema = z.object({
   airNodeId: z.string().min(1, {
@@ -29,8 +25,36 @@ const formSchema = z.object({
   }),
 });
 
+interface NFTOption {
+  id: string;
+  name: string;
+  location: string;
+}
+
 export default function FractionalizationTab() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [availableNFTs, setAvailableNFTs] = useState<NFTOption[]>([]);
+  const { web3State } = useWeb3();
+  const { getTokenMetadata } = useNFTContract();
+  const { fractionalizeNFT, loading } = useFractionalization();
+  
+  // Fetch available NFTs - in a real application, you would fetch this from the contract
+  useEffect(() => {
+    // This is a mock implementation - would be replaced with real contract calls
+    const fetchNFTs = async () => {
+      if (web3State.connected) {
+        // For demo purposes, we're using mock data
+        // In a real app, you would query the blockchain for NFTs owned by the user
+        setAvailableNFTs([
+          { id: "1", name: "Portal 180", location: "Nairobi, Kenya" },
+          { id: "2", name: "Portal 360", location: "Lagos, Nigeria" },
+          { id: "3", name: "Nexus I", location: "Addis Ababa, Ethiopia" },
+        ]);
+      }
+    };
+    
+    fetchNFTs();
+  }, [web3State.connected]);
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -45,13 +69,13 @@ export default function FractionalizationTab() {
     setIsSubmitting(true);
     
     try {
-      // In a real app, this would call a contract method
-      console.log("Fractionalizing NFT:", values);
+      // Convert airNodeId (which is actually the tokenId) to a number
+      const nftId = parseInt(values.airNodeId);
       
-      // Simulate async operation
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Call the contract to fractionalize the NFT
+      await fractionalizeNFT(nftId, values.fractionCount, values.pricePerFraction);
       
-      toast.success(`Successfully fractionalized ${values.airNodeId} into ${values.fractionCount} fractions`);
+      toast.success(`Successfully fractionalized NFT into ${values.fractionCount} fractions`);
       toast.info("Fractions ready to be listed on the marketplace");
       form.reset();
     } catch (error) {
