@@ -39,6 +39,27 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
     }
   };
 
+  const renderNetworkIcon = (network: string) => {
+    if (network === "ethereum") {
+      return (
+        <img 
+          src="/lovable-uploads/78957c5d-f008-4fef-bcea-71cf6e15aac6.png" 
+          alt="Ethereum"
+          className="w-6 h-6"
+        />
+      );
+    } else if (network === "cardano") {
+      return (
+        <img 
+          src="/lovable-uploads/68179fce-b792-49fe-929d-d919c7f3c82d.png" 
+          alt="Cardano"
+          className="w-6 h-6"
+        />
+      );
+    }
+    return null;
+  };
+
   return (
     <Select value={selectedNetwork} onValueChange={handleNetworkChange}>
       <SelectTrigger 
@@ -48,25 +69,29 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
             : "bg-ana-darkblue/50 border-ana-purple/30 text-white w-full md:w-auto"
         } ${className}`}
       >
-        <SelectValue placeholder="Select Network" />
+        <SelectValue>
+          {renderNetworkIcon(selectedNetwork)}
+        </SelectValue>
       </SelectTrigger>
       <SelectContent className="bg-ana-darkblue border-ana-purple/30 text-white">
         <SelectItem value="ethereum" className="flex items-center gap-2 hover:bg-ana-purple/20">
           <div className="flex items-center gap-2">
-            <div className="w-5 h-5 rounded-full bg-[#627EEA] flex items-center justify-center">
-              <span className="text-white text-xs">Ξ</span>
-            </div>
-            Ethereum
+            <img 
+              src="/lovable-uploads/78957c5d-f008-4fef-bcea-71cf6e15aac6.png" 
+              alt="Ethereum"
+              className="w-6 h-6"
+            />
+            <span>Ethereum</span>
           </div>
         </SelectItem>
         <SelectItem value="cardano" className="flex items-center gap-2 hover:bg-ana-purple/20">
           <div className="flex items-center gap-2">
-            <div className="w-5 h-5 rounded-full bg-[#0033AD] flex items-center justify-center">
-              <svg className="w-3 h-3 text-white" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 19.391c-3.8-.004-7.238-2.286-8.7-5.789c1.462-3.501 4.9-5.78 8.7-5.783c3.8.004 7.238 2.283 8.7 5.784C19.238 17.105 15.8 19.387 12 19.391z" />
-              </svg>
-            </div>
-            Cardano
+            <img 
+              src="/lovable-uploads/68179fce-b792-49fe-929d-d919c7f3c82d.png" 
+              alt="Cardano"
+              className="w-6 h-6"
+            />
+            <span>Cardano</span>
           </div>
         </SelectItem>
       </SelectContent>
