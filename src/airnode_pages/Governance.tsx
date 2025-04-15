@@ -188,8 +188,6 @@ const Governance = () => {
 
   return (
     <NetworkBackground>
-      <Navbar />
-
       <div className="pt-24 pb-20 px-4">
         <div className="container mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
