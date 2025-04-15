@@ -25,8 +25,8 @@ const Navbar = () => {
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-8">
-          <div className="flex gap-6">
+        <div className="hidden md:flex items-center space-x-6">
+          <nav className="flex items-center space-x-6">
             <Link to="/" className="text-white/80 hover:text-white transition-colors">
               Home
             </Link>
@@ -43,8 +43,8 @@ const Navbar = () => {
               <Shield size={16} />
               Admin
             </Link>
-            <NetworkSelector />
-          </div>
+          </nav>
+          <NetworkSelector variant="minimal" />
           <WalletConnect className="hidden md:block" />
         </div>
 
