@@ -145,7 +145,9 @@ const Network: { [key: string]: NetworkType } = {
         width={24}
         height={24}
         alt="Cardano Logo"
-        className=""
+        priority
+        fetchPriority="high"
+        unoptimized
       />
     ),
   },
@@ -153,7 +155,15 @@ const Network: { [key: string]: NetworkType } = {
     id: "ethereum",
     name: "Ethereum",
     logo: (
-      <Image src="/ethereum.png" width={24} height={24} alt="Ethereum Logo" />
+      <Image
+        src="/ethereum.png"
+        width={24}
+        height={24}
+        priority
+        fetchPriority="high"
+        unoptimized
+        alt="Ethereum Logo"
+      />
     ),
   },
 };
