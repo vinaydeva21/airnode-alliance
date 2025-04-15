@@ -2,12 +2,18 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Shield } from "lucide-react";
+import { Menu, X, Shield, ChevronDown } from "lucide-react";
 import Logo from "./Logo";
 import Link from "next/link";
 import WalletConnect from "./WalletConnect";
+import { useWeb3 } from "@/contexts/Web3Context";
 
-const Navbar = () => {
+import clsx from "clsx";
+import Image from "next/image";
+interface RedirectingProp {
+  setIsRedirecting: (value: boolean) => void;
+}
+const Navbar = ({ setIsRedirecting }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const toggleMobileMenu = () => {
@@ -59,6 +65,8 @@ const Navbar = () => {
               Admin
             </Link>
           </div>
+          <NetworkDropdown setIsRedirecting={setIsRedirecting} />
+
           <WalletConnect className="hidden md:block" />
         </div>
 
@@ -120,3 +128,91 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
+type NetworkType = {
+  id: string;
+  name: "Cardano" | "Ethereum";
+  logo: React.ReactNode;
+};
+
+const Network: { [key: string]: NetworkType } = {
+  Cardano: {
+    id: "cardano",
+    name: "Cardano",
+    logo: (
+      <Image
+        src="/cardano.png"
+        width={24}
+        height={24}
+        alt="Cardano Logo"
+        className=""
+      />
+    ),
+  },
+  Ethereum: {
+    id: "ethereum",
+    name: "Ethereum",
+    logo: (
+      <Image src="/ethereum.png" width={24} height={24} alt="Ethereum Logo" />
+    ),
+  },
+};
+
+const NetworkDropdown: React.FC<RedirectingProp> = ({ setIsRedirecting }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const { chain, setChain } = useWeb3();
+
+  const toggleDropdown = () => setIsOpen(!isOpen);
+
+  const selectNetwork = (network: NetworkType) => {
+    setChain(network.name);
+    if (network.name == "Ethereum") {
+      setIsRedirecting(true);
+
+      setTimeout(() => {
+        window.location.href = "https://airnode-alliance.vercel.app";
+      }, 1500);
+    }
+    setIsOpen(false);
+  };
+
+  return (
+    <div className="">
+      <div className="relative w-full max-w-xs">
+        <button
+          onClick={toggleDropdown}
+          className="flex items-center justify-between w-fit gap-2 px-2 py-2 bg-gray-800 border border-gray-700 rounded-md text-white"
+        >
+          {chain && (
+            <div className="flex items-center gap-3">{Network[chain].logo}</div>
+          )}
+          <ChevronDown
+            className={clsx(
+              "w-5 h-5 transition-transform",
+              isOpen && "transform rotate-180"
+            )}
+          />
+        </button>
+
+        {isOpen && (
+          <div className="absolute z-10 w-[150px] mt-1 bg-background border border-gray-700 rounded-md shadow-lg">
+            <ul className="">
+              {Object.values(Network).map((network) => (
+                <li key={network.id}>
+                  <Button
+                    onClick={() => selectNetwork(network)}
+                    variant={"ghost"}
+                    className="flex items-center justify-start w-full px-4 py-2 text-left text-white hover:bg-gray-700"
+                  >
+                    <span className="mr-3">{network.logo}</span>
+                    <span>{network.name}</span>
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};

@@ -151,8 +151,6 @@ const Marketplace = () => {
 
   return (
     <NetworkBackground>
-      <Navbar />
-
       <div className="pt-24 pb-20 px-4">
         <div className="container mx-auto">
           <h1 className="text-3xl font-bold text-white mb-8">
