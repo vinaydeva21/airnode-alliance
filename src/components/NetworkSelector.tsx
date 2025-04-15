@@ -35,7 +35,7 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
       }
     } else if (value === "cardano") {
       toast.info("Redirecting to Cardano network...");
-      window.open("https://airnode-alliance.netlify.app/", "_blank");
+      window.location.href = "https://airnode-alliance.netlify.app/";
     }
   };
 
@@ -100,3 +100,4 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
 };
 
 export default NetworkSelector;
+
