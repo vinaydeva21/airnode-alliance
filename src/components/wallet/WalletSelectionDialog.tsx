@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   Dialog,
@@ -26,9 +25,11 @@ export const WalletSelectionDialog: React.FC<WalletSelectionDialogProps> = ({
   onConnect,
 }) => {
   const { openConnectModal } = useConnectModal();
-  
+
   // Filter wallets by network
-  const cardanoWallets = wallets.filter(wallet => wallet.network === "cardano");
+  const cardanoWallets = wallets.filter(
+    (wallet) => wallet.network === "cardano"
+  );
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -42,7 +43,7 @@ export const WalletSelectionDialog: React.FC<WalletSelectionDialogProps> = ({
 
         <div className="py-4 flex flex-col gap-5">
           {/* Ethereum Network Section */}
-          <div>
+          {/* <div>
             <h3 className="text-sm font-medium text-white/70 mb-2">Ethereum Network</h3>
             <button
               onClick={() => {
@@ -61,13 +62,15 @@ export const WalletSelectionDialog: React.FC<WalletSelectionDialogProps> = ({
               </div>
               <div className="text-ana-purple">Connect</div>
             </button>
-          </div>
-          
+          </div> */}
+
           <Separator className="bg-ana-purple/20" />
-          
+
           {/* Cardano Network Section */}
           <div>
-            <h3 className="text-sm font-medium text-white/70 mb-2">Cardano Network</h3>
+            <h3 className="text-sm font-medium text-white/70 mb-2">
+              Cardano Network
+            </h3>
             <div className="flex flex-col gap-3">
               {cardanoWallets.map((wallet) => (
                 <WalletOption
