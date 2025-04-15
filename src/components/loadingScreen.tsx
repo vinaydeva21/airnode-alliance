@@ -13,7 +13,7 @@ export default function LoadingScreen() {
 
   return (
     <motion.div
-      className="fixed inset-0 bg-ana-darkblue/80 backdrop-blur-md border-ana-purple/20  flex items-center justify-center z-50"
+      className="fixed inset-0 bg-ana-darkblue/60 backdrop-blur-[120px] shadow-ana-darkblue flex items-center justify-center z-50"
       initial={{ x: "-100%" }}
       animate={{ x: isVisible ? 0 : "-100%" }}
       transition={{ duration: 0.6, ease: "easeOut" }}
