@@ -47,7 +47,7 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
       setTransitionNetwork("cardano");
       setRedirectUrl("https://airnode-alliance.netlify.app/");
       setShowTransition(true);
-      toast.info("Redirecting to Cardano network...");
+      toast.info("Switching to Cardano network...");
     }
   };
 
