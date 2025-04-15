@@ -141,7 +141,7 @@ const Network: { [key: string]: NetworkType } = {
     name: "Cardano",
     logo: (
       <Image
-        src="/cardano.png"
+        src="/cardano.webp"
         width={24}
         height={24}
         alt="Cardano Logo"
@@ -156,7 +156,7 @@ const Network: { [key: string]: NetworkType } = {
     name: "Ethereum",
     logo: (
       <Image
-        src="/ethereum.png"
+        src="/ethereum.webp"
         width={24}
         height={24}
         priority

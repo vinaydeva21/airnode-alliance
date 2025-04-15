@@ -54,7 +54,7 @@ export default function LoadingScreen() {
         {/* Ethereum Logo */}
         <div className="absolute inset-0 flex items-center justify-center rotate-[75deg]">
           <Image
-            src="/ethereum.png"
+            src="/ethereum.webp"
             width={120}
             height={120}
             alt="Ethereum Logo"
