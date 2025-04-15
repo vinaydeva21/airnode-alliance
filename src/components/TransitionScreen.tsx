@@ -38,15 +38,16 @@ const TransitionScreen: React.FC<TransitionScreenProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ana-darkblue">
-      <div className="relative w-full h-full flex flex-col items-center justify-center">
-        {/* Animated background rays */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-1/2 left-1/2 h-[200%] w-[200%] -translate-x-1/2 -translate-y-1/2">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-ana-darkblue">
+      <div className="absolute inset-0 w-full h-full flex flex-col items-center justify-center">
+        {/* Animated background rays - making sure they cover the full screen */}
+        <div className="absolute inset-0 w-full h-full overflow-hidden">
+          <div className="absolute top-1/2 left-1/2 h-[300%] w-[300%] -translate-x-1/2 -translate-y-1/2">
             <div className="absolute top-0 left-0 right-0 bottom-0 bg-ana-purple/5 animate-pulse-slow" />
             <div className="absolute top-0 left-1/4 h-full w-1/6 -translate-x-1/2 bg-ana-purple/20 transform -skew-x-12 animate-pulse-slow" />
             <div className="absolute top-0 left-2/4 h-full w-1/6 -translate-x-1/2 bg-ana-purple/20 transform -skew-x-12 animate-pulse-slow" style={{ animationDelay: '0.3s' }} />
             <div className="absolute top-0 left-3/4 h-full w-1/6 -translate-x-1/2 bg-ana-purple/20 transform -skew-x-12 animate-pulse-slow" style={{ animationDelay: '0.6s' }} />
+            <div className="absolute top-0 right-1/4 h-full w-1/6 -translate-x-1/2 bg-ana-purple/20 transform skew-x-12 animate-pulse-slow" style={{ animationDelay: '0.9s' }} />
           </div>
         </div>
         
