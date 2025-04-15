@@ -2,19 +2,16 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Shield, ExternalLink } from "lucide-react";
+import { Menu, X, Shield } from "lucide-react";
 import Logo from "./Logo";
 import WalletConnect from "./WalletConnect";
+import NetworkSelector from "./NetworkSelector";
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
-  };
-
-  const handleCardanoNetworkSwitch = () => {
-    window.open("https://airnode-alliance.netlify.app/", "_blank");
   };
 
   return (
@@ -46,15 +43,7 @@ const Navbar = () => {
               <Shield size={16} />
               Admin
             </Link>
-            <Button 
-              variant="outline" 
-              size="sm"
-              className="text-white/80 hover:text-white border-ana-purple/30 hover:bg-ana-purple/20 flex items-center gap-1"
-              onClick={handleCardanoNetworkSwitch}
-            >
-              <ExternalLink size={16} />
-              Switch Cardano Network
-            </Button>
+            <NetworkSelector />
           </div>
           <WalletConnect className="hidden md:block" />
         </div>
@@ -105,15 +94,7 @@ const Navbar = () => {
               <Shield size={16} />
               Admin
             </Link>
-            <Button 
-              variant="outline" 
-              size="sm"
-              className="text-white/80 hover:text-white border-ana-purple/30 hover:bg-ana-purple/20 flex items-center gap-1 w-full justify-start"
-              onClick={handleCardanoNetworkSwitch}
-            >
-              <ExternalLink size={16} />
-              Switch Cardano Network
-            </Button>
+            <NetworkSelector />
             <div className="pt-2">
               <WalletConnect />
             </div>
