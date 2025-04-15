@@ -58,6 +58,9 @@ export default function LoadingScreen() {
             width={120}
             height={120}
             alt="Ethereum Logo"
+            priority
+            fetchPriority="high"
+            unoptimized
           />
         </div>
       </motion.div>
