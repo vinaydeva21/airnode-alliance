@@ -65,7 +65,7 @@ export const NetworkDropdown: React.FC<RedirectingProp> = ({
         </button>
 
         {isOpen && (
-          <div className="absolute z-10 w-[150px] mt-3 border border-gray-700 rounded-md shadow-lg">
+          <div className="absolute z-10 w-[150px] mt-1 bg-ana-darkblue border border-gray-700 rounded-md shadow-lg">
             <ul className="">
               {Object.values(Network).map((network) => (
                 <li key={network.id}>
