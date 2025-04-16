@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,6 +11,7 @@ import Dashboard from "./pages/Dashboard";
 import Governance from "./pages/Governance";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
+import Navbar from "./components/Navbar";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +22,7 @@ const App = () => (
         <TooltipProvider>
           <Toaster />
           <Sonner />
+          <Navbar />
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />

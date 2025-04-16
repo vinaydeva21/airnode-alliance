@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -25,7 +24,8 @@ const Governance = () => {
     {
       id: "prop-001",
       title: "Increase Treasury Allocation for New AirNodes",
-      description: "Proposal to increase treasury allocation for purchasing new AirNodes from 20% to 30% of monthly revenue.",
+      description:
+        "Proposal to increase treasury allocation for purchasing new AirNodes from 20% to 30% of monthly revenue.",
       status: "Active",
       endTime: "3 days left",
       votesFor: 65,
@@ -38,7 +38,8 @@ const Governance = () => {
     {
       id: "prop-002",
       title: "Reduce Staking Lock Period",
-      description: "Reduce the minimum staking lock period from 90 days to 60 days to increase liquidity.",
+      description:
+        "Reduce the minimum staking lock period from 90 days to 60 days to increase liquidity.",
       status: "Active",
       endTime: "5 days left",
       votesFor: 40,
@@ -82,13 +83,13 @@ const Governance = () => {
       proposalTitle: "Add Support for Layer 2 Solutions",
       vote: "For",
       timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
-    }
+    },
   ]);
 
   // State for wallet and proposal form
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [showProposalForm, setShowProposalForm] = useState(false);
-  
+
   // Mock treasury data
   const treasuryData: TreasuryData = {
     totalBalance: 2450000,
@@ -99,108 +100,122 @@ const Governance = () => {
       reserve: 10,
     },
     recentTransactions: [
-      { 
-        id: "tx-001", 
-        description: "Monthly rewards distribution", 
-        amount: -125000, 
-        date: "Dec 01, 2023" 
+      {
+        id: "tx-001",
+        description: "Monthly rewards distribution",
+        amount: -125000,
+        date: "Dec 01, 2023",
       },
-      { 
-        id: "tx-002", 
-        description: "New AirNode acquisition", 
-        amount: -350000, 
-        date: "Nov 15, 2023" 
+      {
+        id: "tx-002",
+        description: "New AirNode acquisition",
+        amount: -350000,
+        date: "Nov 15, 2023",
       },
-      { 
-        id: "tx-003", 
-        description: "Revenue from existing AirNodes", 
-        amount: 425000, 
-        date: "Nov 01, 2023" 
+      {
+        id: "tx-003",
+        description: "Revenue from existing AirNodes",
+        amount: 425000,
+        date: "Nov 01, 2023",
       },
-    ]
+    ],
   };
-  
+
   // Handle voting
-  const handleVote = (proposalId: string, voteType: "For" | "Against" | "Abstain") => {
-    setActiveProposals(prevProposals => 
-      prevProposals.map(proposal => {
+  const handleVote = (
+    proposalId: string,
+    voteType: "For" | "Against" | "Abstain"
+  ) => {
+    setActiveProposals((prevProposals) =>
+      prevProposals.map((proposal) => {
         if (proposal.id === proposalId) {
           const updatedProposal = { ...proposal };
-          
+
           if (voteType === "For") {
             updatedProposal.votesFor += 1;
           } else if (voteType === "Against") {
             updatedProposal.votesAgainst += 1;
-          } else if (voteType === "Abstain" && updatedProposal.abstain !== undefined) {
+          } else if (
+            voteType === "Abstain" &&
+            updatedProposal.abstain !== undefined
+          ) {
             updatedProposal.abstain += 1;
           }
-          
+
           updatedProposal.totalVotes += 1;
           return updatedProposal;
         }
         return proposal;
       })
     );
-    
-    const votedProposal = activeProposals.find(p => p.id === proposalId);
+
+    const votedProposal = activeProposals.find((p) => p.id === proposalId);
     if (votedProposal) {
-      setMyVotes(prev => [
+      setMyVotes((prev) => [
         ...prev,
         {
           proposalId,
           proposalTitle: votedProposal.title,
           vote: voteType,
           timestamp: new Date(),
-        }
+        },
       ]);
-      
+
       toast.success(`Vote cast: ${voteType}`, {
-        description: `You voted on "${votedProposal.title.substring(0, 30)}..."`,
+        description: `You voted on "${votedProposal.title.substring(
+          0,
+          30
+        )}..."`,
       });
     }
   };
-  
+
   // Handle proposal creation
   const handleCreateProposal = (newProposal: Proposal) => {
-    setActiveProposals(prev => [newProposal, ...prev]);
+    setActiveProposals((prev) => [newProposal, ...prev]);
   };
-  
+
   // Simulated wallet connection effect
   useEffect(() => {
     const checkWalletStatus = () => {
       setIsWalletConnected(true);
     };
-    
+
     const timer = setTimeout(checkWalletStatus, 500);
     return () => clearTimeout(timer);
   }, []);
 
   return (
     <NetworkBackground>
-      <Navbar />
-      
+      {/* <Navbar /> */}
+
       <div className="pt-24 pb-20 px-4">
         <div className="container mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
             <div>
               <h1 className="text-3xl font-bold text-white">Governance</h1>
-              <p className="text-white/70">Shape the future of AirNode Alliance</p>
+              <p className="text-white/70">
+                Shape the future of AirNode Alliance
+              </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 mt-4 md:mt-0">
-              <Button onClick={() => setShowProposalForm(true)} className="flex gap-2">
+              <Button
+                onClick={() => setShowProposalForm(true)}
+                className="flex gap-2"
+              >
                 <FileText size={16} />
                 Create Proposal
               </Button>
             </div>
           </div>
-          
+
           {/* Stats Cards */}
-          <GovernanceStats 
+          <GovernanceStats
             activeProposals={14}
             participationRate={78}
             votingPower={3250}
           />
-          
+
           {/* Main Content Tabs */}
           <Tabs defaultValue="active" className="mt-8">
             <TabsList className="bg-ana-darkblue/50 border border-ana-purple/20">
@@ -221,25 +236,25 @@ const Governance = () => {
                 Treasury
               </TabsTrigger>
             </TabsList>
-            
+
             {/* Active Proposals Tab */}
             <TabsContent value="active" className="mt-6">
-              <ActiveProposalsTab 
-                proposals={activeProposals} 
+              <ActiveProposalsTab
+                proposals={activeProposals}
                 onVote={handleVote}
               />
             </TabsContent>
-            
+
             {/* Recent Proposals Tab */}
             <TabsContent value="recent" className="mt-6">
               <RecentProposalsTab proposals={recentProposals} />
             </TabsContent>
-            
+
             {/* My Votes Tab */}
             <TabsContent value="my" className="mt-6">
               <MyVotesTab votes={myVotes} />
             </TabsContent>
-            
+
             {/* Treasury Tab */}
             <TabsContent value="treasury" className="mt-6">
               <TreasuryTab treasuryData={treasuryData} />
@@ -247,13 +262,13 @@ const Governance = () => {
           </Tabs>
         </div>
       </div>
-      
-      <ProposalForm 
-        open={showProposalForm} 
+
+      <ProposalForm
+        open={showProposalForm}
         onClose={() => setShowProposalForm(false)}
         onSubmit={handleCreateProposal}
       />
-      
+
       <Footer />
     </NetworkBackground>
   );
