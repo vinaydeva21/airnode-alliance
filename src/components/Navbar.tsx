@@ -191,7 +191,7 @@ const NetworkDropdown: React.FC<RedirectingProp> = ({ setIsRedirecting }) => {
       <div className="relative w-full max-w-xs">
         <button
           onClick={toggleDropdown}
-          className="flex items-center justify-between w-fit gap-2 px-2 py-2 bg-transparent border-0 rounded-md text-white"
+          className="flex items-center justify-between w-fit gap-2 px-2 py-2 bg-transparent border border-gray-700 rounded-md text-white"
         >
           {chain && (
             <div className="flex items-center gap-3">{Network[chain].logo}</div>
@@ -205,18 +205,17 @@ const NetworkDropdown: React.FC<RedirectingProp> = ({ setIsRedirecting }) => {
         </button>
 
         {isOpen && (
-          <div className="absolute z-10 w-[150px] mt-1 bg-ana-darkblue border-ana-purple/30 rounded-md shadow-lg">
+          <div className="absolute z-10 w-[150px] mt-1 bg-transparent border border-gray-700 rounded-md shadow-lg">
             <ul className="">
               {Object.values(Network).map((network) => (
                 <li key={network.id}>
-                  <Button
+                  <button
                     onClick={() => selectNetwork(network)}
-                    variant={"ghost"}
                     className="flex items-center justify-start w-full px-4 py-2 text-left text-white hover:bg-gray-700"
                   >
                     <span className="mr-3">{network.logo}</span>
                     <span>{network.name}</span>
-                  </Button>
+                  </button>
                 </li>
               ))}
             </ul>
