@@ -1,103 +1,88 @@
+import clsx from "clsx";
+import { ChevronDown } from "lucide-react";
+import { Button } from "./ui/button";
+import { useState } from "react";
 
-import React, { useState } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { toast } from "sonner";
-import { useWeb3 } from "@/contexts/Web3Context";
-
-interface NetworkSelectorProps {
-  className?: string;
-  variant?: "default" | "minimal";
+type NetworkType = {
+  id: string;
+  name: "Cardano" | "Ethereum";
+  logo: React.ReactNode;
+};
+interface RedirectingProp {
+  setIsRedirecting: (value: boolean) => void;
+  chain: "Ethereum" | "Cardano";
+  setChain: (value: "Ethereum" | "Cardano") => void;
 }
-
-export const NetworkSelector: React.FC<NetworkSelectorProps> = ({ 
-  className = "",
-  variant = "default"
+const Network: { [key: string]: NetworkType } = {
+  Cardano: {
+    id: "cardano",
+    name: "Cardano",
+    logo: <img src="/cardano.webp" alt="Cardano Logo" className="w-6 h-6" />,
+  },
+  Ethereum: {
+    id: "ethereum",
+    name: "Ethereum",
+    logo: <img src="/ethereum.webp" alt="Ethereum Logo" className="w-6 h-6" />,
+  },
+};
+export const NetworkDropdown: React.FC<RedirectingProp> = ({
+  setIsRedirecting,
+  setChain,
+  chain,
 }) => {
-  const { switchToSepolia } = useWeb3();
-  const [selectedNetwork, setSelectedNetwork] = useState("ethereum");
+  const [isOpen, setIsOpen] = useState(false);
 
-  const handleNetworkChange = async (value: string) => {
-    setSelectedNetwork(value);
-    
-    if (value === "ethereum") {
-      try {
-        await switchToSepolia();
-        toast.success("Switched to Ethereum Sepolia network");
-      } catch (error) {
-        console.error("Failed to switch network:", error);
-        toast.error("Failed to switch to Ethereum network");
-      }
-    } else if (value === "cardano") {
-      toast.info("Redirecting to Cardano network...");
-      window.location.href = "https://airnode-alliance.netlify.app/";
-    }
-  };
+  const toggleDropdown = () => setIsOpen(!isOpen);
 
-  const renderNetworkIcon = (network: string) => {
-    if (network === "ethereum") {
-      return (
-        <img 
-          src="/lovable-uploads/78957c5d-f008-4fef-bcea-71cf6e15aac6.png" 
-          alt="Ethereum"
-          className="w-6 h-6"
-        />
-      );
-    } else if (network === "cardano") {
-      return (
-        <img 
-          src="/lovable-uploads/68179fce-b792-49fe-929d-d919c7f3c82d.png" 
-          alt="Cardano"
-          className="w-6 h-6"
-        />
-      );
+  const selectNetwork = (network: NetworkType) => {
+    setChain(network.name);
+    if (network.name == "Cardano") {
+      setIsRedirecting(true);
+
+      setTimeout(() => {
+        window.location.href = "https://airnode-alliance.netlify.app";
+      }, 1500);
     }
-    return null;
+    setIsOpen(false);
   };
 
   return (
-    <Select value={selectedNetwork} onValueChange={handleNetworkChange}>
-      <SelectTrigger 
-        className={`${
-          variant === "minimal" 
-            ? "bg-transparent border-0 hover:bg-ana-purple/20 p-2" 
-            : "bg-ana-darkblue/50 border-ana-purple/30 text-white w-full md:w-auto"
-        } ${className}`}
-      >
-        <SelectValue>
-          {renderNetworkIcon(selectedNetwork)}
-        </SelectValue>
-      </SelectTrigger>
-      <SelectContent className="bg-ana-darkblue border-ana-purple/30 text-white">
-        <SelectItem value="ethereum" className="flex items-center gap-2 hover:bg-ana-purple/20">
-          <div className="flex items-center gap-2">
-            <img 
-              src="/lovable-uploads/78957c5d-f008-4fef-bcea-71cf6e15aac6.png" 
-              alt="Ethereum"
-              className="w-6 h-6"
-            />
-            <span>Ethereum</span>
+    <div className="">
+      <div className="relative w-full max-w-xs">
+        <button
+          onClick={toggleDropdown}
+          className="flex items-center justify-between w-fit gap-2 px-2 py-2 bg-transparent border border-gray-700 rounded-md text-white"
+        >
+          {chain && (
+            <div className="flex items-center gap-3">{Network[chain].logo}</div>
+          )}
+          <ChevronDown
+            className={clsx(
+              "w-5 h-5 transition-transform",
+              isOpen && "transform rotate-180"
+            )}
+          />
+        </button>
+
+        {isOpen && (
+          <div className="absolute z-10 w-[150px] mt-1 bg-transparent border border-gray-700 rounded-md shadow-lg">
+            <ul className="">
+              {Object.values(Network).map((network) => (
+                <li key={network.id}>
+                  <Button
+                    onClick={() => selectNetwork(network)}
+                    variant={"ghost"}
+                    className="flex items-center justify-start w-full px-4 py-2 text-left text-white hover:bg-gray-700"
+                  >
+                    <span className="mr-3">{network.logo}</span>
+                    <span>{network.name}</span>
+                  </Button>
+                </li>
+              ))}
+            </ul>
           </div>
-        </SelectItem>
-        <SelectItem value="cardano" className="flex items-center gap-2 hover:bg-ana-purple/20">
-          <div className="flex items-center gap-2">
-            <img 
-              src="/lovable-uploads/68179fce-b792-49fe-929d-d919c7f3c82d.png" 
-              alt="Cardano"
-              className="w-6 h-6"
-            />
-            <span>Cardano</span>
-          </div>
-        </SelectItem>
-      </SelectContent>
-    </Select>
+        )}
+      </div>
+    </div>
   );
 };
-
-export default NetworkSelector;
-
