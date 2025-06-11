@@ -20,12 +20,12 @@ const Network: { [key: string]: NetworkType } = {
   Cardano: {
     id: "cardano",
     name: "Cardano",
-    logo: <img src="/cardano.webp" alt="Cardano Logo" className="w-6 h-6 filter grayscale" />,
+    logo: <img src="/cardano.webp" alt="Cardano Logo" className="w-5 h-5 filter grayscale opacity-70" />,
   },
   Ethereum: {
     id: "ethereum",
     name: "Ethereum",
-    logo: <img src="/ethereum.webp" alt="Ethereum Logo" className="w-6 h-6 filter grayscale" />,
+    logo: <img src="/ethereum.webp" alt="Ethereum Logo" className="w-5 h-5 filter grayscale opacity-70" />,
   },
 };
 
@@ -51,35 +51,38 @@ export const NetworkDropdown: React.FC<RedirectingProp> = ({
   };
 
   return (
-    <div className="">
+    <div className="relative">
       <div className="relative w-full max-w-xs">
         <button
           onClick={toggleDropdown}
-          className="flex items-center justify-between w-fit gap-2 px-3 py-2 bg-transparent border border-mono-gray-600 rounded-md text-white hover:border-mono-gray-400 transition-colors"
+          className="flex items-center justify-between w-fit gap-3 px-4 py-2.5 bg-white border border-mono-gray-300 rounded-lg text-mono-gray-700 hover:border-mono-gray-400 hover:bg-mono-gray-50 transition-all duration-200 shadow-sm"
         >
           {chain && (
-            <div className="flex items-center gap-3">{Network[chain].logo}</div>
+            <div className="flex items-center gap-3">
+              {Network[chain].logo}
+              <span className="text-sm font-medium">{Network[chain].name}</span>
+            </div>
           )}
           <ChevronDown
             className={clsx(
-              "w-5 h-5 transition-transform",
+              "w-4 h-4 transition-transform duration-200 text-mono-gray-500",
               isOpen && "transform rotate-180"
             )}
           />
         </button>
 
         {isOpen && (
-          <div className="absolute z-10 w-[150px] mt-1 bg-mono-gray-900 border border-mono-gray-600 rounded-md shadow-lg">
+          <div className="absolute z-50 w-[160px] mt-2 bg-white border border-mono-gray-200 rounded-lg shadow-lg overflow-hidden">
             <ul className="">
               {Object.values(Network).map((network) => (
                 <li key={network.id}>
                   <Button
                     onClick={() => selectNetwork(network)}
                     variant={"ghost"}
-                    className="flex items-center justify-start w-full px-4 py-2 text-left text-white hover:bg-mono-gray-700 transition-colors"
+                    className="flex items-center justify-start w-full px-4 py-3 text-left text-mono-gray-700 hover:bg-mono-gray-50 transition-colors rounded-none border-0"
                   >
                     <span className="mr-3">{network.logo}</span>
-                    <span>{network.name}</span>
+                    <span className="text-sm font-medium">{network.name}</span>
                   </Button>
                 </li>
               ))}

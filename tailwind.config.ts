@@ -66,17 +66,17 @@ export default {
 				mono: {
 					black: '#000000',
 					white: '#ffffff',
-					'gray-50': '#f9fafb',
-					'gray-100': '#f3f4f6',
-					'gray-200': '#e5e7eb',
-					'gray-300': '#d1d5db',
-					'gray-400': '#9ca3af',
-					'gray-500': '#6b7280',
-					'gray-600': '#4b5563',
-					'gray-700': '#374151',
-					'gray-800': '#1f2937',
-					'gray-900': '#111827',
-					'gray-950': '#030712',
+					'gray-50': '#fafafa',
+					'gray-100': '#f5f5f5',
+					'gray-200': '#e5e5e5',
+					'gray-300': '#d4d4d4',
+					'gray-400': '#a3a3a3',
+					'gray-500': '#737373',
+					'gray-600': '#525252',
+					'gray-700': '#404040',
+					'gray-800': '#262626',
+					'gray-900': '#171717',
+					'gray-950': '#0a0a0a',
 				}
 			},
 			borderRadius: {
@@ -103,28 +103,28 @@ export default {
 				},
 				'pulse-slow': {
 					'0%, 100%': { opacity: '1' },
-					'50%': { opacity: '0.7' },
+					'50%': { opacity: '0.6' },
 				},
 				'float': {
 					'0%, 100%': { transform: 'translateY(0)' },
-					'50%': { transform: 'translateY(-10px)' },
+					'50%': { transform: 'translateY(-8px)' },
 				},
 				'fade-in': {
-					'0%': { opacity: '0', transform: 'translateY(10px)' },
+					'0%': { opacity: '0', transform: 'translateY(20px)' },
 					'100%': { opacity: '1', transform: 'translateY(0)' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
-				'pulse-slow': 'pulse-slow 4s ease-in-out infinite',
-				'float': 'float 6s ease-in-out infinite',
-				'fade-in': 'fade-in 0.5s ease-out',
+				'pulse-slow': 'pulse-slow 3s ease-in-out infinite',
+				'float': 'float 4s ease-in-out infinite',
+				'fade-in': 'fade-in 0.6s ease-out',
 			},
 			backgroundImage: {
-				'mono-gradient': 'linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%)',
-				'mono-gradient-light': 'linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%)',
-				'mono-radial': 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
+				'mono-gradient': 'linear-gradient(135deg, #ffffff 0%, #f8f8f8 100%)',
+				'mono-gradient-light': 'linear-gradient(135deg, #fafafa 0%, #ffffff 100%)',
+				'mono-radial': 'radial-gradient(circle, rgba(0,0,0,0.02) 0%, transparent 60%)',
 			},
 			fontFamily: {
 				sans: ['Inter', 'system-ui', 'sans-serif'],
@@ -132,14 +132,19 @@ export default {
 			typography: {
 				DEFAULT: {
 					css: {
-						color: '#ffffff',
-						h1: { color: '#ffffff' },
-						h2: { color: '#ffffff' },
-						h3: { color: '#ffffff' },
-						h4: { color: '#ffffff' },
-						strong: { color: '#ffffff' },
+						color: '#000000',
+						h1: { color: '#000000' },
+						h2: { color: '#000000' },
+						h3: { color: '#000000' },
+						h4: { color: '#000000' },
+						strong: { color: '#000000' },
 					}
 				}
+			},
+			spacing: {
+				'18': '4.5rem',
+				'88': '22rem',
+				'128': '32rem',
 			}
 		}
 	},

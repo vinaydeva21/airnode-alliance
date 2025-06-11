@@ -21,101 +21,105 @@ const Navbar = (props: RedirectingProp) => {
   };
 
   return (
-    <nav className="px-4 py-3 bg-mono-gray-950/90 backdrop-blur-md border-b border-mono-gray-800 fixed w-full top-0 z-50">
+    <nav className="px-6 py-4 bg-white/95 backdrop-blur-md border-b border-mono-gray-200 fixed w-full top-0 z-50 shadow-sm">
       <div className="container mx-auto flex justify-between items-center">
-        <Link to="/" className="flex items-center gap-2">
-          <Logo size={32} />
-          <span className="text-lg font-bold gradient-text">
+        <Link to="/" className="flex items-center gap-3">
+          <Logo size={36} />
+          <span className="text-xl font-semibold text-mono-gray-900 tracking-tight">
             AirNode Alliance
           </span>
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center space-x-6">
-          <nav className="flex items-center space-x-6">
+        <div className="hidden md:flex items-center space-x-8">
+          <nav className="flex items-center space-x-8">
             <Link
               to="/"
-              className="text-mono-gray-200 hover:text-white transition-colors font-medium"
+              className="text-mono-gray-600 hover:text-mono-gray-900 transition-colors font-medium tracking-tight"
             >
               Home
             </Link>
             <Link
               to="/marketplace"
-              className="text-mono-gray-200 hover:text-white transition-colors font-medium"
+              className="text-mono-gray-600 hover:text-mono-gray-900 transition-colors font-medium tracking-tight"
             >
               Marketplace
             </Link>
             <Link
               to="/dashboard"
-              className="text-mono-gray-200 hover:text-white transition-colors font-medium"
+              className="text-mono-gray-600 hover:text-mono-gray-900 transition-colors font-medium tracking-tight"
             >
               Dashboard
             </Link>
             <Link
               to="/governance"
-              className="text-mono-gray-200 hover:text-white transition-colors font-medium"
+              className="text-mono-gray-600 hover:text-mono-gray-900 transition-colors font-medium tracking-tight"
             >
               Governance
             </Link>
             <Link
               to="/admin"
-              className="text-mono-gray-200 hover:text-white transition-colors flex items-center gap-1 font-medium"
+              className="text-mono-gray-600 hover:text-mono-gray-900 transition-colors flex items-center gap-2 font-medium tracking-tight"
             >
               <Shield size={16} />
               Admin
             </Link>
           </nav>
-          <NetworkDropdown {...props} />
-          <WalletConnect className="hidden md:block" />
+          <div className="flex items-center gap-4">
+            <NetworkDropdown {...props} />
+            <WalletConnect className="hidden md:block" />
+          </div>
         </div>
 
         {/* Mobile Menu Button */}
-        <button className="md:hidden text-white" onClick={toggleMobileMenu}>
+        <button className="md:hidden text-mono-gray-900" onClick={toggleMobileMenu}>
           {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
       {/* Mobile Navigation */}
       {mobileMenuOpen && (
-        <div className="md:hidden absolute top-[60px] left-0 right-0 bg-mono-gray-950/95 backdrop-blur-lg border-b border-mono-gray-800 py-4 px-4">
-          <div className="flex flex-col gap-4">
+        <div className="md:hidden absolute top-[73px] left-0 right-0 bg-white/98 backdrop-blur-lg border-b border-mono-gray-200 py-6 px-6 shadow-lg">
+          <div className="flex flex-col gap-6">
             <Link
               to="/"
-              className="text-mono-gray-200 hover:text-white transition-colors py-2 font-medium"
+              className="text-mono-gray-600 hover:text-mono-gray-900 transition-colors py-2 font-medium tracking-tight"
               onClick={() => setMobileMenuOpen(false)}
             >
               Home
             </Link>
             <Link
               to="/marketplace"
-              className="text-mono-gray-200 hover:text-white transition-colors py-2 font-medium"
+              className="text-mono-gray-600 hover:text-mono-gray-900 transition-colors py-2 font-medium tracking-tight"
               onClick={() => setMobileMenuOpen(false)}
             >
               Marketplace
             </Link>
             <Link
               to="/dashboard"
-              className="text-mono-gray-200 hover:text-white transition-colors py-2 font-medium"
+              className="text-mono-gray-600 hover:text-mono-gray-900 transition-colors py-2 font-medium tracking-tight"
               onClick={() => setMobileMenuOpen(false)}
             >
               Dashboard
             </Link>
             <Link
               to="/governance"
-              className="text-mono-gray-200 hover:text-white transition-colors py-2 font-medium"
+              className="text-mono-gray-600 hover:text-mono-gray-900 transition-colors py-2 font-medium tracking-tight"
               onClick={() => setMobileMenuOpen(false)}
             >
               Governance
             </Link>
             <Link
               to="/admin"
-              className="text-mono-gray-200 hover:text-white transition-colors py-2 flex items-center gap-1 font-medium"
+              className="text-mono-gray-600 hover:text-mono-gray-900 transition-colors py-2 flex items-center gap-2 font-medium tracking-tight"
               onClick={() => setMobileMenuOpen(false)}
             >
               <Shield size={16} />
               Admin
             </Link>
-            <NetworkDropdown {...props} />
+            <div className="pt-4 border-t border-mono-gray-200">
+              <NetworkDropdown {...props} />
+            </div>
             <div className="pt-2">
               <WalletConnect />
             </div>
