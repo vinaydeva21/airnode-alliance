@@ -63,20 +63,12 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				mono: {
-					black: '#000000',
-					white: '#ffffff',
-					'gray-50': '#fafafa',
-					'gray-100': '#f5f5f5',
-					'gray-200': '#e5e5e5',
-					'gray-300': '#d4d4d4',
-					'gray-400': '#a3a3a3',
-					'gray-500': '#737373',
-					'gray-600': '#525252',
-					'gray-700': '#404040',
-					'gray-800': '#262626',
-					'gray-900': '#171717',
-					'gray-950': '#0a0a0a',
+				ana: {
+					purple: '#8c52ff',
+					pink: '#ff5c87',
+					blue: '#5c87ff',
+					darkblue: '#1a1a35',
+					darkpurple: '#2d1a4a',
 				}
 			},
 			borderRadius: {
@@ -103,55 +95,23 @@ export default {
 				},
 				'pulse-slow': {
 					'0%, 100%': { opacity: '1' },
-					'50%': { opacity: '0.6' },
+					'50%': { opacity: '0.7' },
 				},
 				'float': {
 					'0%, 100%': { transform: 'translateY(0)' },
-					'50%': { transform: 'translateY(-8px)' },
-				},
-				'fade-in': {
-					'0%': { opacity: '0', transform: 'translateY(20px)' },
-					'100%': { opacity: '1', transform: 'translateY(0)' }
+					'50%': { transform: 'translateY(-10px)' },
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
-				'pulse-slow': 'pulse-slow 3s ease-in-out infinite',
-				'float': 'float 4s ease-in-out infinite',
-				'fade-in': 'fade-in 0.6s ease-out',
+				'pulse-slow': 'pulse-slow 4s ease-in-out infinite',
+				'float': 'float 6s ease-in-out infinite',
 			},
 			backgroundImage: {
-				'mono-gradient': 'linear-gradient(135deg, #ffffff 0%, #f8f8f8 100%)',
-				'mono-gradient-light': 'linear-gradient(135deg, #fafafa 0%, #ffffff 100%)',
-				'mono-radial': 'radial-gradient(circle, rgba(0,0,0,0.02) 0%, transparent 60%)',
-			},
-			fontFamily: {
-				sans: ['Inter', 'system-ui', 'sans-serif'],
-			},
-			typography: {
-				DEFAULT: {
-					css: {
-						color: '#000000',
-						h1: { color: '#000000' },
-						h2: { color: '#000000' },
-						h3: { color: '#000000' },
-						h4: { color: '#000000' },
-						h5: { color: '#000000' },
-						h6: { color: '#000000' },
-						p: { color: '#000000' },
-						a: { color: '#000000' },
-						strong: { color: '#000000' },
-						code: { color: '#000000' },
-						blockquote: { color: '#000000' },
-						li: { color: '#000000' },
-					}
-				}
-			},
-			spacing: {
-				'18': '4.5rem',
-				'88': '22rem',
-				'128': '32rem',
+				'network-pattern': "url('/network-bg.png')",
+				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+				'gradient-purple': 'linear-gradient(to right, #8c52ff, #ff5c87)',
 			}
 		}
 	},

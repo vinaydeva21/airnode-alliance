@@ -5,44 +5,44 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 0%;
+    --background: 240 35% 8%;
+    --foreground: 210 40% 98%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 0%;
+    --card: 240 35% 10%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 0%;
+    --popover: 240 35% 10%;
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 0 0% 0%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 266 100% 66%;
+    --primary-foreground: 210 40% 98%;
 
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 0%;
+    --secondary: 341 100% 68%;
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 15%;
+    --muted: 240 25% 25%;
+    --muted-foreground: 215 20.2% 75.1%;
 
-    --accent: 0 0% 96%;
-    --accent-foreground: 0 0% 0%;
+    --accent: 224 76% 68%;
+    --accent-foreground: 210 40% 98%;
 
-    --destructive: 0 0% 0%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 0 0% 88%;
-    --input: 0 0% 96%;
-    --ring: 0 0% 0%;
+    --border: 240 25% 20%;
+    --input: 240 25% 20%;
+    --ring: 262.1 83.3% 57.8%;
 
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 0 0% 0%;
-    --sidebar-primary: 0 0% 0%;
+    --sidebar-background: 240 35% 12%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 266 100% 66%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 0 0% 96%;
-    --sidebar-accent-foreground: 0 0% 0%;
-    --sidebar-border: 0 0% 88%;
-    --sidebar-ring: 0 0% 0%;
+    --sidebar-accent: 240 25% 25%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 25% 20%;
+    --sidebar-ring: 266 100% 66%;
   }
 }
 
@@ -53,167 +53,28 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    letter-spacing: -0.025em;
-    line-height: 1.6;
-    color: #000000;
   }
 
   .airnode-card {
-    background: rgba(255, 255, 255, 0.98);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.04);
+    background: linear-gradient(135deg, rgba(140, 82, 255, 0.2), rgba(255, 92, 135, 0.2));
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(140, 82, 255, 0.3);
   }
 
   .network-bg {
-    background-color: #ffffff;
+    background-color: #1a1a35;
     background-image: 
-      radial-gradient(circle at 20% 20%, rgba(0, 0, 0, 0.02) 0%, transparent 40%),
-      radial-gradient(circle at 80% 80%, rgba(0, 0, 0, 0.015) 0%, transparent 40%);
-    background-size: 800px 800px, 600px 600px;
-    background-position: 0 0, 50% 50%;
+      radial-gradient(circle at 25% 25%, rgba(140, 82, 255, 0.2) 0%, transparent 50%),
+      radial-gradient(circle at 75% 75%, rgba(92, 135, 255, 0.2) 0%, transparent 50%),
+      url('/network-bg.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
   }
 
   .glass-card {
-    background: rgba(255, 255, 255, 0.98);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02), 0 1px 3px rgba(0, 0, 0, 0.04);
-  }
-
-  .gradient-text {
-    background: linear-gradient(135deg, #000000 0%, #404040 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .mono-gradient {
-    background: linear-gradient(135deg, #ffffff 0%, #f8f8f8 100%);
-  }
-
-  .mono-border {
-    border: 1px solid rgba(0, 0, 0, 0.08);
-  }
-
-  .mono-hover {
-    transition: all 0.3s ease;
-  }
-
-  .mono-hover:hover {
-    background: rgba(0, 0, 0, 0.02);
-    border-color: rgba(0, 0, 0, 0.12);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  }
-
-  .mono-button {
-    background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
-    color: #ffffff;
-    border: none;
-    transition: all 0.3s ease;
-    font-weight: 500;
-    letter-spacing: -0.01em;
-  }
-
-  .mono-button:hover {
-    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
-
-  .mono-button-outline {
-    background: transparent;
-    color: #000000;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
-    font-weight: 500;
-    letter-spacing: -0.01em;
-  }
-
-  .mono-button-outline:hover {
-    background: rgba(0, 0, 0, 0.04);
-    border-color: rgba(0, 0, 0, 0.3);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  }
-
-  /* Enhanced typography for maximum readability */
-  h1, h2, h3, h4, h5, h6 {
-    font-weight: 600;
-    letter-spacing: -0.03em;
-    line-height: 1.2;
-    color: #000000;
-  }
-
-  p {
-    color: #000000;
-    line-height: 1.6;
-  }
-
-  /* Navigation and interactive text */
-  a {
-    color: #000000;
-    transition: color 0.2s ease;
-  }
-
-  a:hover {
-    color: #404040;
-  }
-
-  /* Form elements */
-  label {
-    color: #000000;
-    font-weight: 500;
-  }
-
-  input, textarea, select {
-    color: #000000;
-  }
-
-  input::placeholder, textarea::placeholder {
-    color: #666666;
-  }
-
-  /* Button text */
-  button {
-    font-weight: 500;
-    letter-spacing: -0.01em;
-  }
-
-  /* Ensure all muted text is still readable */
-  .text-muted-foreground {
-    color: #262626 !important;
-  }
-
-  /* Secondary text should be dark gray, not light gray */
-  .text-secondary {
-    color: #404040 !important;
-  }
-
-  /* Clean spacing utilities */
-  .section-padding {
-    padding: 4rem 1rem;
-  }
-
-  .container-spacing {
-    padding: 0 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  /* Subtle animations */
-  .fade-in {
-    animation: fade-in 0.6s ease-out;
-  }
-
-  @keyframes fade-in {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    background: rgba(26, 26, 53, 0.5);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(140, 82, 255, 0.3);
   }
 }
