@@ -1,3 +1,4 @@
+
 import clsx from "clsx";
 import { ChevronDown } from "lucide-react";
 import { Button } from "./ui/button";
@@ -8,23 +9,26 @@ type NetworkType = {
   name: "Cardano" | "Ethereum";
   logo: React.ReactNode;
 };
+
 interface RedirectingProp {
   setIsRedirecting: (value: boolean) => void;
   chain: "Ethereum" | "Cardano";
   setChain: (value: "Ethereum" | "Cardano") => void;
 }
+
 const Network: { [key: string]: NetworkType } = {
   Cardano: {
     id: "cardano",
     name: "Cardano",
-    logo: <img src="/cardano.webp" alt="Cardano Logo" className="w-6 h-6" />,
+    logo: <img src="/cardano.webp" alt="Cardano Logo" className="w-6 h-6 filter grayscale" />,
   },
   Ethereum: {
     id: "ethereum",
     name: "Ethereum",
-    logo: <img src="/ethereum.webp" alt="Ethereum Logo" className="w-6 h-6" />,
+    logo: <img src="/ethereum.webp" alt="Ethereum Logo" className="w-6 h-6 filter grayscale" />,
   },
 };
+
 export const NetworkDropdown: React.FC<RedirectingProp> = ({
   setIsRedirecting,
   setChain,
@@ -51,7 +55,7 @@ export const NetworkDropdown: React.FC<RedirectingProp> = ({
       <div className="relative w-full max-w-xs">
         <button
           onClick={toggleDropdown}
-          className="flex items-center justify-between w-fit gap-2 px-2 py-2 bg-transparent  border border-gray-700 rounded-md text-white"
+          className="flex items-center justify-between w-fit gap-2 px-3 py-2 bg-transparent border border-mono-gray-600 rounded-md text-white hover:border-mono-gray-400 transition-colors"
         >
           {chain && (
             <div className="flex items-center gap-3">{Network[chain].logo}</div>
@@ -65,14 +69,14 @@ export const NetworkDropdown: React.FC<RedirectingProp> = ({
         </button>
 
         {isOpen && (
-          <div className="absolute z-10 w-[150px] mt-1 bg-ana-darkblue border border-gray-700 rounded-md shadow-lg">
+          <div className="absolute z-10 w-[150px] mt-1 bg-mono-gray-900 border border-mono-gray-600 rounded-md shadow-lg">
             <ul className="">
               {Object.values(Network).map((network) => (
                 <li key={network.id}>
                   <Button
                     onClick={() => selectNetwork(network)}
                     variant={"ghost"}
-                    className="flex items-center justify-start w-full px-4 py-2 text-left text-white hover:bg-gray-700"
+                    className="flex items-center justify-start w-full px-4 py-2 text-left text-white hover:bg-mono-gray-700 transition-colors"
                   >
                     <span className="mr-3">{network.logo}</span>
                     <span>{network.name}</span>
