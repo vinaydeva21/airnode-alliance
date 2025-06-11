@@ -21,7 +21,7 @@
     --secondary-foreground: 0 0% 0%;
 
     --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 40%;
+    --muted-foreground: 0 0% 15%;
 
     --accent: 0 0% 96%;
     --accent-foreground: 0 0% 0%;
@@ -137,7 +137,7 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   }
 
-  /* Enhanced typography */
+  /* Enhanced typography for maximum readability */
   h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
     letter-spacing: -0.03em;
@@ -148,6 +148,46 @@
   p {
     color: #000000;
     line-height: 1.6;
+  }
+
+  /* Navigation and interactive text */
+  a {
+    color: #000000;
+    transition: color 0.2s ease;
+  }
+
+  a:hover {
+    color: #404040;
+  }
+
+  /* Form elements */
+  label {
+    color: #000000;
+    font-weight: 500;
+  }
+
+  input, textarea, select {
+    color: #000000;
+  }
+
+  input::placeholder, textarea::placeholder {
+    color: #666666;
+  }
+
+  /* Button text */
+  button {
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  /* Ensure all muted text is still readable */
+  .text-muted-foreground {
+    color: #262626 !important;
+  }
+
+  /* Secondary text should be dark gray, not light gray */
+  .text-secondary {
+    color: #404040 !important;
   }
 
   /* Clean spacing utilities */

@@ -137,7 +137,14 @@ export default {
 						h2: { color: '#000000' },
 						h3: { color: '#000000' },
 						h4: { color: '#000000' },
+						h5: { color: '#000000' },
+						h6: { color: '#000000' },
+						p: { color: '#000000' },
+						a: { color: '#000000' },
 						strong: { color: '#000000' },
+						code: { color: '#000000' },
+						blockquote: { color: '#000000' },
+						li: { color: '#000000' },
 					}
 				}
 			},
