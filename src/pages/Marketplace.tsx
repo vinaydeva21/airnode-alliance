@@ -70,7 +70,7 @@ const Marketplace = () => {
                 location: location,
                 price: listing.price,
                 imageUrl:
-                  "/lovable-uploads/944059d9-4b2a-4ce4-a703-1df8d972e858.png",
+                  "/lovable-uploads/4a8968a8-9af2-40aa-9480-469f6961f03c.png",
                 totalShares: details?.totalFractions?.toNumber() || 1000,
                 availableShares: parseInt(listing.quantity || "100"),
                 performance: {
@@ -134,7 +134,7 @@ const Marketplace = () => {
                     location: location,
                     price: parseFloat(listing.price),
                     imageUrl:
-                      "/lovable-uploads/944059d9-4b2a-4ce4-a703-1df8d972e858.png",
+                      "/lovable-uploads/4a8968a8-9af2-40aa-9480-469f6961f03c.png",
                     totalShares: fractionInfo.count || 1000,
                     availableShares: parseInt(listing.quantity || "100"),
                     performance: {
@@ -206,7 +206,7 @@ const Marketplace = () => {
                   location: location,
                   price: parseFloat(listing.price),
                   imageUrl:
-                    "/lovable-uploads/944059d9-4b2a-4ce4-a703-1df8d972e858.png",
+                    "/lovable-uploads/4a8968a8-9af2-40aa-9480-469f6961f03c.png",
                   totalShares: fractionInfo.count || 1000,
                   availableShares: parseInt(listing.quantity || "100"),
                   performance: {
@@ -275,7 +275,7 @@ const Marketplace = () => {
                   location: location,
                   price: parseFloat(listing.price),
                   imageUrl:
-                    "/lovable-uploads/944059d9-4b2a-4ce4-a703-1df8d972e858.png",
+                    "/lovable-uploads/4a8968a8-9af2-40aa-9480-469f6961f03c.png",
                   totalShares: fractionInfo.count || 1000,
                   availableShares: parseInt(listing.quantity || "100"),
                   performance: {
@@ -302,14 +302,14 @@ const Marketplace = () => {
     fetchListings();
   }, []);
 
-  // Default AirNodes as fallback
+  // Default AirNodes as fallback with new images
   const defaultAirNodes = [
     {
       id: "portal-180",
       name: "Portal 180",
       location: "Nairobi, Kenya",
       price: 45,
-      imageUrl: "/lovable-uploads/944059d9-4b2a-4ce4-a703-1df8d972e858.png",
+      imageUrl: "/lovable-uploads/4a8968a8-9af2-40aa-9480-469f6961f03c.png",
       totalShares: 1000,
       availableShares: 850,
       performance: {
@@ -323,7 +323,7 @@ const Marketplace = () => {
       name: "Portal 360",
       location: "Lagos, Nigeria",
       price: 60,
-      imageUrl: "/lovable-uploads/b43073b7-44b5-4631-b30f-dc3671d1e301.png",
+      imageUrl: "/lovable-uploads/2a34fc0e-ef2f-427d-b83f-b2ac89eac128.png",
       totalShares: 1000,
       availableShares: 600,
       performance: {
@@ -333,11 +333,11 @@ const Marketplace = () => {
       },
     },
     {
-      id: "nexus-1",
-      name: "Nexus I",
+      id: "apex-90",
+      name: "Apex 90",
       price: 75,
       location: "Addis Ababa, Ethiopia",
-      imageUrl: "/lovable-uploads/944059d9-4b2a-4ce4-a703-1df8d972e858.png",
+      imageUrl: "/lovable-uploads/41074963-71ad-4ff5-98d5-15013da0f5dd.png",
       totalShares: 2000,
       availableShares: 1200,
       performance: {
@@ -347,11 +347,11 @@ const Marketplace = () => {
       },
     },
     {
-      id: "nexus-2",
-      name: "Nexus II",
+      id: "apex-180",
+      name: "Apex 180",
       price: 80,
       location: "Kampala, Uganda",
-      imageUrl: "/lovable-uploads/b43073b7-44b5-4631-b30f-dc3671d1e301.png",
+      imageUrl: "/lovable-uploads/0bde1343-f33a-4772-afec-f05061c54e5c.png",
       totalShares: 2000,
       availableShares: 1800,
       performance: {

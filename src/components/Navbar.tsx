@@ -19,7 +19,7 @@ const Navbar = (props: RedirectingProp) => {
   };
 
   return (
-    <nav className="px-4 py-3 bg-ana-darkblue/80 backdrop-blur-md border-b border-ana-purple/20 fixed w-full top-0 z-50">
+    <nav className="px-4 py-3 bg-white/95 backdrop-blur-md border-b border-gray-200 fixed w-full top-0 z-50 shadow-sm">
       <div className="container mx-auto flex justify-between items-center">
         <Link to="/" className="flex items-center">
           <img 
@@ -34,81 +34,83 @@ const Navbar = (props: RedirectingProp) => {
           <nav className="flex items-center space-x-6">
             <Link
               to="/"
-              className="text-white/80 hover:text-white transition-colors"
+              className="text-gray-600 hover:text-gray-900 transition-colors"
             >
               Home
             </Link>
             <Link
               to="/marketplace"
-              className="text-white/80 hover:text-white transition-colors"
+              className="text-gray-600 hover:text-gray-900 transition-colors"
             >
               Marketplace
             </Link>
             <Link
               to="/dashboard"
-              className="text-white/80 hover:text-white transition-colors"
+              className="text-gray-600 hover:text-gray-900 transition-colors"
             >
               Dashboard
             </Link>
             <Link
               to="/governance"
-              className="text-white/80 hover:text-white transition-colors"
+              className="text-gray-600 hover:text-gray-900 transition-colors"
             >
               Governance
             </Link>
             <Link
               to="/admin"
-              className="text-white/80 hover:text-white transition-colors flex items-center gap-1"
+              className="text-gray-600 hover:text-gray-900 transition-colors flex items-center gap-1"
             >
               <Shield size={16} />
               Admin
             </Link>
           </nav>
           <NetworkDropdown {...props} />
-          <WalletConnect className="hidden md:block" />
+          <div className="block">
+            <WalletConnect />
+          </div>
         </div>
 
         {/* Mobile Menu Button */}
-        <button className="md:hidden text-white" onClick={toggleMobileMenu}>
+        <button className="md:hidden text-gray-900" onClick={toggleMobileMenu}>
           {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
       {/* Mobile Navigation */}
       {mobileMenuOpen && (
-        <div className="md:hidden absolute top-[60px] left-0 right-0 bg-ana-darkblue/95 backdrop-blur-lg border-b border-ana-purple/20 py-4 px-4">
+        <div className="md:hidden absolute top-[60px] left-0 right-0 bg-white/95 backdrop-blur-lg border-b border-gray-200 py-4 px-4 shadow-lg">
           <div className="flex flex-col gap-4">
             <Link
               to="/"
-              className="text-white/80 hover:text-white transition-colors py-2"
+              className="text-gray-600 hover:text-gray-900 transition-colors py-2"
               onClick={() => setMobileMenuOpen(false)}
             >
               Home
             </Link>
             <Link
               to="/marketplace"
-              className="text-white/80 hover:text-white transition-colors py-2"
+              className="text-gray-600 hover:text-gray-900 transition-colors py-2"
               onClick={() => setMobileMenuOpen(false)}
             >
               Marketplace
             </Link>
             <Link
               to="/dashboard"
-              className="text-white/80 hover:text-white transition-colors py-2"
+              className="text-gray-600 hover:text-gray-900 transition-colors py-2"
               onClick={() => setMobileMenuOpen(false)}
             >
               Dashboard
             </Link>
             <Link
               to="/governance"
-              className="text-white/80 hover:text-white transition-colors py-2"
+              className="text-gray-600 hover:text-gray-900 transition-colors py-2"
               onClick={() => setMobileMenuOpen(false)}
             >
               Governance
             </Link>
             <Link
               to="/admin"
-              className="text-white/80 hover:text-white transition-colors py-2 flex items-center gap-1"
+              className="text-gray-600 hover:text-gray-900 transition-colors py-2 flex items-center gap-1"
               onClick={() => setMobileMenuOpen(false)}
             >
               <Shield size={16} />

@@ -75,14 +75,14 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
               setAuthTab("login");
               setAuthDialogOpen(true);
             }}
-            className="bg-ana-darkblue/50 border-ana-purple/30 text-white"
+            className="bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
           >
             <User size={16} className="mr-1" />
             Login
           </Button>
           <Button
             onClick={() => setWalletSelectionOpen(true)}
-            className="bg-ana-purple hover:bg-ana-purple/90"
+            className="bg-gray-900 text-white hover:bg-gray-800"
             disabled={connecting}
           >
             {connecting ? (
@@ -103,7 +103,7 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
           {!isOnCorrectNetwork && (
             <Badge 
               variant="outline" 
-              className="bg-yellow-500/20 text-yellow-400 border-yellow-500/50 flex items-center gap-1 cursor-pointer hover:bg-yellow-500/30"
+              className="bg-yellow-500/20 text-yellow-600 border-yellow-500/50 flex items-center gap-1 cursor-pointer hover:bg-yellow-500/30"
               onClick={switchToSepolia}
             >
               <AlertCircle size={12} className="mr-1" />
