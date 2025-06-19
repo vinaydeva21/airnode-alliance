@@ -1,8 +1,8 @@
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Shield } from "lucide-react";
-import Logo from "./Logo";
 import WalletConnect from "./WalletConnect";
 import { NetworkDropdown } from "./NetworkSelector";
 
@@ -21,11 +21,12 @@ const Navbar = (props: RedirectingProp) => {
   return (
     <nav className="px-4 py-3 bg-ana-darkblue/80 backdrop-blur-md border-b border-ana-purple/20 fixed w-full top-0 z-50">
       <div className="container mx-auto flex justify-between items-center">
-        <Link to="/" className="flex items-center gap-2">
-          <Logo size={32} />
-          <span className="text-lg font-bold bg-gradient-to-r from-ana-purple to-ana-pink text-transparent bg-clip-text">
-            AirNode Alliance
-          </span>
+        <Link to="/" className="flex items-center">
+          <img 
+            src="/lovable-uploads/59368f04-0783-4804-b487-66dcc0ccfd29.png" 
+            alt="ANA Logo" 
+            className="h-8 w-auto"
+          />
         </Link>
 
         {/* Desktop Navigation */}
