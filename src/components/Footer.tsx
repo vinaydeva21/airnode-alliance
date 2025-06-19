@@ -1,11 +1,5 @@
-
 import { Link } from "react-router-dom";
-import { Twitter, Linkedin, Instagram } from "lucide-react";
-import { discord, telegram } from "lucide-react/dynamicIconImports";
-import { lazy, Suspense } from "react";
-
-const DiscordIcon = lazy(() => import("lucide-react").then(module => ({ default: module.MessageSquare })));
-const TelegramIcon = lazy(() => import("lucide-react").then(module => ({ default: module.MessageSquare })));
+import { Twitter, Linkedin, Instagram, MessageCircle, Send } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -28,14 +22,10 @@ const Footer = () => {
             </p>
             <div className="flex gap-4">
               <a href="https://discord.gg/HmeWMSwQaQ" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-ana-purple transition-colors">
-                <Suspense fallback={<div className="w-5 h-5" />}>
-                  <DiscordIcon size={20} />
-                </Suspense>
+                <MessageCircle size={20} />
               </a>
               <a href="https://t.me/AirnodeAlliance" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-ana-purple transition-colors">
-                <Suspense fallback={<div className="w-5 h-5" />}>
-                  <TelegramIcon size={20} />
-                </Suspense>
+                <Send size={20} />
               </a>
               <a href="https://x.com/airnodealliance" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-ana-purple transition-colors">
                 <Twitter size={20} />
