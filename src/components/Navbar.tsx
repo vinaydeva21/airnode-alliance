@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Shield } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import WalletConnect from "./WalletConnect";
 import { NetworkDropdown } from "./NetworkSelector";
 
@@ -50,13 +50,6 @@ const Navbar = (props: RedirectingProp) => {
             >
               Governance
             </Link>
-            <Link
-              to="/admin"
-              className="text-gray-600 hover:text-gray-900 transition-colors flex items-center gap-1"
-            >
-              <Shield size={16} />
-              Admin
-            </Link>
           </nav>
           <NetworkDropdown {...props} />
           <div className="block">
@@ -94,14 +87,6 @@ const Navbar = (props: RedirectingProp) => {
               onClick={() => setMobileMenuOpen(false)}
             >
               Governance
-            </Link>
-            <Link
-              to="/admin"
-              className="text-gray-600 hover:text-gray-900 transition-colors py-2 flex items-center gap-1"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <Shield size={16} />
-              Admin
             </Link>
             <NetworkDropdown {...props} />
             <div className="pt-2">
