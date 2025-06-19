@@ -58,7 +58,7 @@ const HomePage = () => {
 
   return (
     <NetworkBackground>
-      <Navbar setIsRedirecting={() => {}} chain="Ethereum" setChain={() => {}} />
+      <Navbar setIsRedirecting={() => {}} chain="World Mobile Chain" setChain={() => {}} />
 
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4">

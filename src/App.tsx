@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -19,7 +20,7 @@ const queryClient = new QueryClient();
 
 const App = () => {
   const [isRedirecting, setIsRedirecting] = useState(false);
-  const [chain, setChain] = useState<"Ethereum" | "Cardano">("Ethereum");
+  const [chain, setChain] = useState<"World Mobile Chain" | "Cardano">("World Mobile Chain");
   return (
     <QueryClientProvider client={queryClient}>
       <RainbowKitWrapper projectId="0b7502f59a16b5cc689348f2c3bc8c26">

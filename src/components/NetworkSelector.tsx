@@ -1,3 +1,4 @@
+
 import clsx from "clsx";
 import { ChevronDown } from "lucide-react";
 import { Button } from "./ui/button";
@@ -5,13 +6,13 @@ import { useState } from "react";
 
 type NetworkType = {
   id: string;
-  name: "Cardano" | "Ethereum";
+  name: "Cardano" | "World Mobile Chain";
   logo: React.ReactNode;
 };
 interface RedirectingProp {
   setIsRedirecting: (value: boolean) => void;
-  chain: "Ethereum" | "Cardano";
-  setChain: (value: "Ethereum" | "Cardano") => void;
+  chain: "World Mobile Chain" | "Cardano";
+  setChain: (value: "World Mobile Chain" | "Cardano") => void;
 }
 const Network: { [key: string]: NetworkType } = {
   Cardano: {
@@ -19,10 +20,10 @@ const Network: { [key: string]: NetworkType } = {
     name: "Cardano",
     logo: <img src="/cardano.webp" alt="Cardano Logo" className="w-6 h-6" />,
   },
-  Ethereum: {
-    id: "ethereum",
-    name: "Ethereum",
-    logo: <img src="/ethereum.webp" alt="Ethereum Logo" className="w-6 h-6" />,
+  "World Mobile Chain": {
+    id: "wmc",
+    name: "World Mobile Chain",
+    logo: <img src="/ethereum.webp" alt="World Mobile Chain Logo" className="w-6 h-6" />,
   },
 };
 export const NetworkDropdown: React.FC<RedirectingProp> = ({
