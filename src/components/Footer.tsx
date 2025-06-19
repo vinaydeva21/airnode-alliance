@@ -51,10 +51,9 @@ const Footer = () => {
         </div>
         
         <div className="mt-12 pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-white/50 text-sm">© 2023 AirNode Alliance. All rights reserved.</p>
+          <p className="text-white/50 text-sm">© 2025 AirNode Alliance. All rights reserved.</p>
           <div className="flex gap-6 mt-4 md:mt-0">
-            <Link to="/terms" className="text-white/50 hover:text-white text-sm">Terms of Service</Link>
-            <Link to="/privacy" className="text-white/50 hover:text-white text-sm">Privacy Policy</Link>
+            
           </div>
         </div>
       </div>
