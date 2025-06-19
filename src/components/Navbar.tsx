@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,7 @@ const Navbar = (props: RedirectingProp) => {
   return (
     <nav className="px-4 py-3 bg-white/95 backdrop-blur-md border-b border-gray-200 fixed w-full top-0 z-50 shadow-sm">
       <div className="container mx-auto flex justify-between items-center">
+        {/* Logo - Left */}
         <Link to="/" className="flex items-center">
           <img 
             src="/lovable-uploads/59368f04-0783-4804-b487-66dcc0ccfd29.png" 
@@ -28,8 +30,8 @@ const Navbar = (props: RedirectingProp) => {
           />
         </Link>
 
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center space-x-6">
+        {/* Desktop Navigation - Center */}
+        <div className="hidden md:flex items-center space-x-6 absolute left-1/2 transform -translate-x-1/2">
           <nav className="flex items-center space-x-6">
             <Link
               to="/marketplace"
@@ -50,6 +52,10 @@ const Navbar = (props: RedirectingProp) => {
               Governance
             </Link>
           </nav>
+        </div>
+
+        {/* Network & Wallet - Right */}
+        <div className="hidden md:flex items-center space-x-6">
           <NetworkDropdown {...props} />
           <div className="block">
             <WalletConnect className="text-white" />
