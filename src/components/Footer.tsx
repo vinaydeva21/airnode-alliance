@@ -1,16 +1,19 @@
 
 import { Link } from "react-router-dom";
-import Logo from "./Logo";
-import { Twitter, Facebook, Linkedin, Github } from "lucide-react";
+import { Twitter, MessageSquare, Linkedin, Instagram } from "lucide-react";
 
 const Footer = () => {
   return (
     <footer className="bg-ana-darkblue border-t border-ana-purple/20 py-12">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="col-span-1">
             <div className="flex items-center gap-2 mb-4">
-              <Logo size={32} />
+              <img 
+                src="/lovable-uploads/59368f04-0783-4804-b487-66dcc0ccfd29.png" 
+                alt="ANA Logo" 
+                className="h-8 w-auto"
+              />
               <span className="text-lg font-bold bg-gradient-to-r from-ana-purple to-ana-pink text-transparent bg-clip-text">
                 AirNode Alliance
               </span>
@@ -19,50 +22,31 @@ const Footer = () => {
               Democratizing access to telecommunications infrastructure through NFTs and blockchain technology.
             </p>
             <div className="flex gap-4">
-              <a href="#" className="text-white/60 hover:text-ana-purple transition-colors">
+              <a href="https://discord.gg/HmeWMSwQaQ" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-ana-purple transition-colors">
+                <MessageSquare size={20} />
+              </a>
+              <a href="https://t.me/AirnodeAlliance" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-ana-purple transition-colors">
+                <MessageSquare size={20} />
+              </a>
+              <a href="https://x.com/airnodealliance" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-ana-purple transition-colors">
                 <Twitter size={20} />
               </a>
-              <a href="#" className="text-white/60 hover:text-ana-purple transition-colors">
-                <Facebook size={20} />
-              </a>
-              <a href="#" className="text-white/60 hover:text-ana-purple transition-colors">
+              <a href="https://www.linkedin.com/showcase/airnode-alliance" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-ana-purple transition-colors">
                 <Linkedin size={20} />
               </a>
-              <a href="#" className="text-white/60 hover:text-ana-purple transition-colors">
-                <Github size={20} />
+              <a href="https://www.instagram.com/airnodealliance/" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-ana-purple transition-colors">
+                <Instagram size={20} />
               </a>
             </div>
           </div>
           
           <div className="col-span-1">
-            <h3 className="text-white font-medium mb-4">About</h3>
-            <ul className="space-y-2">
-              <li><Link to="/" className="text-white/70 hover:text-white transition-colors text-sm">Home</Link></li>
-              <li><Link to="/about" className="text-white/70 hover:text-white transition-colors text-sm">About Us</Link></li>
-              <li><Link to="/team" className="text-white/70 hover:text-white transition-colors text-sm">Our Team</Link></li>
-              <li><Link to="/partners" className="text-white/70 hover:text-white transition-colors text-sm">Partners & Investors</Link></li>
-              <li><Link to="/blog" className="text-white/70 hover:text-white transition-colors text-sm">Blog & News</Link></li>
-            </ul>
-          </div>
-          
-          <div className="col-span-1">
-            <h3 className="text-white font-medium mb-4">Governance</h3>
-            <ul className="space-y-2">
-              <li><Link to="/dao" className="text-white/70 hover:text-white transition-colors text-sm">DAO</Link></li>
-              <li><Link to="/proposals" className="text-white/70 hover:text-white transition-colors text-sm">Proposals</Link></li>
-              <li><Link to="/voting" className="text-white/70 hover:text-white transition-colors text-sm">Voting & Delegation</Link></li>
-              <li><Link to="/treasury" className="text-white/70 hover:text-white transition-colors text-sm">Treasury</Link></li>
-              <li><Link to="/token" className="text-white/70 hover:text-white transition-colors text-sm">ANA Token</Link></li>
-            </ul>
-          </div>
-          
-          <div className="col-span-1">
             <h3 className="text-white font-medium mb-4">World Mobile Chain</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="text-white/70 hover:text-white transition-colors text-sm">Explorer</a></li>
-              <li><a href="#" className="text-white/70 hover:text-white transition-colors text-sm">Documentation</a></li>
-              <li><a href="#" className="text-white/70 hover:text-white transition-colors text-sm">Bridge to WMC</a></li>
-              <li><a href="#" className="text-white/70 hover:text-white transition-colors text-sm">AirNode System</a></li>
+              <li><a href="https://worldmobile.io/" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white transition-colors text-sm">World Mobile</a></li>
+              <li><a href="https://worldmobile.io/about/ecosystem-metrics" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white transition-colors text-sm">Ecosystem Metrics</a></li>
+              <li><a href="https://airnode.worldmobile.net/explore/ecosystem/" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white transition-colors text-sm">AirNode Explorer</a></li>
+              <li><a href="https://airnode.worldmobile.net/explore/ecosystem/" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white transition-colors text-sm">WMTx Staking</a></li>
             </ul>
           </div>
         </div>

@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Globe, Shield, Users, Wallet } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -57,7 +58,7 @@ const HomePage = () => {
 
   return (
     <NetworkBackground>
-      {/* <Navbar /> */}
+      <Navbar setIsRedirecting={() => {}} chain="Ethereum" setChain={() => {}} />
 
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4">

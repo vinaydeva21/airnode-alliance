@@ -33,12 +33,6 @@ const Navbar = (props: RedirectingProp) => {
         <div className="hidden md:flex items-center space-x-6">
           <nav className="flex items-center space-x-6">
             <Link
-              to="/"
-              className="text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              Home
-            </Link>
-            <Link
               to="/marketplace"
               className="text-gray-600 hover:text-gray-900 transition-colors"
             >
@@ -80,13 +74,6 @@ const Navbar = (props: RedirectingProp) => {
       {mobileMenuOpen && (
         <div className="md:hidden absolute top-[60px] left-0 right-0 bg-white/95 backdrop-blur-lg border-b border-gray-200 py-4 px-4 shadow-lg">
           <div className="flex flex-col gap-4">
-            <Link
-              to="/"
-              className="text-gray-600 hover:text-gray-900 transition-colors py-2"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Home
-            </Link>
             <Link
               to="/marketplace"
               className="text-gray-600 hover:text-gray-900 transition-colors py-2"
