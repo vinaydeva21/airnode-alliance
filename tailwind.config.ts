@@ -64,11 +64,11 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				ana: {
-					purple: '#8c52ff',
-					pink: '#ff5c87',
-					blue: '#5c87ff',
-					darkblue: '#1a1a35',
-					darkpurple: '#2d1a4a',
+					purple: '#2a2a2a',
+					pink: '#404040',
+					blue: '#1a1a1a',
+					darkblue: '#f8f8f8',
+					darkpurple: '#f0f0f0',
 				}
 			},
 			borderRadius: {
@@ -111,7 +111,7 @@ export default {
 			backgroundImage: {
 				'network-pattern': "url('/network-bg.png')",
 				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-				'gradient-purple': 'linear-gradient(to right, #8c52ff, #ff5c87)',
+				'gradient-purple': 'linear-gradient(to right, #2a2a2a, #404040)',
 			}
 		}
 	},
