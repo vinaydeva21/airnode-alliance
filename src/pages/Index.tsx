@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Globe, Shield, Users, Wallet } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -145,41 +144,6 @@ const HomePage = () => {
                 All transactions and ownership records are secured on the World
                 Mobile Chain (WMC) blockchain.
               </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Upcoming Drops Section */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto">
-          <div className="flex justify-between items-center mb-10">
-            <h2 className="text-2xl font-bold text-white">
-              Upcoming AirNode Drops
-            </h2>
-            <Link
-              to="/marketplace"
-              className="text-ana-purple hover:text-ana-pink flex items-center gap-1 transition-colors"
-            >
-              View all <ArrowRight size={16} />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {upcomingNodes.map((node) => (
-              <AirNodeCard key={node.id} {...node} />
-            ))}
-
-            <div className="flex items-center justify-center h-full min-h-[300px] airnode-card rounded-lg border border-ana-purple/20 p-6">
-              <div className="text-center">
-                <h3 className="text-xl font-semibold text-white mb-2">
-                  More Coming Soon
-                </h3>
-                <p className="text-white/70 mb-4">
-                  Stay tuned for more AirNode opportunities
-                </p>
-                <Button variant="outline">Get Notified</Button>
-              </div>
             </div>
           </div>
         </div>

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { User, Wallet, ChevronRight, AlertCircle } from "lucide-react";
@@ -75,14 +74,14 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
               setAuthTab("login");
               setAuthDialogOpen(true);
             }}
-            className="bg-gray-800 border-gray-600 text-white hover:bg-gray-700"
+            className="bg-gray-800 border-gray-600 text-white hover:bg-gray-700 hover:text-white"
           >
             <User size={16} className="mr-1" />
             Login
           </Button>
           <Button
             onClick={() => setWalletSelectionOpen(true)}
-            className="bg-gray-800 text-white hover:bg-gray-700"
+            className="bg-gray-800 text-white hover:bg-gray-700 hover:text-white"
             disabled={connecting}
           >
             {connecting ? (
