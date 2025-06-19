@@ -66,7 +66,7 @@ const Navbar = (props: RedirectingProp) => {
           </nav>
           <NetworkDropdown {...props} />
           <div className="block">
-            <WalletConnect />
+            <WalletConnect className="text-white" />
           </div>
         </div>
 
@@ -118,7 +118,7 @@ const Navbar = (props: RedirectingProp) => {
             </Link>
             <NetworkDropdown {...props} />
             <div className="pt-2">
-              <WalletConnect />
+              <WalletConnect className="text-white" />
             </div>
           </div>
         </div>

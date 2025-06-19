@@ -75,14 +75,14 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
               setAuthTab("login");
               setAuthDialogOpen(true);
             }}
-            className="bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
+            className="bg-gray-800 border-gray-600 text-white hover:bg-gray-700"
           >
             <User size={16} className="mr-1" />
             Login
           </Button>
           <Button
             onClick={() => setWalletSelectionOpen(true)}
-            className="bg-gray-900 text-white hover:bg-gray-800"
+            className="bg-gray-800 text-white hover:bg-gray-700"
             disabled={connecting}
           >
             {connecting ? (

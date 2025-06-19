@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Globe, Shield, Users, Wallet } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -13,7 +14,7 @@ const HomePage = () => {
       name: "Portal 180",
       location: "Nairobi, Kenya",
       price: 45,
-      imageUrl: "/lovable-uploads/944059d9-4b2a-4ce4-a703-1df8d972e858.png",
+      imageUrl: "/lovable-uploads/2a34fc0e-ef2f-427d-b83f-b2ac89eac128.png",
       totalShares: 1000,
       availableShares: 850,
     },
@@ -22,9 +23,36 @@ const HomePage = () => {
       name: "Portal 360",
       location: "Lagos, Nigeria",
       price: 60,
-      imageUrl: "/lovable-uploads/b43073b7-44b5-4631-b30f-dc3671d1e301.png",
+      imageUrl: "/lovable-uploads/4a8968a8-9af2-40aa-9480-469f6961f03c.png",
       totalShares: 1000,
       availableShares: 600,
+    },
+    {
+      id: "portal-720",
+      name: "Portal 720",
+      location: "Cape Town, South Africa",
+      price: 75,
+      imageUrl: "/lovable-uploads/78957c5d-f008-4fef-bcea-71cf6e15aac6.png",
+      totalShares: 1000,
+      availableShares: 400,
+    },
+    {
+      id: "portal-1080",
+      name: "Portal 1080",
+      location: "Cairo, Egypt",
+      price: 90,
+      imageUrl: "/lovable-uploads/a87b7206-f007-4408-81b9-e12a3723f7f4.png",
+      totalShares: 1000,
+      availableShares: 300,
+    },
+    {
+      id: "portal-1440",
+      name: "Portal 1440",
+      location: "Marrakech, Morocco",
+      price: 120,
+      imageUrl: "/lovable-uploads/fb09514c-1484-43fc-a427-2bc23e2225a2.png",
+      totalShares: 1000,
+      availableShares: 200,
     },
   ];
 
