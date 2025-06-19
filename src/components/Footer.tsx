@@ -15,9 +15,7 @@ const Footer = () => {
                 alt="ANA Logo" 
                 className="h-8 w-auto"
               />
-              <span className="text-lg font-bold bg-gradient-to-r from-ana-purple to-ana-pink text-transparent bg-clip-text">
-                AirNode Alliance
-              </span>
+              
             </div>
             <p className="text-white/70 text-sm mb-4">
               Democratizing access to telecommunications infrastructure through NFTs and blockchain technology.
