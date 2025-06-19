@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Globe, Shield, Users, Wallet } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -58,7 +57,7 @@ const HomePage = () => {
 
   return (
     <NetworkBackground>
-      <Navbar setIsRedirecting={() => {}} chain="World Mobile Chain" setChain={() => {}} />
+      <Navbar setIsRedirecting={() => {}} chain="WMC" setChain={() => {}} />
 
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4">
@@ -142,8 +141,7 @@ const HomePage = () => {
                 Secured by Blockchain
               </h3>
               <p className="text-white/70">
-                All transactions and ownership records are secured on the World
-                Mobile Chain (WMC) blockchain.
+                All transactions and ownership records are secured on the WMC blockchain.
               </p>
             </div>
           </div>

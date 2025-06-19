@@ -44,8 +44,8 @@ const NetworkBackground: React.FC<NetworkBackgroundProps> = ({ children, classNa
         this.speedX = Math.random() * 0.5 - 0.25;
         this.speedY = Math.random() * 0.5 - 0.25;
         
-        // Purple/blue theme colors
-        const colors = ["rgba(140, 82, 255, 0.8)", "rgba(92, 135, 255, 0.8)"];
+        // Black theme colors
+        const colors = ["rgba(0, 0, 0, 0.8)", "rgba(40, 40, 40, 0.8)"];
         this.color = colors[Math.floor(Math.random() * colors.length)];
       }
       
@@ -88,7 +88,7 @@ const NetworkBackground: React.FC<NetworkBackgroundProps> = ({ children, classNa
           
           if (distance < maxDistance) {
             const opacity = 1 - distance / maxDistance;
-            ctx!.strokeStyle = `rgba(140, 82, 255, ${opacity * 0.2})`;
+            ctx!.strokeStyle = `rgba(0, 0, 0, ${opacity * 0.2})`;
             ctx!.lineWidth = 0.5;
             ctx!.beginPath();
             ctx!.moveTo(particles[i].x, particles[i].y);

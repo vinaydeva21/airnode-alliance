@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -8,8 +7,8 @@ import { NetworkDropdown } from "./NetworkSelector";
 
 interface RedirectingProp {
   setIsRedirecting: (value: boolean) => void;
-  chain: "World Mobile Chain" | "Cardano";
-  setChain: (value: "World Mobile Chain" | "Cardano") => void;
+  chain: "WMC" | "Cardano";
+  setChain: (value: "WMC" | "Cardano") => void;
 }
 const Navbar = (props: RedirectingProp) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

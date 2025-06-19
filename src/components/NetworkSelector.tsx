@@ -6,13 +6,13 @@ import { useState } from "react";
 
 type NetworkType = {
   id: string;
-  name: "Cardano" | "World Mobile Chain";
+  name: "Cardano" | "WMC";
   logo: React.ReactNode;
 };
 interface RedirectingProp {
   setIsRedirecting: (value: boolean) => void;
-  chain: "World Mobile Chain" | "Cardano";
-  setChain: (value: "World Mobile Chain" | "Cardano") => void;
+  chain: "WMC" | "Cardano";
+  setChain: (value: "WMC" | "Cardano") => void;
 }
 const Network: { [key: string]: NetworkType } = {
   Cardano: {
@@ -20,10 +20,10 @@ const Network: { [key: string]: NetworkType } = {
     name: "Cardano",
     logo: <img src="/cardano.webp" alt="Cardano Logo" className="w-6 h-6" />,
   },
-  "World Mobile Chain": {
+  "WMC": {
     id: "wmc",
-    name: "World Mobile Chain",
-    logo: <img src="/ethereum.webp" alt="World Mobile Chain Logo" className="w-6 h-6" />,
+    name: "WMC",
+    logo: <img src="/ethereum.webp" alt="WMC Logo" className="w-6 h-6" />,
   },
 };
 export const NetworkDropdown: React.FC<RedirectingProp> = ({
