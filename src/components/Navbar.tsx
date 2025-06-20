@@ -30,6 +30,7 @@ const Navbar = ({ setIsRedirecting }) => {
             height={100}
             width={100}
             className="h-8 w-auto"
+            priority
           />
         </Link>
 
