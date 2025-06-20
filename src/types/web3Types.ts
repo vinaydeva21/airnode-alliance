@@ -5,8 +5,8 @@ export interface Web3ContextType {
   contracts: ContractInteractions | null;
   connect: (walletId: string) => Promise<void>;
   disconnect: () => void;
-  chain: "Cardano" | "Ethereum";
-  setChain: (chain: "Cardano" | "Ethereum") => void;
+  chain: "Cardano" | "WMC";
+  setChain: (chain: "Cardano" | "WMC") => void;
 }
 
 export interface WalletProviderProps {

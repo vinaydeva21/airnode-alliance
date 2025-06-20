@@ -17,7 +17,7 @@ export const useWalletConnect = () => {
   });
   const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null);
   const [walletType, setWalletType] = useState<string | null>(null);
-  const [chain, setChain] = useState<"Cardano" | "Ethereum">("Cardano");
+  const [chain, setChain] = useState<"Cardano" | "WMC">("Cardano");
 
   const { address, chainId, isConnected } = useAccount();
   const { connectAsync, connectors } = useConnect();

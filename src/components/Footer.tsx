@@ -1,13 +1,19 @@
 import Link from "next/link";
-import Logo from "./Logo";
-import { Twitter, Facebook, Linkedin, Github } from "lucide-react";
+import {
+  Twitter,
+  Linkedin,
+  Instagram,
+  MessageCircle,
+  Send,
+} from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
 
 const Footer = () => {
   return (
     <footer className="bg-ana-darkblue border-t border-ana-purple/20 py-12">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="col-span-1">
             <div className="flex items-center gap-2 mb-4">
               <Image
@@ -24,182 +30,103 @@ const Footer = () => {
               NFTs and blockchain technology.
             </p>
             <div className="flex gap-4">
-              <a
-                href="#"
+              <Link
+                href="https://discord.gg/HmeWMSwQaQ"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white/60 hover:text-ana-purple transition-colors"
+              >
+                <MessageCircle size={20} />
+              </Link>
+              <Link
+                href="https://t.me/AirnodeAlliance"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white/60 hover:text-ana-purple transition-colors"
+              >
+                <Send size={20} />
+              </Link>
+              <Link
+                href="https://x.com/airnodealliance"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-white/60 hover:text-ana-purple transition-colors"
               >
                 <Twitter size={20} />
-              </a>
-              <a
-                href="#"
-                className="text-white/60 hover:text-ana-purple transition-colors"
-              >
-                <Facebook size={20} />
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                href="https://www.linkedin.com/showcase/airnode-alliance"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-white/60 hover:text-ana-purple transition-colors"
               >
                 <Linkedin size={20} />
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                href="https://www.instagram.com/airnodealliance/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-white/60 hover:text-ana-purple transition-colors"
               >
-                <Github size={20} />
-              </a>
+                <Instagram size={20} />
+              </Link>
             </div>
-          </div>
-
-          <div className="col-span-1">
-            <h3 className="text-white font-medium mb-4">About</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link
-                  href="/"
-                  className="text-white/70 hover:text-white transition-colors text-sm"
-                >
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/about"
-                  className="text-white/70 hover:text-white transition-colors text-sm"
-                >
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/team"
-                  className="text-white/70 hover:text-white transition-colors text-sm"
-                >
-                  Our Team
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/partners"
-                  className="text-white/70 hover:text-white transition-colors text-sm"
-                >
-                  Partners & Investors
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/blog"
-                  className="text-white/70 hover:text-white transition-colors text-sm"
-                >
-                  Blog & News
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div className="col-span-1">
-            <h3 className="text-white font-medium mb-4">Governance</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link
-                  href="/dao"
-                  className="text-white/70 hover:text-white transition-colors text-sm"
-                >
-                  DAO
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/proposals"
-                  className="text-white/70 hover:text-white transition-colors text-sm"
-                >
-                  Proposals
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/voting"
-                  className="text-white/70 hover:text-white transition-colors text-sm"
-                >
-                  Voting & Delegation
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/treasury"
-                  className="text-white/70 hover:text-white transition-colors text-sm"
-                >
-                  Treasury
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/token"
-                  className="text-white/70 hover:text-white transition-colors text-sm"
-                >
-                  ANA Token
-                </Link>
-              </li>
-            </ul>
           </div>
 
           <div className="col-span-1">
             <h3 className="text-white font-medium mb-4">World Mobile Chain</h3>
             <ul className="space-y-2">
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="https://worldmobile.io/"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-white/70 hover:text-white transition-colors text-sm"
                 >
-                  Explorer
-                </a>
+                  World Mobile
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="https://worldmobile.io/about/ecosystem-metrics"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-white/70 hover:text-white transition-colors text-sm"
                 >
-                  Documentation
-                </a>
+                  Ecosystem Metrics
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="https://airnode.worldmobile.net/explore/ecosystem/"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-white/70 hover:text-white transition-colors text-sm"
                 >
-                  Bridge to WMC
-                </a>
+                  AirNode Explorer
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="https://airnode.worldmobile.net/explore/ecosystem/"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-white/70 hover:text-white transition-colors text-sm"
                 >
-                  AirNode System
-                </a>
+                  WMTx Staking
+                </Link>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="mt-12 pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between items-center">
+        <Separator className="my-8 bg-white/10" />
+
+        <div className="flex flex-col md:flex-row justify-between items-center">
           <p className="text-white/50 text-sm">
-            © 2023 AirNode Alliance. All rights reserved.
+            © 2025 AirNode Alliance. All rights reserved.
           </p>
-          <div className="flex gap-6 mt-4 md:mt-0">
-            <Link
-              href="/terms"
-              className="text-white/50 hover:text-white text-sm"
-            >
-              Terms of Service
-            </Link>
-            <Link
-              href="/privacy"
-              className="text-white/50 hover:text-white text-sm"
-            >
-              Privacy Policy
-            </Link>
-          </div>
+          <div className="flex gap-6 mt-4 md:mt-0"></div>
         </div>
       </div>
     </footer>

@@ -21,7 +21,7 @@ const Navbar = ({ setIsRedirecting }) => {
   };
 
   return (
-    <nav className="px-4 py-3 bg-ana-darkblue/80 backdrop-blur-md border-b border-ana-purple/20 fixed w-full top-0 z-50">
+    <nav className="px-4 py-3 bg-white/95 backdrop-blur-md border-b border-gray-200 fixed w-full top-0 z-50 shadow-sm">
       <div className="container mx-auto flex justify-between items-center">
         <Link href="/" className="flex items-center gap-2">
           <Image
@@ -35,91 +35,82 @@ const Navbar = ({ setIsRedirecting }) => {
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden md:flex items-center space-x-6 absolute left-1/2 transform -translate-x-1/2">
           <div className="flex gap-6">
             <Link
-              href="/"
-              className="text-white/80 hover:text-white transition-colors"
-            >
-              Home
-            </Link>
-            <Link
               href="/marketplace"
-              className="text-white/80 hover:text-white transition-colors"
+              className="text-gray-600 hover:text-gray-900 transition-colors"
             >
               Marketplace
             </Link>
             <Link
               href="/dashboard"
-              className="text-white/80 hover:text-white transition-colors"
+              className="text-gray-600 hover:text-gray-900 transition-colors"
             >
               Dashboard
             </Link>
             <Link
               href="/governance"
-              className="text-white/80 hover:text-white transition-colors"
+              className="text-gray-600 hover:text-gray-900 transition-colors"
             >
               Governance
             </Link>
-            <Link
+            {/* <Link
               href="/admin"
-              className="text-white/80 hover:text-white transition-colors flex items-center gap-1"
+              className="text-gray-600 hover:text-gray-900 transition-colors flex items-center gap-1"
             >
               <Shield size={16} />
               Admin
-            </Link>
+            </Link> */}
           </div>
+        </div>
+        <div className="hidden md:flex items-center space-x-6">
           <NetworkDropdown setIsRedirecting={setIsRedirecting} />
-
-          <WalletConnect className="hidden md:block" />
+          <div className="block">
+            <WalletConnect className="hidden md:block" />
+            {/* <WalletConnect /> */}
+          </div>
         </div>
 
         {/* Mobile Menu Button */}
-        <button className="md:hidden text-white" onClick={toggleMobileMenu}>
+        <button className="md:hidden text-gray-900" onClick={toggleMobileMenu}>
           {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
       {/* Mobile Navigation */}
       {mobileMenuOpen && (
-        <div className="md:hidden absolute top-[60px] left-0 right-0 bg-ana-darkblue/95 backdrop-blur-lg border-b border-ana-purple/20 py-4 px-4">
+        <div className="md:hidden absolute top-[60px] left-0 right-0 bg-white/95 backdrop-blur-lg border-b border-gray-200 py-4 px-4 shadow-lg">
           <div className="flex flex-col gap-4">
             <Link
-              href="/"
-              className="text-white/80 hover:text-white transition-colors py-2"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Home
-            </Link>
-            <Link
               href="/marketplace"
-              className="text-white/80 hover:text-white transition-colors py-2"
+              className="text-gray-600 hover:text-gray-900 transition-colors py-2"
               onClick={() => setMobileMenuOpen(false)}
             >
               Marketplace
             </Link>
             <Link
               href="/dashboard"
-              className="text-white/80 hover:text-white transition-colors py-2"
+              className="text-gray-600 hover:text-gray-900 transition-colors py-2"
               onClick={() => setMobileMenuOpen(false)}
             >
               Dashboard
             </Link>
             <Link
               href="/governance"
-              className="text-white/80 hover:text-white transition-colors py-2"
+              className="text-gray-600 hover:text-gray-900 transition-colors py-2"
               onClick={() => setMobileMenuOpen(false)}
             >
               Governance
             </Link>
-            <Link
+            {/* <Link
               href="/admin"
-              className="text-white/80 hover:text-white transition-colors py-2 flex items-center gap-1"
+              className="text-gray-600 hover:text-gray-900 transition-colors py-2 flex items-center gap-1"
               onClick={() => setMobileMenuOpen(false)}
             >
               <Shield size={16} />
               Admin
-            </Link>
+            </Link> */}
             <div className="pt-2">
               {" "}
               <WalletConnect />{" "}
@@ -135,7 +126,7 @@ export default Navbar;
 
 type NetworkType = {
   id: string;
-  name: "Cardano" | "Ethereum";
+  name: "Cardano" | "WMC";
   logo: React.ReactNode;
 };
 
@@ -157,7 +148,7 @@ const Network: { [key: string]: NetworkType } = {
   },
   Ethereum: {
     id: "ethereum",
-    name: "Ethereum",
+    name: "WMC",
     logo: (
       <Image
         src="/ethereum.webp"
@@ -180,7 +171,7 @@ const NetworkDropdown: React.FC<RedirectingProp> = ({ setIsRedirecting }) => {
 
   const selectNetwork = (network: NetworkType) => {
     setChain(network.name);
-    if (network.name == "Ethereum") {
+    if (network.name == "WMC") {
       setIsRedirecting(true);
 
       setTimeout(() => {
