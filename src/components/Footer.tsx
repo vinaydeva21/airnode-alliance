@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Logo from "./Logo";
 import { Twitter, Facebook, Linkedin, Github } from "lucide-react";
+import Image from "next/image";
 
 const Footer = () => {
   return (
@@ -9,10 +10,13 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1">
             <div className="flex items-center gap-2 mb-4">
-              <Logo size={32} />
-              <span className="text-lg font-bold bg-gradient-to-r from-ana-purple to-ana-pink text-transparent bg-clip-text">
-                AirNode Alliance
-              </span>
+              <Image
+                height={100}
+                width={100}
+                src="/logo.png"
+                alt="ANA Logo"
+                className="h-8 w-auto"
+              />
             </div>
             <p className="text-white/70 text-sm mb-4">
               Democratizing access to telecommunications infrastructure through

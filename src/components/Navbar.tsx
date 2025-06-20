@@ -24,10 +24,13 @@ const Navbar = ({ setIsRedirecting }) => {
     <nav className="px-4 py-3 bg-ana-darkblue/80 backdrop-blur-md border-b border-ana-purple/20 fixed w-full top-0 z-50">
       <div className="container mx-auto flex justify-between items-center">
         <Link href="/" className="flex items-center gap-2">
-          <Logo size={32} />
-          <span className="text-lg font-bold bg-gradient-to-r from-ana-purple to-ana-pink text-transparent bg-clip-text">
-            AirNode Alliance
-          </span>
+          <Image
+            src="/logo.png"
+            alt="ANA Logo"
+            height={100}
+            width={100}
+            className="h-8 w-auto"
+          />
         </Link>
 
         {/* Desktop Navigation */}

@@ -41,24 +41,15 @@ const NetworkBackground: React.FC<NetworkBackgroundProps> = ({
       color: string;
 
       constructor() {
-        if (!canvas) {
-          this.x = 0;
-          this.y = 0;
-          this.size = 0;
-          this.speedX = 0;
-          this.speedY = 0;
-          const colors = ["rgba(140, 82, 255, 0.8)", "rgba(92, 135, 255, 0.8)"];
-          this.color = colors[Math.floor(Math.random() * colors.length)];
-          return;
-        }
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
+        //  if (!canvas) return;
+        this.x = Math.random() * (canvas?.width ?? 1);
+        this.y = Math.random() * (canvas?.height ?? 1);
         this.size = Math.random() * 2 + 0.5;
         this.speedX = Math.random() * 0.5 - 0.25;
         this.speedY = Math.random() * 0.5 - 0.25;
 
-        // Purple/blue theme colors
-        const colors = ["rgba(140, 82, 255, 0.8)", "rgba(92, 135, 255, 0.8)"];
+        // Black theme colors
+        const colors = ["rgba(0, 0, 0, 0.8)", "rgba(40, 40, 40, 0.8)"];
         this.color = colors[Math.floor(Math.random() * colors.length)];
       }
 
@@ -66,13 +57,13 @@ const NetworkBackground: React.FC<NetworkBackgroundProps> = ({
         // Move particles
         this.x += this.speedX;
         this.y += this.speedY;
-        if (!canvas) return;
-        // Wrap around edges
-        if (this.x > canvas.width) this.x = 0;
-        else if (this.x < 0) this.x = canvas.width;
 
-        if (this.y > canvas.height) this.y = 0;
-        else if (this.y < 0) this.y = canvas.height;
+        // Wrap around edges
+        if (this.x > (canvas?.width ?? 1)) this.x = 0;
+        else if (this.x < 0) this.x = canvas?.width ?? 1;
+
+        if (this.y > (canvas?.height ?? 1)) this.y = 0;
+        else if (this.y < 0) this.y = canvas?.height ?? 1;
       }
 
       draw() {
@@ -101,7 +92,7 @@ const NetworkBackground: React.FC<NetworkBackgroundProps> = ({
 
           if (distance < maxDistance) {
             const opacity = 1 - distance / maxDistance;
-            ctx!.strokeStyle = `rgba(140, 82, 255, ${opacity * 0.2})`;
+            ctx!.strokeStyle = `rgba(0, 0, 0, ${opacity * 0.2})`;
             ctx!.lineWidth = 0.5;
             ctx!.beginPath();
             ctx!.moveTo(particles[i].x, particles[i].y);

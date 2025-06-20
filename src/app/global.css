@@ -5,44 +5,44 @@
 
 @layer base {
   :root {
-    --background: 240 35% 8%;
-    --foreground: 210 40% 98%;
+    --background: 0 0% 98%;
+    --foreground: 0 0% 10%;
 
-    --card: 240 35% 10%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 15%;
 
-    --popover: 240 35% 10%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 10%;
 
-    --primary: 266 100% 66%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 0 0% 20%;
+    --primary-foreground: 0 0% 98%;
 
-    --secondary: 341 100% 68%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 0 0% 90%;
+    --secondary-foreground: 0 0% 20%;
 
-    --muted: 240 25% 25%;
-    --muted-foreground: 215 20.2% 75.1%;
+    --muted: 0 0% 95%;
+    --muted-foreground: 0 0% 40%;
 
-    --accent: 224 76% 68%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 0 0% 92%;
+    --accent-foreground: 0 0% 20%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 240 25% 20%;
-    --input: 240 25% 20%;
-    --ring: 262.1 83.3% 57.8%;
+    --border: 0 0% 88%;
+    --input: 0 0% 95%;
+    --ring: 0 0% 30%;
 
     --radius: 0.5rem;
 
-    --sidebar-background: 240 35% 12%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 266 100% 66%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 25% 25%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 25% 20%;
-    --sidebar-ring: 266 100% 66%;
+    --sidebar-background: 0 0% 96%;
+    --sidebar-foreground: 0 0% 15%;
+    --sidebar-primary: 0 0% 20%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 0 0% 92%;
+    --sidebar-accent-foreground: 0 0% 15%;
+    --sidebar-border: 0 0% 88%;
+    --sidebar-ring: 0 0% 30%;
   }
 }
 
@@ -53,28 +53,140 @@
 
   body {
     @apply bg-background text-foreground;
+    background-color: #fafafa;
+    color: #1a1a1a;
   }
 
   .airnode-card {
-    background: linear-gradient(135deg, rgba(140, 82, 255, 0.2), rgba(255, 92, 135, 0.2));
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 248, 248, 0.9));
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(140, 82, 255, 0.3);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   }
 
   .network-bg {
-    background-color: #1a1a35;
+    background-color: #ffffff;
     background-image: 
-      radial-gradient(circle at 25% 25%, rgba(140, 82, 255, 0.2) 0%, transparent 50%),
-      radial-gradient(circle at 75% 75%, rgba(92, 135, 255, 0.2) 0%, transparent 50%),
-      url('/network-bg.png');
+      radial-gradient(circle at 25% 25%, rgba(0, 0, 0, 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.02) 0%, transparent 50%);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
   }
 
   .glass-card {
-    background: rgba(26, 26, 53, 0.5);
+    background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(140, 82, 255, 0.3);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+  }
+
+  /* Monochrome color overrides */
+  .text-ana-purple, .text-ana-pink, .text-ana-blue {
+    color: #2a2a2a !important;
+  }
+
+  .bg-ana-purple, .bg-ana-pink, .bg-ana-blue, .bg-ana-darkblue {
+    background-color: #f8f8f8 !important;
+  }
+
+  .bg-ana-darkblue\/30, .bg-ana-darkblue\/50 {
+    background-color: rgba(248, 248, 248, 0.8) !important;
+  }
+
+  .border-ana-purple, .border-ana-pink, .border-ana-blue {
+    border-color: rgba(0, 0, 0, 0.15) !important;
+  }
+
+  .border-ana-purple\/20, .border-ana-purple\/30 {
+    border-color: rgba(0, 0, 0, 0.1) !important;
+  }
+
+  /* Gradient overrides */
+  .bg-gradient-to-r.from-ana-purple.to-ana-pink,
+  .bg-gradient-to-br.from-ana-purple.via-ana-pink.to-ana-blue,
+  .bg-gradient-to-br.from-ana-purple.to-ana-pink {
+    background: linear-gradient(to right, #2a2a2a, #4a4a4a) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+  }
+
+  /* Button and interactive elements */
+  .hover\:bg-ana-purple\/20:hover,
+  .hover\:bg-ana-purple\/5:hover {
+    background-color: rgba(0, 0, 0, 0.05) !important;
+  }
+
+  .hover\:border-ana-purple\/50:hover {
+    border-color: rgba(0, 0, 0, 0.2) !important;
+  }
+
+  /* Text colors for better contrast */
+  .text-white {
+    color: #1a1a1a !important;
+  }
+
+  .text-white\/60, .text-white\/70, .text-white\/80 {
+    color: #4a4a4a !important;
+  }
+
+  .text-white\/50 {
+    color: #6a6a6a !important;
+  }
+
+  .text-white\/30 {
+    color: #8a8a8a !important;
+  }
+
+  /* Navigation and header styling - Updated for white navbar */
+  .bg-ana-darkblue\/80 {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+  }
+
+  /* Card styling for white dominance */
+  .bg-ana-darkblue\/30.border-ana-purple\/20 {
+    background-color: #ffffff !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  }
+
+  /* Green accent colors remain for positive indicators */
+  .text-green-400, .text-green-500 {
+    color: #16a34a !important;
+  }
+
+  .bg-green-500\/20 {
+    background-color: rgba(34, 197, 94, 0.1) !important;
+  }
+
+  /* Red accent colors for negative indicators */
+  .text-red-500 {
+    color: #dc2626 !important;
+  }
+
+  .bg-red-500\/20 {
+    background-color: rgba(220, 38, 38, 0.1) !important;
+  }
+
+  /* Form elements styling */
+  .bg-ana-darkblue\/50.border-ana-purple\/20 {
+    background-color: #ffffff !important;
+    border-color: rgba(0, 0, 0, 0.15) !important;
+  }
+
+  /* Loading and skeleton effects */
+  .animate-pulse-slow {
+    animation: pulse-mono 4s ease-in-out infinite;
+  }
+
+  @keyframes pulse-mono {
+    0%, 100% { 
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+    50% { 
+      background-color: rgba(0, 0, 0, 0.1);
+    }
   }
 }
