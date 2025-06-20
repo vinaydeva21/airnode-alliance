@@ -23,6 +23,8 @@ const Footer = () => {
                 alt="ANA Logo"
                 className="h-8 w-auto"
                 priority
+                fetchPriority="high"
+                unoptimized
               />
             </div>
             <p className="text-white/70 text-sm mb-4">
