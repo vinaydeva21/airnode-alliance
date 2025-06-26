@@ -45,7 +45,7 @@ const Footer = () => {
               <li><a href="https://worldmobile.io/" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white transition-colors text-sm">World Mobile</a></li>
               <li><a href="https://worldmobile.io/about/ecosystem-metrics" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white transition-colors text-sm">Ecosystem Metrics</a></li>
               <li><a href="https://airnode.worldmobile.net/explore/ecosystem/" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white transition-colors text-sm">AirNode Explorer</a></li>
-              <li><a href="https://airnode.worldmobile.net/explore/ecosystem/" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white transition-colors text-sm">WMTx Staking</a></li>
+              <li><a href="https://worldmobiletoken.com/staking" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white transition-colors text-sm">WMTx Staking</a></li>
             </ul>
           </div>
         </div>
