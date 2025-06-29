@@ -1,3 +1,4 @@
+
 import clsx from "clsx";
 import { ChevronDown } from "lucide-react";
 import { Button } from "./ui/button";
@@ -46,7 +47,10 @@ export const NetworkDropdown: React.FC<RedirectingProp> = ({
   return <div className="">
       <div className="relative w-full max-w-xs">
         <button onClick={toggleDropdown} className="flex items-center justify-between w-fit gap-2 px-2 py-2 bg-transparent  border border-gray-700 rounded-md text-white">
-          {chain && <div className="flex items-center gap-3">{Network[chain].logo}</div>}
+          {chain && <div className="flex items-center gap-3">
+            {Network[chain].logo}
+            <span>WMTX</span>
+          </div>}
           <ChevronDown className={clsx("w-5 h-5 transition-transform", isOpen && "transform rotate-180")} />
         </button>
 
