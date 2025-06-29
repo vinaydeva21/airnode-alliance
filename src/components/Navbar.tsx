@@ -13,9 +13,14 @@ interface RedirectingProp {
 }
 const Navbar = (props: RedirectingProp) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  const handleAdminLogin = (adminStatus: boolean) => {
+    setIsAdmin(adminStatus);
   };
 
   return (
@@ -51,6 +56,14 @@ const Navbar = (props: RedirectingProp) => {
             >
               Governance
             </Link>
+            {isAdmin && (
+              <Link
+                to="/admin"
+                className="text-red-600 hover:text-red-800 transition-colors font-medium"
+              >
+                Admin
+              </Link>
+            )}
           </nav>
         </div>
 
@@ -58,7 +71,7 @@ const Navbar = (props: RedirectingProp) => {
         <div className="hidden md:flex items-center space-x-6">
           <NetworkDropdown {...props} />
           <div className="block">
-            <WalletConnect className="text-white" />
+            <WalletConnect className="text-white" onAdminLogin={handleAdminLogin} />
           </div>
         </div>
 
@@ -93,9 +106,18 @@ const Navbar = (props: RedirectingProp) => {
             >
               Governance
             </Link>
+            {isAdmin && (
+              <Link
+                to="/admin"
+                className="text-red-600 hover:text-red-800 transition-colors py-2 font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Admin
+              </Link>
+            )}
             <NetworkDropdown {...props} />
             <div className="pt-2">
-              <WalletConnect className="text-white" />
+              <WalletConnect className="text-white" onAdminLogin={handleAdminLogin} />
             </div>
           </div>
         </div>

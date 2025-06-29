@@ -13,7 +13,7 @@ interface AuthDialogProps {
   onOpenChange: (open: boolean) => void;
   activeTab: "login" | "signup";
   setActiveTab: (tab: "login" | "signup") => void;
-  onSuccess: () => void;
+  onSuccess: (isAdmin?: boolean) => void;
 }
 
 export const AuthDialog: React.FC<AuthDialogProps> = ({ 
@@ -36,10 +36,19 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({
       return;
     }
     
-    // This would be replaced with actual authentication logic
-    toast.success("Successfully logged in");
-    onOpenChange(false);
-    onSuccess();
+    // Check for admin credentials
+    const isAdmin = loginEmail === "admin" && loginPassword === "admin@123";
+    
+    if (isAdmin) {
+      toast.success("Successfully logged in as Admin");
+      onOpenChange(false);
+      onSuccess(true);
+    } else {
+      // This would be replaced with actual authentication logic
+      toast.success("Successfully logged in");
+      onOpenChange(false);
+      onSuccess(false);
+    }
   };
 
   const handleSignup = (e: React.FormEvent) => {
@@ -57,7 +66,7 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({
     // This would be replaced with actual registration logic
     toast.success("Account created successfully");
     onOpenChange(false);
-    onSuccess();
+    onSuccess(false);
   };
 
   return (
@@ -82,13 +91,13 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({
           <TabsContent value="login">
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">Username/Email</Label>
                 <Input
                   id="email"
-                  type="email"
+                  type="text"
                   value={loginEmail}
                   onChange={(e) => setLoginEmail(e.target.value)}
-                  placeholder="you@example.com"
+                  placeholder="admin or you@example.com"
                   className="bg-ana-darkblue/50 border-ana-purple/30 text-white"
                 />
               </div>
@@ -103,6 +112,10 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({
                   placeholder="********"
                   className="bg-ana-darkblue/50 border-ana-purple/30 text-white"
                 />
+              </div>
+              
+              <div className="text-xs text-white/50">
+                Demo credentials: admin / admin@123
               </div>
               
               <div className="pt-4 flex gap-2 justify-end">
