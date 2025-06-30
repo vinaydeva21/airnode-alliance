@@ -17,7 +17,7 @@ const Dashboard = () => {
       owned: 50,
       totalShares: 1000,
       value: 2250,
-      imageUrl: "/lovable-uploads/944059d9-4b2a-4ce4-a703-1df8d972e858.png",
+      imageUrl: "/lovable-uploads/2a34fc0e-ef2f-427d-b83f-b2ac89eac128.png",
     },
     {
       id: "portal-360",
@@ -26,7 +26,25 @@ const Dashboard = () => {
       owned: 25,
       totalShares: 1000,
       value: 1500,
-      imageUrl: "/lovable-uploads/b43073b7-44b5-4631-b30f-dc3671d1e301.png",
+      imageUrl: "/lovable-uploads/78957c5d-f008-4fef-bcea-71cf6e15aac6.png",
+    },
+    {
+      id: "portal-12",
+      name: "Portal 12",
+      location: "Mumbai, India",
+      owned: 75,
+      totalShares: 1000,
+      value: 3750,
+      imageUrl: "/lovable-uploads/68179fce-b792-49fe-929d-d919c7f3c82d.png",
+    },
+    {
+      id: "portal-85",
+      name: "Portal 85",
+      location: "São Paulo, Brazil",
+      owned: 40,
+      totalShares: 1000,
+      value: 2000,
+      imageUrl: "/lovable-uploads/4a8968a8-9af2-40aa-9480-469f6961f03c.png",
     },
   ];
 
@@ -76,7 +94,7 @@ const Dashboard = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-white">$3,750.00</div>
+                <div className="text-2xl font-bold text-white">$9,500.00</div>
                 <div className="text-sm text-white/50">
                   +5.2% from last month
                 </div>
@@ -91,7 +109,7 @@ const Dashboard = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-white">75</div>
+                <div className="text-2xl font-bold text-white">190</div>
                 <div className="text-sm text-white/50">Across 2 AirNodes</div>
               </CardContent>
             </Card>
@@ -104,7 +122,7 @@ const Dashboard = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-white">$150.00</div>
+                <div className="text-2xl font-bold text-white">$285.00</div>
                 <div className="text-sm text-white/50">
                   Next distribution: 2 days
                 </div>

@@ -110,7 +110,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="https://airnode.worldmobile.net/explore/ecosystem/"
+                  href="https://worldmobiletoken.com/staking/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-white/70 hover:text-white transition-colors text-sm"
