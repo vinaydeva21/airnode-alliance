@@ -197,7 +197,7 @@ export const NetworkDropdown: React.FC<RedirectingProp> = ({
       setIsRedirecting(true);
 
       setTimeout(() => {
-        window.location.href = "https://airnodealliance.com";
+        window.location.href = "https://airnode-alliance.vercel.app/";
       }, 1500);
     }
     setIsOpen(false);
