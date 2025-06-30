@@ -188,7 +188,6 @@ export const NetworkDropdown: React.FC<RedirectingProp> = ({
   setChain,
   chain,
 }) => {
-  console.log(chain);
   const [isOpen, setIsOpen] = useState(false);
   const toggleDropdown = () => setIsOpen(!isOpen);
   const selectNetwork = (network: NetworkType) => {
