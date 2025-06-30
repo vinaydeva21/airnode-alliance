@@ -55,10 +55,10 @@ export default function LoadingScreen() {
           {/* Ethereum Logo */}
           <div className="absolute inset-0 flex items-center justify-center rotate-[75deg]">
             <Image
-              src="/ethereum.webp"
+              src="https://imgs.search.brave.com/kXH8Z5WXis9UzBpv6GgG08AZ8Dei-V7psLqw6EdG0yk/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93ZWIt/Y21zLWNkbi51cGhv/bGQud29ybGQvaW1h/Z2VzL1o4aXExeHNB/SEpXb21KLXZfV01U/WEAyeC5wbmc_YXV0/bz1mb3JtYXQsY29t/cHJlc3M"
               width={120}
               height={120}
-              alt="Ethereum Logo"
+              alt="WMC Logo"
               priority
               fetchPriority="high"
               unoptimized
