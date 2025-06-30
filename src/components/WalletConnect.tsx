@@ -19,9 +19,13 @@ import { useWeb3 } from "@/contexts/Web3Context";
 
 interface WalletConnectProps {
   className?: string;
+  onAdminLogin?: (isAdmin: boolean) => void;
 }
 
-const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
+const WalletConnect: React.FC<WalletConnectProps> = ({
+  className = "",
+  onAdminLogin,
+}) => {
   const { web3State, connect, disconnect } = useWeb3();
   const [stakeDialogOpen, setStakeDialogOpen] = useState(false);
   const [transactionHistoryOpen, setTransactionHistoryOpen] = useState(false);
@@ -30,7 +34,7 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
   const [walletSelectionOpen, setWalletSelectionOpen] = useState(false);
   const [authTab, setAuthTab] = useState<"login" | "signup">("login");
   const [connecting, setConnecting] = useState(false);
-
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const handleConnect = async (walletId: string) => {
     setConnecting(true);
 
@@ -48,15 +52,23 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "" }) => {
 
   const handleDisconnect = () => {
     disconnect();
+    setIsLoggedIn(false);
+    if (onAdminLogin) {
+      onAdminLogin(false);
+    }
   };
 
-  const handleAuthSuccess = () => {
+  const handleAuthSuccess = (isAdmin?: boolean) => {
+    setIsLoggedIn(true);
+    if (onAdminLogin && isAdmin) {
+      onAdminLogin(true);
+    }
     handleConnect("metamask");
   };
 
   return (
     <div className={className}>
-      {!web3State.connected ? (
+      {!isLoggedIn ? (
         <div className="flex gap-2">
           <Button
             variant="outline"

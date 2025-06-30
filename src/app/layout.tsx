@@ -18,6 +18,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const [isRedirecting, setIsRedirecting] = useState<boolean>(false);
+  const [chain, setChain] = useState<"WMC" | "Cardano">("Cardano");
+
   return (
     <html lang="en">
       <body>
@@ -25,7 +27,11 @@ export default function RootLayout({
           <QueryClientProvider client={queryClient}>
             <RainbowKitWrapper projectId="0b7502f59a16b5cc689348f2c3bc8c26">
               <Web3Provider>
-                <Navbar setIsRedirecting={setIsRedirecting} />
+                <Navbar
+                  setChain={setChain}
+                  chain={chain}
+                  setIsRedirecting={setIsRedirecting}
+                />
                 <TooltipProvider>
                   <Toaster />
                   <Sonner />

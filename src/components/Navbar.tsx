@@ -12,12 +12,19 @@ import clsx from "clsx";
 import Image from "next/image";
 interface RedirectingProp {
   setIsRedirecting: (value: boolean) => void;
+  chain: "WMC" | "Cardano";
+  setChain: (value: "WMC" | "Cardano") => void;
 }
-const Navbar = ({ setIsRedirecting }) => {
+const Navbar = (props: RedirectingProp) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  const handleAdminLogin = (adminStatus: boolean) => {
+    setIsAdmin(adminStatus);
   };
 
   return (
@@ -57,19 +64,23 @@ const Navbar = ({ setIsRedirecting }) => {
             >
               Governance
             </Link>
-            {/* <Link
-              href="/admin"
-              className="text-gray-600 hover:text-gray-900 transition-colors flex items-center gap-1"
-            >
-              <Shield size={16} />
-              Admin
-            </Link> */}
+            {isAdmin && (
+              <Link
+                href="/admin"
+                className="text-red-600 hover:text-red-800 transition-colors font-medium"
+              >
+                Admin
+              </Link>
+            )}
           </div>
         </div>
         <div className="hidden md:flex items-center space-x-6">
-          <NetworkDropdown setIsRedirecting={setIsRedirecting} />
+          <NetworkDropdown {...props} />
           <div className="block">
-            <WalletConnect className="hidden md:block" />
+            <WalletConnect
+              className="hidden md:block"
+              onAdminLogin={handleAdminLogin}
+            />
             {/* <WalletConnect /> */}
           </div>
         </div>
@@ -105,17 +116,18 @@ const Navbar = ({ setIsRedirecting }) => {
             >
               Governance
             </Link>
-            {/* <Link
-              href="/admin"
-              className="text-gray-600 hover:text-gray-900 transition-colors py-2 flex items-center gap-1"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <Shield size={16} />
-              Admin
-            </Link> */}
+            {isAdmin && (
+              <Link
+                href="/admin"
+                className="text-red-600 hover:text-red-800 transition-colors py-2 font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Admin
+              </Link>
+            )}
             <div className="pt-2">
               {" "}
-              <WalletConnect />{" "}
+              <WalletConnect onAdminLogin={handleAdminLogin} />{" "}
             </div>
           </div>
         </div>
@@ -132,66 +144,55 @@ type NetworkType = {
   logo: React.ReactNode;
 };
 
-const Network: { [key: string]: NetworkType } = {
+const Network: {
+  [key: string]: NetworkType;
+} = {
   Cardano: {
     id: "cardano",
     name: "Cardano",
-    logo: (
-      <Image
-        src="/cardano.webp"
-        width={24}
-        height={24}
-        alt="Cardano Logo"
-        priority
-        fetchPriority="high"
-        unoptimized
-      />
-    ),
+    logo: <img src="/cardano.webp" alt="Cardano Logo" className="w-6 h-6" />,
   },
-  Ethereum: {
-    id: "ethereum",
+  WMC: {
+    id: "wmc",
     name: "WMC",
     logo: (
-      <Image
-        src="/ethereum.webp"
-        width={24}
-        height={24}
-        priority
-        fetchPriority="high"
-        unoptimized
-        alt="Ethereum Logo"
+      <img
+        alt="WMC Logo"
+        className="w-6 h-6"
+        src="https://imgs.search.brave.com/kXH8Z5WXis9UzBpv6GgG08AZ8Dei-V7psLqw6EdG0yk/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93ZWIt/Y21zLWNkbi51cGhv/bGQud29ybGQvaW1h/Z2VzL1o4aXExeHNB/SEpXb21KLXZfV01U/WEAyeC5wbmc_YXV0/bz1mb3JtYXQsY29t/cHJlc3M"
       />
     ),
   },
 };
-
-const NetworkDropdown: React.FC<RedirectingProp> = ({ setIsRedirecting }) => {
+export const NetworkDropdown: React.FC<RedirectingProp> = ({
+  setIsRedirecting,
+  setChain,
+  chain,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { chain, setChain } = useWeb3();
-
   const toggleDropdown = () => setIsOpen(!isOpen);
-
   const selectNetwork = (network: NetworkType) => {
     setChain(network.name);
-    if (network.name == "WMC") {
+    if (network.name == "Cardano") {
       setIsRedirecting(true);
-
       setTimeout(() => {
-        window.location.href = "https://airnodealliance.com";
+        window.location.href = "https://airnode-alliance.netlify.app";
       }, 1500);
     }
     setIsOpen(false);
   };
-
   return (
     <div className="">
       <div className="relative w-full max-w-xs">
         <button
           onClick={toggleDropdown}
-          className="flex items-center justify-between w-fit gap-2 px-2 py-2 bg-transparent border border-gray-700 rounded-md text-white"
+          className="flex items-center justify-between w-fit gap-2 px-2 py-2 bg-transparent  border border-gray-700 rounded-md text-white"
         >
           {chain && (
-            <div className="flex items-center gap-3">{Network[chain].logo}</div>
+            <div className="flex items-center gap-3">
+              {Network[chain].logo}
+              <span>WMTX</span>
+            </div>
           )}
           <ChevronDown
             className={clsx(
@@ -206,13 +207,14 @@ const NetworkDropdown: React.FC<RedirectingProp> = ({ setIsRedirecting }) => {
             <ul className="">
               {Object.values(Network).map((network) => (
                 <li key={network.id}>
-                  <button
+                  <Button
                     onClick={() => selectNetwork(network)}
+                    variant={"ghost"}
                     className="flex items-center justify-start w-full px-4 py-2 text-left text-white hover:bg-gray-700"
                   >
                     <span className="mr-3">{network.logo}</span>
                     <span>{network.name}</span>
-                  </button>
+                  </Button>
                 </li>
               ))}
             </ul>
