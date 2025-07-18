@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -24,7 +23,7 @@ const Navbar = (props: RedirectingProp) => {
   };
 
   const handleLogoClick = () => {
-    window.open("https://www.airnodealliance.com", "_blank");
+    window.open("https://www.airnodealliance.com", "_self");
   };
 
   return (
