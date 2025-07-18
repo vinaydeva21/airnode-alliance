@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -54,19 +55,6 @@ const AirNodeCard: React.FC<AirNodeProps> = ({
             alt={name} 
             className="w-full h-full object-cover transition-transform hover:scale-105 duration-500"
           />
-          <div className="absolute top-2 right-2">
-            <Badge variant="secondary" className="bg-ana-darkblue/80 hover:bg-ana-darkblue border-ana-purple/20 text-white">
-              {availableShares}/{totalShares} Available
-            </Badge>
-          </div>
-          <div className="absolute bottom-2 left-2 flex gap-1">
-            <Badge variant="outline" className="bg-green-500/20 text-green-300 border-green-500/30">
-              {performance.uptime}% Uptime
-            </Badge>
-            <Badge variant="outline" className="bg-ana-purple/20 text-ana-purple border-ana-purple/30">
-              {performance.roi}% ROI
-            </Badge>
-          </div>
         </div>
         <CardContent className="p-4">
           <div className="flex justify-between items-start mb-3">
@@ -78,6 +66,22 @@ const AirNodeCard: React.FC<AirNodeProps> = ({
               <div className="text-sm text-white/70">Price</div>
               <div className="text-lg font-semibold text-white">${price}</div>
             </div>
+          </div>
+          
+          {/* Moved badges and performance indicators here */}
+          <div className="flex justify-between items-center mb-3">
+            <Badge variant="secondary" className="bg-ana-darkblue/80 hover:bg-ana-darkblue border-ana-purple/20 text-white">
+              {availableShares}/{totalShares} Available
+            </Badge>
+          </div>
+          
+          <div className="flex gap-2 mb-4">
+            <Badge variant="outline" className="bg-green-500/20 text-green-300 border-green-500/30">
+              {performance.uptime}% Uptime
+            </Badge>
+            <Badge variant="outline" className="bg-ana-purple/20 text-ana-purple border-ana-purple/30">
+              {performance.roi}% ROI
+            </Badge>
           </div>
           
           <div className="flex justify-between mt-4">
