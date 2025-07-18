@@ -1,3 +1,4 @@
+
 import React from "react";
 import { SearchBar } from "../SearchBar";
 import { MarketplaceStats } from "../MarketplaceStats";
@@ -59,7 +60,7 @@ export const BuyNodesTab: React.FC<BuyNodesTabProps> = ({
           <div className="animate-pulse text-ana-purple">Loading AirNodes...</div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {displayNodes.length > 0 ? (
             displayNodes.map((node) => (
               <AirNodeCard key={node.id} {...node} />

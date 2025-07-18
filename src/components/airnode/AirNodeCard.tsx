@@ -48,58 +48,58 @@ const AirNodeCard: React.FC<AirNodeProps> = ({
 
   return (
     <>
-      <Card className={`overflow-hidden airnode-card transition-all hover:shadow-lg hover:shadow-ana-purple/10 ${className}`}>
-        <div className="relative h-56 overflow-hidden">
+      <Card className={`overflow-hidden airnode-card transition-all hover:shadow-lg hover:shadow-ana-purple/10 w-full max-w-sm mx-auto ${className}`}>
+        <div className="relative w-full aspect-[4/3] overflow-hidden">
           <img 
             src={imageUrl || "/placeholder.svg"} 
             alt={name} 
-            className="w-full h-full object-cover transition-transform hover:scale-105 duration-500"
+            className="w-full h-full object-cover object-center transition-transform hover:scale-105 duration-500"
           />
         </div>
-        <CardContent className="p-4">
+        <CardContent className="p-3 sm:p-4">
           <div className="flex justify-between items-start mb-3">
-            <div>
-              <h3 className="font-semibold text-white">{name}</h3>
-              <p className="text-sm text-white/70">{location}</p>
+            <div className="min-w-0 flex-1 mr-2">
+              <h3 className="font-semibold text-white text-sm sm:text-base truncate">{name}</h3>
+              <p className="text-xs sm:text-sm text-white/70 truncate">{location}</p>
             </div>
-            <div className="text-right">
-              <div className="text-sm text-white/70">Price</div>
-              <div className="text-lg font-semibold text-white">${price}</div>
+            <div className="text-right flex-shrink-0">
+              <div className="text-xs sm:text-sm text-white/70">Price</div>
+              <div className="text-base sm:text-lg font-semibold text-white">${price}</div>
             </div>
           </div>
           
-          {/* Moved badges and performance indicators here */}
+          {/* Badges and performance indicators */}
           <div className="flex justify-between items-center mb-3">
-            <Badge variant="secondary" className="bg-ana-darkblue/80 hover:bg-ana-darkblue border-ana-purple/20 text-white">
+            <Badge variant="secondary" className="bg-ana-darkblue/80 hover:bg-ana-darkblue border-ana-purple/20 text-white text-xs">
               {availableShares}/{totalShares} Available
             </Badge>
           </div>
           
-          <div className="flex gap-2 mb-4">
-            <Badge variant="outline" className="bg-green-500/20 text-green-300 border-green-500/30">
+          <div className="flex flex-wrap gap-1 sm:gap-2 mb-4">
+            <Badge variant="outline" className="bg-green-500/20 text-green-300 border-green-500/30 text-xs">
               {performance.uptime}% Uptime
             </Badge>
-            <Badge variant="outline" className="bg-ana-purple/20 text-ana-purple border-ana-purple/30">
+            <Badge variant="outline" className="bg-ana-purple/20 text-ana-purple border-ana-purple/30 text-xs">
               {performance.roi}% ROI
             </Badge>
           </div>
           
-          <div className="flex justify-between mt-4">
+          <div className="flex justify-between gap-2 mt-4">
             <Button 
               variant="outline" 
               size="sm" 
-              className="gap-1 bg-transparent border-ana-purple/30 hover:bg-ana-purple/10"
+              className="gap-1 bg-transparent border-ana-purple/30 hover:bg-ana-purple/10 flex-1 text-xs sm:text-sm"
               onClick={() => setDetailsOpen(true)}
             >
-              <Info size={14} />
+              <Info size={12} className="sm:w-4 sm:h-4" />
               Details
             </Button>
             <Button 
               size="sm"
-              className="gap-1"
+              className="gap-1 flex-1 text-xs sm:text-sm"
               onClick={() => setPurchaseOpen(true)}
             >
-              <ShoppingCart size={14} />
+              <ShoppingCart size={12} className="sm:w-4 sm:h-4" />
               Buy Shares
             </Button>
           </div>
