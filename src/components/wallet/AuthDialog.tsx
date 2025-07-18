@@ -37,7 +37,7 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({
     }
     
     // Check for admin credentials
-    const isAdmin = loginEmail === "admin" && loginPassword === "admin@123";
+    const isAdmin = loginEmail === "ANAdmin" && loginPassword === "Airnode";
     
     if (isAdmin) {
       toast.success("Successfully logged in as Admin");
@@ -97,7 +97,7 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({
                   type="text"
                   value={loginEmail}
                   onChange={(e) => setLoginEmail(e.target.value)}
-                  placeholder="admin or you@example.com"
+                  placeholder="Enter username or email"
                   className="bg-ana-darkblue/50 border-ana-purple/30 text-white"
                 />
               </div>
@@ -109,13 +109,9 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({
                   type="password"
                   value={loginPassword}
                   onChange={(e) => setLoginPassword(e.target.value)}
-                  placeholder="********"
+                  placeholder="Enter password"
                   className="bg-ana-darkblue/50 border-ana-purple/30 text-white"
                 />
-              </div>
-              
-              <div className="text-xs text-white/50">
-                Demo credentials: admin / admin@123
               </div>
               
               <div className="pt-4 flex gap-2 justify-end">

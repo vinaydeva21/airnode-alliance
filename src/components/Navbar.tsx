@@ -23,17 +23,21 @@ const Navbar = (props: RedirectingProp) => {
     setIsAdmin(adminStatus);
   };
 
+  const handleLogoClick = () => {
+    window.open("https://www.airnodealliance.com", "_blank");
+  };
+
   return (
     <nav className="px-4 py-3 bg-white/95 backdrop-blur-md border-b border-gray-200 fixed w-full top-0 z-50 shadow-sm">
       <div className="container mx-auto flex justify-between items-center">
         {/* Logo - Left */}
-        <Link to="/" className="flex items-center">
+        <div className="flex items-center cursor-pointer" onClick={handleLogoClick}>
           <img 
             src="/lovable-uploads/59368f04-0783-4804-b487-66dcc0ccfd29.png" 
             alt="ANA Logo" 
             className="h-8 w-auto"
           />
-        </Link>
+        </div>
 
         {/* Desktop Navigation - Center */}
         <div className="hidden md:flex items-center space-x-6 absolute left-1/2 transform -translate-x-1/2">

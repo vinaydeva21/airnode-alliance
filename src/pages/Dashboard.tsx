@@ -17,7 +17,7 @@ const Dashboard = () => {
       owned: 50,
       totalShares: 1000,
       value: 2250,
-      imageUrl: "/lovable-uploads/2a34fc0e-ef2f-427d-b83f-b2ac89eac128.png",
+      imageUrl: "/lovable-uploads/4a8968a8-9af2-40aa-9480-469f6961f03c.png",
     },
     {
       id: "portal-360",
@@ -26,7 +26,7 @@ const Dashboard = () => {
       owned: 25,
       totalShares: 1000,
       value: 1500,
-      imageUrl: "/lovable-uploads/78957c5d-f008-4fef-bcea-71cf6e15aac6.png",
+      imageUrl: "/lovable-uploads/41074963-71ad-4ff5-98d5-15013da0f5dd.png",
     },
     {
       id: "portal-12",
@@ -35,7 +35,7 @@ const Dashboard = () => {
       owned: 75,
       totalShares: 1000,
       value: 3750,
-      imageUrl: "/lovable-uploads/68179fce-b792-49fe-929d-d919c7f3c82d.png",
+      imageUrl: "/lovable-uploads/2a34fc0e-ef2f-427d-b83f-b2ac89eac128.png",
     },
     {
       id: "portal-85",
@@ -44,7 +44,7 @@ const Dashboard = () => {
       owned: 40,
       totalShares: 1000,
       value: 2000,
-      imageUrl: "/lovable-uploads/4a8968a8-9af2-40aa-9480-469f6961f03c.png",
+      imageUrl: "/lovable-uploads/0bde1343-f33a-4772-afec-f05061c54e5c.png",
     },
   ];
 
