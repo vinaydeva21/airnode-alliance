@@ -37,26 +37,47 @@ export const WalletSelectionDialog: React.FC<WalletSelectionDialogProps> = ({
         </DialogHeader>
 
         <div className="py-4 flex flex-col gap-5">
-          {/* Ethereum Network Section */}
+          {/* Ethereum & Layer 2 Networks Section */}
           <div>
-            <h3 className="text-sm font-medium text-white/70 mb-2">Ethereum Network</h3>
-            <button
-              onClick={() => {
-                if (openConnectModal) {
-                  openConnectModal();
-                  onOpenChange(false);
-                } else {
-                  toast.error("Rainbow Kit connection not available");
-                }
-              }}
-              className="flex w-full items-center justify-between p-3 rounded-lg border border-ana-purple/20 hover:bg-ana-purple/20 transition-colors"
-            >
-              <div className="flex items-center gap-3">
-                <div className="text-2xl">🌈</div>
-                <span className="font-medium">Rainbow Kit</span>
+            <h3 className="text-sm font-medium text-white/70 mb-3">Connect Your Wallet</h3>
+            <div className="space-y-3">
+              {/* Rainbow Kit - Supports multiple wallets including Coinbase */}
+              <button
+                onClick={() => {
+                  if (openConnectModal) {
+                    openConnectModal();
+                    onOpenChange(false);
+                  } else {
+                    toast.error("Rainbow Kit connection not available");
+                  }
+                }}
+                className="flex w-full items-center justify-between p-3 rounded-lg border border-ana-purple/20 hover:bg-ana-purple/20 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="text-2xl">🌈</div>
+                  <div>
+                    <div className="font-medium">Connect Wallet</div>
+                    <div className="text-xs text-white/60">MetaMask, Coinbase, WalletConnect & more</div>
+                  </div>
+                </div>
+                <div className="text-ana-purple">Connect</div>
+              </button>
+              
+              {/* Network Information */}
+              <div className="bg-ana-darkblue/30 rounded-lg p-3 border border-ana-purple/10">
+                <div className="text-xs text-white/70 mb-2">Supported Networks:</div>
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-xs">
+                    <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                    <span>Sepolia Testnet (Testing)</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs">
+                    <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                    <span>World Mobile Chain (Production)</span>
+                  </div>
+                </div>
               </div>
-              <div className="text-ana-purple">Connect</div>
-            </button>
+            </div>
           </div>
         </div>
       </DialogContent>

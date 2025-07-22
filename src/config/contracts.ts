@@ -2,8 +2,21 @@
 // Contract configuration with deployed addresses and ABIs
 
 export const contractConfig = {
+  // Sepolia testnet configuration for testing
+  sepolia: {
+    chainId: 11155111,
+    name: "Sepolia",
+    rpcUrl: "https://sepolia.infura.io/v3/",
+  },
+  // World Mobile Chain Mainnet (to be updated with actual addresses after deployment)
+  worldMobile: {
+    chainId: 8888, // Replace with actual World Mobile Chain ID
+    name: "World Mobile Chain",
+    rpcUrl: "https://rpc.worldmobile.io", // Replace with actual RPC
+  },
   airNodeNFT: {
-    address: "0x2afec7ac5f7b006cc23fe2db5b2ba80ebc426af1",
+    // This will be updated after you deploy the contract
+    address: "0x2afec7ac5f7b006cc23fe2db5b2ba80ebc426af1", // Placeholder - update after deployment
     abi: [
       {
         "inputs": [],

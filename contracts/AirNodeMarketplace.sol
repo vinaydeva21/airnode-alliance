@@ -1,4 +1,3 @@
-
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
@@ -9,7 +8,7 @@ import "./AirNodeFractionalization.sol";
 
 /**
  * @title AirNodeMarketplace
- * @dev Marketplace for buying and selling AirNode fractions
+ * @dev Enhanced marketplace for buying and selling AirNode fractions with real-time updates
  */
 contract AirNodeMarketplace is Ownable, ReentrancyGuard {
     // Struct to store listing details
@@ -28,6 +27,9 @@ contract AirNodeMarketplace is Ownable, ReentrancyGuard {
     // Array to store all listings
     Listing[] public listings;
     
+    // Mapping to track user purchases
+    mapping(address => mapping(string => uint256)) public userFractionBalances;
+    
     // Platform fee percentage (in basis points, e.g., 250 = 2.5%)
     uint256 public platformFeePercent = 250;
     
@@ -42,25 +44,16 @@ contract AirNodeMarketplace is Ownable, ReentrancyGuard {
     }
 
     /**
-     * @dev List fractions for sale
-     * @param fractionId ID of the fraction to list
-     * @param price Price per fraction
-     * @param quantity Number of fractions to list
-     * @return listingId ID of the created listing
+     * @dev List fractions for sale (Admin only - for initial listing)
      */
     function listFractionForSale(
         string memory fractionId,
         uint256 price,
         uint256 quantity
-    ) public nonReentrant returns (uint256) {
+    ) public onlyOwner nonReentrant returns (uint256) {
         AirNodeFractionalization.FractionDetails memory details = fractionalization.getFractionDetails(fractionId);
         require(details.isListed, "Fraction not available for listing");
-        
-        IERC20 fractionToken = IERC20(details.fractionToken);
-        require(fractionToken.balanceOf(msg.sender) >= quantity, "Insufficient fractions");
-        
-        // Transfer tokens to this contract
-        require(fractionToken.transferFrom(msg.sender, address(this), quantity), "Transfer failed");
+        require(details.availableFractions >= quantity, "Not enough fractions available");
         
         // Create listing
         uint256 listingId = listings.length;
@@ -79,9 +72,7 @@ contract AirNodeMarketplace is Ownable, ReentrancyGuard {
     }
 
     /**
-     * @dev Buy fractions
-     * @param listingId ID of the listing
-     * @param quantity Number of fractions to buy
+     * @dev Buy fractions with real-time updates
      */
     function buyFractions(uint256 listingId, uint256 quantity) public payable nonReentrant {
         require(listingId < listings.length, "Invalid listing ID");
@@ -102,7 +93,13 @@ contract AirNodeMarketplace is Ownable, ReentrancyGuard {
             listing.isActive = false;
         }
         
-        // Transfer fractions to buyer
+        // Update user balance
+        userFractionBalances[msg.sender][listing.fractionId] += quantity;
+        
+        // Update available fractions in fractionalization contract
+        fractionalization.updateAvailableFractions(listing.fractionId, quantity);
+        
+        // Transfer fraction tokens to buyer
         AirNodeFractionalization.FractionDetails memory details = fractionalization.getFractionDetails(listing.fractionId);
         IERC20 fractionToken = IERC20(details.fractionToken);
         require(fractionToken.transfer(msg.sender, quantity), "Transfer failed");
@@ -119,8 +116,72 @@ contract AirNodeMarketplace is Ownable, ReentrancyGuard {
     }
 
     /**
+     * @dev Get all available listings for marketplace
+     */
+    function getMarketplaceListings() public view returns (Listing[] memory) {
+        uint256 activeCount = 0;
+        
+        // Count active listings
+        for (uint256 i = 0; i < listings.length; i++) {
+            if (listings[i].isActive && listings[i].quantity > 0) {
+                activeCount++;
+            }
+        }
+        
+        // Create array of active listings
+        Listing[] memory activeListings = new Listing[](activeCount);
+        uint256 currentIndex = 0;
+        
+        for (uint256 i = 0; i < listings.length; i++) {
+            if (listings[i].isActive && listings[i].quantity > 0) {
+                activeListings[currentIndex] = listings[i];
+                currentIndex++;
+            }
+        }
+        
+        return activeListings;
+    }
+
+    /**
+     * @dev Get user's fraction balances
+     */
+    function getUserFractionBalance(address user, string memory fractionId) public view returns (uint256) {
+        return userFractionBalances[user][fractionId];
+    }
+
+    /**
+     * @dev Get all user's fractions
+     */
+    function getUserAllFractions(address user) public view returns (string[] memory, uint256[] memory) {
+        string[] memory allFractionIds = fractionalization.getAllFractionIds();
+        uint256 ownedCount = 0;
+        
+        // Count owned fractions
+        for (uint256 i = 0; i < allFractionIds.length; i++) {
+            if (userFractionBalances[user][allFractionIds[i]] > 0) {
+                ownedCount++;
+            }
+        }
+        
+        // Create arrays of owned fractions
+        string[] memory ownedFractionIds = new string[](ownedCount);
+        uint256[] memory ownedQuantities = new uint256[](ownedCount);
+        uint256 currentIndex = 0;
+        
+        for (uint256 i = 0; i < allFractionIds.length; i++) {
+            uint256 balance = userFractionBalances[user][allFractionIds[i]];
+            if (balance > 0) {
+                ownedFractionIds[currentIndex] = allFractionIds[i];
+                ownedQuantities[currentIndex] = balance;
+                currentIndex++;
+            }
+        }
+        
+        return (ownedFractionIds, ownedQuantities);
+    }
+
+    /**
      * @dev Cancel a listing
-     * @param listingId ID of the listing to cancel
      */
     function cancelListing(uint256 listingId) public nonReentrant {
         require(listingId < listings.length, "Invalid listing ID");
@@ -131,17 +192,11 @@ contract AirNodeMarketplace is Ownable, ReentrancyGuard {
         // Mark as inactive
         listing.isActive = false;
         
-        // Return fractions to seller
-        AirNodeFractionalization.FractionDetails memory details = fractionalization.getFractionDetails(listing.fractionId);
-        IERC20 fractionToken = IERC20(details.fractionToken);
-        require(fractionToken.transfer(listing.seller, listing.quantity), "Transfer failed");
-        
         emit ListingCancelled(listingId);
     }
 
     /**
      * @dev Set platform fee percentage
-     * @param newFeePercent New fee percentage (in basis points)
      */
     function setPlatformFee(uint256 newFeePercent) public onlyOwner {
         require(newFeePercent <= 1000, "Fee too high"); // Max 10%
@@ -151,7 +206,6 @@ contract AirNodeMarketplace is Ownable, ReentrancyGuard {
 
     /**
      * @dev Withdraw platform fees
-     * @param to Address to send fees to
      */
     function withdrawFees(address payable to) public onlyOwner {
         require(to != address(0), "Invalid address");
@@ -162,12 +216,11 @@ contract AirNodeMarketplace is Ownable, ReentrancyGuard {
 
     /**
      * @dev Get active listings count
-     * @return Number of active listings
      */
     function getActiveListingsCount() public view returns (uint256) {
         uint256 count = 0;
         for (uint256 i = 0; i < listings.length; i++) {
-            if (listings[i].isActive) {
+            if (listings[i].isActive && listings[i].quantity > 0) {
                 count++;
             }
         }
@@ -176,7 +229,6 @@ contract AirNodeMarketplace is Ownable, ReentrancyGuard {
 
     /**
      * @dev Get all listings
-     * @return Array of listings
      */
     function getAllListings() public view returns (Listing[] memory) {
         return listings;
