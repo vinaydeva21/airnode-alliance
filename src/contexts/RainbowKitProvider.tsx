@@ -37,7 +37,13 @@ export const RainbowKitWrapper: React.FC<RainbowKitWrapperProps> = ({
 
   return (
     <WagmiProvider config={wagmiConfig}>
-      <RainbowKitProvider initialChain={sepolia}>
+      <RainbowKitProvider 
+        initialChain={sepolia}
+        appInfo={{
+          appName: 'Airnode Alliance',
+          learnMoreUrl: 'https://www.airnodealliance.com/',
+        }}
+      >
         {children}
       </RainbowKitProvider>
     </WagmiProvider>
