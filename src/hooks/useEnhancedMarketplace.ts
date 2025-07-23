@@ -197,7 +197,7 @@ export const useEnhancedMarketplace = () => {
         name: "Portal 180",
         location: "Nairobi, Kenya",
         price: 45,
-        imageUrl: "/lovable-uploads/4a8968a8-9af2-40aa-9480-469f6961f03c.png",
+        imageUrl: "/lovable-uploads/a70daab2-29e5-4fa4-b829-3329574be93f.png",
         totalShares: 1000,
         availableShares: 850,
         performance: {
@@ -212,7 +212,7 @@ export const useEnhancedMarketplace = () => {
         name: "Portal 360",
         location: "Lagos, Nigeria",
         price: 60,
-        imageUrl: "/lovable-uploads/2a34fc0e-ef2f-427d-b83f-b2ac89eac128.png",
+        imageUrl: "/lovable-uploads/3ae2813d-4b87-4f87-89d7-24d53bbd4467.png",
         totalShares: 1000,
         availableShares: 600,
         performance: {
@@ -227,7 +227,7 @@ export const useEnhancedMarketplace = () => {
         name: "Apex 90",
         location: "Addis Ababa, Ethiopia",
         price: 75,
-        imageUrl: "/lovable-uploads/41074963-71ad-4ff5-98d5-15013da0f5dd.png",
+        imageUrl: "/lovable-uploads/59d86994-f6a9-4570-b53c-519a936f6a3f.png",
         totalShares: 2000,
         availableShares: 1200,
         performance: {
@@ -242,7 +242,7 @@ export const useEnhancedMarketplace = () => {
         name: "Apex 180",
         location: "Kampala, Uganda",
         price: 80,
-        imageUrl: "/lovable-uploads/0bde1343-f33a-4772-afec-f05061c54e5c.png",
+        imageUrl: "/lovable-uploads/2da80626-af04-44e1-ae5b-ebb332918edf.png",
         totalShares: 2000,
         availableShares: 1800,
         performance: {
