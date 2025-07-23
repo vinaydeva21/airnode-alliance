@@ -79,7 +79,7 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "", onAdminLo
 
   return (
     <div className={className}>
-      {!isLoggedIn ? (
+      {!web3State.connected ? (
         <div className="flex gap-2">
           <Button
             variant="outline"
