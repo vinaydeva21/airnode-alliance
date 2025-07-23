@@ -11,7 +11,7 @@ interface RainbowKitWrapperProps {
 
 export const RainbowKitWrapper: React.FC<RainbowKitWrapperProps> = ({ 
   children,
-  projectId = "0b7502f59a16b5cc689348f2c3bc8c26" // Use default project ID
+  projectId = "0b7502f59a16b5cc689348f2c3bc8c26" // Reown WalletConnect Project ID
 }) => {
   // Define all chains we want to support as a readonly array, with Sepolia as the first/default
   const chains = [sepolia, mainnet, polygon, optimism, arbitrum] as const;
