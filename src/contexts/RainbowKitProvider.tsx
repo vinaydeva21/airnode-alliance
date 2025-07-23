@@ -19,7 +19,7 @@ export const RainbowKitWrapper: React.FC<RainbowKitWrapperProps> = ({
   // Get connectors for wallets from RainbowKit - in v2 syntax
   const { connectors } = getDefaultWallets({
     projectId,
-    appName: 'AirNode Alliance',
+    appName: 'Airnode Alliance',
   });
 
   // Create wagmi config - in v2 we need to include chains as a readonly array

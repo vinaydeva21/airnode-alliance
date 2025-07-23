@@ -10,6 +10,7 @@ import {
   DialogTitle,
   DialogDescription
 } from "@/components/ui/dialog";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { AuthDialog } from "./wallet/AuthDialog";
 import { StakingDialog } from "./wallet/StakingDialog";
 import { TransactionHistoryDialog } from "./wallet/TransactionHistoryDialog";
@@ -33,6 +34,7 @@ interface WalletConnectProps {
 
 const WalletConnect: React.FC<WalletConnectProps> = ({ className = "", onAdminLogin }) => {
   const { web3State, connect, disconnect, switchToSepolia } = useWeb3();
+  const { openConnectModal } = useConnectModal();
   const [stakeDialogOpen, setStakeDialogOpen] = useState(false);
   const [transactionHistoryOpen, setTransactionHistoryOpen] = useState(false);
   const [myAssetsDialogOpen, setMyAssetsDialogOpen] = useState(false);
@@ -91,7 +93,11 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "", onAdminLo
             Login
           </Button>
           <Button
-            onClick={() => setWalletSelectionOpen(true)}
+            onClick={() => {
+              if (openConnectModal) {
+                openConnectModal();
+              }
+            }}
             className="bg-white border border-black text-black hover:bg-gray-50 hover:text-black"
             disabled={connecting}
           >
