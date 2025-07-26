@@ -28,7 +28,7 @@ const Navbar = (props: RedirectingProp) => {
   };
 
   return (
-    <nav className="px-4 py-3 bg-mono-gray-950/90 backdrop-blur-md border-b border-mono-gray-800 fixed w-full top-0 z-50 shadow-sm">
+    <nav className="px-4 py-3 bg-white border-b border-mono-gray-800 fixed w-full top-0 z-50 shadow-sm">
       <div className="container mx-auto flex justify-between items-center">
         <Link href="/" className="flex items-center gap-2">
           <Image
@@ -206,7 +206,7 @@ export const NetworkDropdown: React.FC<RedirectingProp> = ({
       <div className="relative w-full max-w-xs">
         <button
           onClick={toggleDropdown}
-          className="flex items-center justify-between w-fit gap-2 px-2 py-2 bg-transparent  border border-gray-700 rounded-md text-white"
+          className="flex items-center justify-between w-fit gap-2 px-2 py-2  border border-gray-700 rounded-md text-white"
         >
           {chain && (
             <div className="flex items-center gap-3">
