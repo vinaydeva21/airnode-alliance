@@ -63,7 +63,11 @@ export async function mintNFTCardano(
           [airNodeId]: {
             name: airNodeId,
 
-            image: "https://bit.ly/40Fcr9D",
+            image: "http://bit.ly/3UyRQQM",
+            // image for portal 360 = http://bit.ly/3UyRQQM
+            // bit.ly/40Fcr9D
+            //bit.ly/3H7ZyhH
+            //bit.ly/3Uv7o86
             airNodeId: m.airNodeId,
             location: m.location,
             performance: {
