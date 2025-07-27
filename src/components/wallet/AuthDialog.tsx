@@ -107,7 +107,7 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({
                   type="text"
                   value={loginEmail}
                   onChange={(e) => setLoginEmail(e.target.value)}
-                  placeholder="admin or you@example.com"
+                  placeholder="Enter your email id "
                   className="bg-ana-darkblue/50 border-ana-purple/30 text-white"
                 />
               </div>
@@ -119,7 +119,7 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({
                   type="password"
                   value={loginPassword}
                   onChange={(e) => setLoginPassword(e.target.value)}
-                  placeholder="********"
+                  placeholder="Enter your password"
                   className="bg-ana-darkblue/50 border-ana-purple/30 text-white"
                 />
               </div>
