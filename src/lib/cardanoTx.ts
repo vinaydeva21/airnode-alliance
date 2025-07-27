@@ -62,7 +62,8 @@ export async function mintNFTCardano(
         [policyId]: {
           [airNodeId]: {
             name: airNodeId,
-            image: "https://avatars.githubusercontent.com/u/106166350",
+
+            image: "https://bit.ly/40Fcr9D",
             airNodeId: m.airNodeId,
             location: m.location,
             performance: {

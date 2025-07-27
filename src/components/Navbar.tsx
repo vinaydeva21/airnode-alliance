@@ -17,7 +17,7 @@ interface RedirectingProp {
 }
 const Navbar = (props: RedirectingProp) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(true);
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -121,7 +121,7 @@ const Navbar = (props: RedirectingProp) => {
               <Link
                 href="/admin"
                 className="text-red-600 hover:text-red-800 transition-colors py-2 font-medium"
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={() => setMobileMenuOpen(true)}
               >
                 Admin
               </Link>

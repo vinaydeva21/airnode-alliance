@@ -8,7 +8,7 @@ validator placeholder {
     True
   }
 
-  spend(_datum, _redeemer, _o_ref, _tx) {
+  spend(_datum, _redemer, _o_ref, _tx) {
     True
   }
 

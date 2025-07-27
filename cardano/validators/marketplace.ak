@@ -15,8 +15,8 @@ validator marketplace {
     let Transaction { inputs, outputs, .. } = tx
     expect Some(script_input) = transaction.find_input(inputs, oref)
     expect Script(self_script) = script_input.output.address.payment_credential
-    let (pid, tkn, qty) = functions.input_token(script_input)
-    functions.validate_token_outputs(tx, self_script, pid, datum, qty, tkn)
+    let (p_id, tkn, qty) = functions.input_token(script_input)
+    functions.validate_token_outputs(tx, self_script, p_id, datum, qty, tkn)
   }
 
   else(_) {

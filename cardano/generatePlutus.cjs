@@ -1,8 +1,9 @@
-const fs = require('fs');
-const path = require('path');
+#!/usr/bin/env node
+const fs = require("fs");
+const path = require("path");
 
 // Path to the JSON file
-const jsonPath = path.join(__dirname, 'plutus.json');
+const jsonPath = path.join(__dirname, "plutus.json");
 
 // Load the JSON content
 const jsonContent = require(jsonPath);
@@ -11,14 +12,16 @@ const jsonContent = require(jsonPath);
 const validatorexports = [];
 
 jsonContent.validators.forEach((validator) => {
-    const title = validator.title.replace(/\./g, "_"); // Replace dots with underscores
-    const compiledCode = validator.compiledCode;
-    if (compiledCode) {
-        validatorexports.push(`export const ${title} = ${JSON.stringify(compiledCode)};`);
-    }
+  const title = validator.title.replace(/\./g, "_"); // Replace dots with underscores
+  const compiledCode = validator.compiledCode;
+  if (compiledCode) {
+    validatorexports.push(
+      `export const ${title} = ${JSON.stringify(compiledCode)};`
+    );
+  }
 });
 
 // Write the JS file
-const outputPath = path.join(__dirname, '../src/config/scripts/plutus.ts');
-fs.writeFileSync(outputPath, validatorexports.join('\n'), 'utf8');
-console.log('plutus.js generated successfully!');
+const outputPath = path.join(__dirname, "../src/config/scripts/plutus.ts");
+fs.writeFileSync(outputPath, validatorexports.join("\n"), "utf8");
+console.log("plutus.js generated successfully!");

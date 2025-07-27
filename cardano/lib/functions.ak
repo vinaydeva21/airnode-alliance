@@ -99,7 +99,7 @@ pub fn must_send_to_marketplace(
 pub fn validate_token_outputs(
   tx: Transaction,
   self_script: PolicyId,
-  pid: PolicyId,
+  p_id: PolicyId,
   datum: MinterDatum,
   available_tokens: Int,
   tkn: ByteArray,
@@ -107,7 +107,7 @@ pub fn validate_token_outputs(
   let Transaction { outputs, .. } = tx
   let MinterDatum { name, price, fraction } = datum
   let (buyer_token_qty, script_token_qty) =
-    find_output_from_PID(outputs, pid, name)
+    find_output_from_PID(outputs, p_id, name)
 
   let lovelace = find_script_output_lovelace(outputs, self_script, name)
   //   and {
