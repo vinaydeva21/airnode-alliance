@@ -3,15 +3,14 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title AirNodeNFT
  * @dev Enhanced AirNode NFT contract with additional features for marketplace integration
  */
-contract AirNodeNFT is ERC721URIStorage, Ownable {
-    using Counters for Counters.Counter;
-    Counters.Counter private _tokenIdCounter;
+contract AirNodeNFT is ERC721URIStorage, Ownable, ReentrancyGuard {
+    uint256 private _tokenIdCounter;
 
     // Struct to store AirNode metadata
     struct AirNodeMetadata {
@@ -56,9 +55,13 @@ contract AirNodeNFT is ERC721URIStorage, Ownable {
         uint256 totalFractions,
         uint256 pricePerShare,
         string memory metadataURI
-    ) public onlyOwner returns (uint256) {
-        uint256 tokenId = _tokenIdCounter.current();
-        _tokenIdCounter.increment();
+    ) public onlyOwner nonReentrant returns (uint256) {
+        require(to != address(0), "AirNodeNFT: mint to zero address");
+        require(bytes(airNodeId).length > 0, "AirNodeNFT: airNodeId cannot be empty");
+        require(bytes(name).length > 0, "AirNodeNFT: name cannot be empty");
+        
+        uint256 tokenId = _tokenIdCounter;
+        _tokenIdCounter++;
         _mint(to, tokenId);
         _setTokenURI(tokenId, metadataURI);
 
@@ -95,7 +98,7 @@ contract AirNodeNFT is ERC721URIStorage, Ownable {
      * @dev Mark an AirNode as fractionalized
      */
     function markFractionalized(uint256 tokenId) external {
-        require(msg.sender == owner() || msg.sender == address(0), "Not authorized");
+        require(msg.sender == owner(), "AirNodeNFT: Not authorized");
         require(_exists(tokenId), "AirNodeNFT: Token does not exist");
         airNodeMetadata[tokenId].fractionalized = true;
     }
@@ -138,7 +141,7 @@ contract AirNodeNFT is ERC721URIStorage, Ownable {
      * @dev Get total number of minted NFTs
      */
     function getTotalMinted() public view returns (uint256) {
-        return _tokenIdCounter.current();
+        return _tokenIdCounter;
     }
 
     /**
@@ -146,6 +149,29 @@ contract AirNodeNFT is ERC721URIStorage, Ownable {
      */
     function _exists(uint256 tokenId) internal view returns (bool) {
         return _ownerOf(tokenId) != address(0);
+    }
+
+    /**
+     * @dev Set active status for an AirNode
+     */
+    function setActiveStatus(uint256 tokenId, bool status) external onlyOwner {
+        require(_exists(tokenId), "AirNodeNFT: Token does not exist");
+        airNodeMetadata[tokenId].isActive = status;
+    }
+
+    /**
+     * @dev Update AirNode performance metrics
+     */
+    function updatePerformance(
+        uint256 tokenId,
+        uint256 uptime,
+        uint256 earnings,
+        uint256 roi
+    ) external onlyOwner {
+        require(_exists(tokenId), "AirNodeNFT: Token does not exist");
+        airNodeMetadata[tokenId].uptime = uptime;
+        airNodeMetadata[tokenId].earnings = earnings;
+        airNodeMetadata[tokenId].roi = roi;
     }
 
     /**
