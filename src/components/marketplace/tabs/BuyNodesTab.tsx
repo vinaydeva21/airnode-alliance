@@ -82,7 +82,7 @@ export const BuyNodesTab: React.FC<BuyNodesTabProps> = ({
       
       {loading ? (
         <div className="flex justify-center items-center min-h-[200px]">
-          <div className="animate-pulse text-ana-purple">Loading AirNodes...</div>
+          <div className="animate-pulse text-primary">Loading AirNodes...</div>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">

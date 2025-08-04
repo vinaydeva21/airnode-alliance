@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Coins, LogOut, ChevronDown, LockKeyhole, ShieldCheck, History } from "lucide-react";
+import { Coins, LogOut, ChevronDown, LockKeyhole, ShieldCheck, History, ShoppingBag } from "lucide-react";
 
 interface WalletMenuProps {
   walletName: string;
@@ -40,6 +40,30 @@ export const WalletDropdownMenu: React.FC<WalletMenuProps> = ({
   onStakeClick,
   onHistoryClick
 }) => {
+  const [purchasedNFTs, setPurchasedNFTs] = useState<any[]>([]);
+
+  useEffect(() => {
+    const loadPurchasedNFTs = () => {
+      const stored = sessionStorage.getItem('purchasedNFTs');
+      if (stored) {
+        setPurchasedNFTs(JSON.parse(stored));
+      }
+    };
+
+    loadPurchasedNFTs();
+    
+    // Listen for storage changes to update in real-time
+    const handleStorageChange = () => loadPurchasedNFTs();
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Also listen for sessionStorage changes within the same tab
+    const interval = setInterval(loadPurchasedNFTs, 1000);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, []);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -85,6 +109,26 @@ export const WalletDropdownMenu: React.FC<WalletMenuProps> = ({
           >
             <Coins size={16} className="mr-2" />
             My Assets
+          </DropdownMenuItem>
+
+          <DropdownMenuItem className="cursor-default">
+            <ShoppingBag size={16} className="mr-2" />
+            <div className="flex flex-col">
+              <span>My NFTs ({purchasedNFTs.length})</span>
+              {purchasedNFTs.length > 0 && (
+                <div className="text-xs text-muted-foreground mt-1 space-y-1">
+                  {purchasedNFTs.map((nft, index) => (
+                    <div key={index} className="flex justify-between">
+                      <span>{nft.name}:</span>
+                      <span className="text-green-400">{nft.sharesOwned} shares</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {purchasedNFTs.length === 0 && (
+                <span className="text-xs text-muted-foreground">No NFTs purchased</span>
+              )}
+            </div>
           </DropdownMenuItem>
           
           <DropdownMenuSub>

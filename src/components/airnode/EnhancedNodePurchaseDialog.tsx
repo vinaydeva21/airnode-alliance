@@ -50,8 +50,8 @@ export const EnhancedNodePurchaseDialog: React.FC<EnhancedNodePurchaseDialogProp
   const estimatedROI = airNode.performance.roi;
 
   const handlePurchase = async () => {
-    if (!web3State.connected) {
-      toast.error("Please connect your wallet to purchase shares");
+    if (quantity <= 0) {
+      toast.error("Please select a valid quantity");
       return;
     }
 
@@ -61,33 +61,46 @@ export const EnhancedNodePurchaseDialog: React.FC<EnhancedNodePurchaseDialogProp
     }
 
     setPurchaseLoading(true);
+    
     try {
-      // If fractionId exists, use enhanced marketplace, otherwise use local success handler
-      if (airNode.fractionId) {
-        await buyShares(airNode.fractionId, quantity, airNode.price);
-        await loadMarketplaceData();
+      // Hardcoded purchase flow - simulate successful purchase
+      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate transaction time
+      
+      // Store purchased NFT in session storage
+      const purchasedNFT = {
+        id: airNode.id,
+        name: airNode.name,
+        location: airNode.location,
+        sharesOwned: quantity,
+        purchasePrice: (airNode.price / airNode.totalShares) * quantity,
+        purchaseDate: new Date().toISOString()
+      };
+      
+      const existingPurchases = JSON.parse(sessionStorage.getItem('purchasedNFTs') || '[]');
+      const existingIndex = existingPurchases.findIndex((nft: any) => nft.id === airNode.id);
+      
+      if (existingIndex >= 0) {
+        existingPurchases[existingIndex].sharesOwned += quantity;
+        existingPurchases[existingIndex].purchasePrice += (airNode.price / airNode.totalShares) * quantity;
+      } else {
+        existingPurchases.push(purchasedNFT);
       }
       
-      // Call success handler to update UI immediately
+      sessionStorage.setItem('purchasedNFTs', JSON.stringify(existingPurchases));
+      
+      toast.success(`Successfully purchased ${quantity} share${quantity > 1 ? 's' : ''} of ${airNode.name}!`);
+      
       if (onPurchaseSuccess) {
         onPurchaseSuccess(quantity);
-      } else {
-        toast.success(`Successfully purchased ${quantity} shares of ${airNode.name}!`);
-        onOpenChange(false);
       }
       
+      // Reset form and close dialog
       setQuantity(1);
-    } catch (error) {
+      onOpenChange(false);
+      
+    } catch (error: any) {
       console.error("Purchase failed:", error);
-      // Only show error for blockchain failures, not fallback mode
-      if (airNode.fractionId) {
-        toast.error("Purchase failed. Please try again.");
-      } else {
-        // Fallback success for demo purposes
-        if (onPurchaseSuccess) {
-          onPurchaseSuccess(quantity);
-        }
-      }
+      toast.error("Purchase failed. Please try again.");
     } finally {
       setPurchaseLoading(false);
     }
@@ -197,14 +210,6 @@ export const EnhancedNodePurchaseDialog: React.FC<EnhancedNodePurchaseDialogProp
               </div>
             </div>
 
-            {/* Wallet Connection Status */}
-            {!web3State.connected && (
-              <div className="bg-yellow-500/10 rounded-lg p-3 border border-yellow-500/20">
-                <p className="text-yellow-300 text-sm">
-                  Please connect your wallet to purchase shares
-                </p>
-              </div>
-            )}
           </div>
 
           {/* Action Buttons */}
@@ -220,7 +225,7 @@ export const EnhancedNodePurchaseDialog: React.FC<EnhancedNodePurchaseDialogProp
             <Button
               onClick={handlePurchase}
               className="flex-1"
-              disabled={loading || !web3State.connected || quantity > airNode.availableShares}
+              disabled={loading || quantity > airNode.availableShares}
             >
               {loading ? (
                 <div className="flex items-center gap-2">
