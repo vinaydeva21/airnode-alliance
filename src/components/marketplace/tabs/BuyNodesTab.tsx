@@ -88,16 +88,14 @@ export const BuyNodesTab: React.FC<BuyNodesTabProps> = ({
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {displayNodes.length > 0 ? (
             displayNodes.map((node) => (
-              <div 
+              <AirNodeCard 
                 key={node.id} 
-                onClick={() => {
+                {...node} 
+                onPurchaseClick={() => {
                   setSelectedNode(node);
                   setPurchaseDialogOpen(true);
                 }}
-                className="cursor-pointer"
-              >
-                <AirNodeCard {...node} />
-              </div>
+              />
             ))
           ) : (
             <div className="col-span-full text-center py-10 text-gray-400">

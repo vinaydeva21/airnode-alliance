@@ -5,7 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Info, ShoppingCart } from "lucide-react";
 import { NodeDetailsDialog } from "./NodeDetailsDialog";
-import { NodePurchaseDialog } from "./NodePurchaseDialog";
 import { NodeCollateralizeDialog } from "./NodeCollateralizeDialog";
 
 export interface AirNodePerformance {
@@ -24,6 +23,7 @@ export interface AirNodeProps {
   availableShares: number;
   className?: string;
   performance?: AirNodePerformance;
+  onPurchaseClick?: () => void;
 }
 
 const AirNodeCard: React.FC<AirNodeProps> = ({
@@ -35,6 +35,7 @@ const AirNodeCard: React.FC<AirNodeProps> = ({
   totalShares,
   availableShares,
   className = "",
+  onPurchaseClick,
   performance = {
     uptime: 99.2,
     earnings: 2.4,
@@ -42,9 +43,7 @@ const AirNodeCard: React.FC<AirNodeProps> = ({
   }
 }) => {
   const [detailsOpen, setDetailsOpen] = useState(false);
-  const [purchaseOpen, setPurchaseOpen] = useState(false);
   const [collateralOpen, setCollateralOpen] = useState(false);
-  const [shareAmount, setShareAmount] = useState(1);
 
   return (
     <>
@@ -97,7 +96,7 @@ const AirNodeCard: React.FC<AirNodeProps> = ({
             <Button 
               size="sm"
               className="gap-1 flex-1 text-xs sm:text-sm"
-              onClick={() => setPurchaseOpen(true)}
+              onClick={onPurchaseClick}
             >
               <ShoppingCart size={12} className="sm:w-4 sm:h-4" />
               Buy Shares
@@ -110,30 +109,19 @@ const AirNodeCard: React.FC<AirNodeProps> = ({
         open={detailsOpen}
         onOpenChange={setDetailsOpen}
         node={{id, name, location, price, totalShares, availableShares, performance}}
-        onBuy={() => {
-          setDetailsOpen(false);
-          setPurchaseOpen(true);
-        }}
+        onBuy={onPurchaseClick || (() => {})}
         onCollateralize={() => {
           setDetailsOpen(false);
           setCollateralOpen(true);
         }}
       />
       
-      <NodePurchaseDialog
-        open={purchaseOpen}
-        onOpenChange={setPurchaseOpen}
-        node={{id, name, price, availableShares, performance}}
-        shareAmount={shareAmount}
-        setShareAmount={setShareAmount}
-      />
-      
       <NodeCollateralizeDialog
         open={collateralOpen}
         onOpenChange={setCollateralOpen}
         node={{id, name, price}}
-        shareAmount={shareAmount}
-        setShareAmount={setShareAmount}
+        shareAmount={1}
+        setShareAmount={() => {}}
       />
     </>
   );

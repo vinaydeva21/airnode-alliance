@@ -59,12 +59,12 @@ export const WalletDropdownMenu: React.FC<WalletMenuProps> = ({
             <span>{address}</span>
           </DropdownMenuItem>
           <DropdownMenuItem className="flex justify-between cursor-default">
-            <span className="opacity-70">ANA Balance:</span> 
-            <span>{anaBalance} ANA</span>
+            <span className="opacity-70">Token Balance:</span> 
+            <span>{anaBalance}</span>
           </DropdownMenuItem>
           <DropdownMenuItem className="flex justify-between cursor-default">
-            <span className="opacity-70">Staked ANA:</span> 
-            <span>{stakedAna} ANA</span>
+            <span className="opacity-70">Staked Tokens:</span> 
+            <span>{stakedAna}</span>
           </DropdownMenuItem>
           <DropdownMenuItem className="flex justify-between cursor-default">
             <span className="opacity-70">Pending Rewards:</span> 
@@ -98,7 +98,7 @@ export const WalletDropdownMenu: React.FC<WalletMenuProps> = ({
                 className="cursor-pointer hover:bg-ana-purple/20"
               >
                 <LockKeyhole size={16} className="mr-2" />
-                Stake ANA Tokens
+                Stake Tokens
               </DropdownMenuItem>
               <DropdownMenuItem className="cursor-pointer hover:bg-ana-purple/20">
                 <ShieldCheck size={16} className="mr-2" />
