@@ -8,11 +8,10 @@ export const contractConfig = {
     name: "Sepolia",
     rpcUrl: "https://sepolia.infura.io/v3/",
   },
-  // World Mobile Chain Mainnet (to be updated with actual addresses after deployment)
   worldMobile: {
-    chainId: 8888, // Replace with actual World Mobile Chain ID
-    name: "World Mobile Chain",
-    rpcUrl: "https://rpc.worldmobile.io", // Replace with actual RPC
+    chainId: 323432,
+    name: "World Mobile Chain Testnet",
+    rpcUrl: "https://worldmobile-testnet.g.alchemy.com/v2/DzZUBKUFFmr_PE7VxyaRMlAZGUujAfyB",
   },
   airNodeNFT: {
     // This will be updated after you deploy the contract

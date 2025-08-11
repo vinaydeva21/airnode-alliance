@@ -12,7 +12,7 @@ const Web3Context = createContext<Web3ContextType | null>(null);
 // Provider component that wraps the app
 export const Web3Provider: React.FC<WalletProviderProps> = ({ children }) => {
   // Get wallet connection logic from the hook
-  const { web3State, provider, connect, disconnect, switchToSepolia } = useWalletConnect();
+  const { web3State, provider, connect, disconnect, switchToWMC } = useWalletConnect();
   
   // Initialize contract interactions state
   const [contracts, setContracts] = useState<ContractInteractions | null>(null);
@@ -43,7 +43,7 @@ export const Web3Provider: React.FC<WalletProviderProps> = ({ children }) => {
       contracts, 
       connect, 
       disconnect,
-      switchToSepolia
+      switchToWMC
     }}>
       {children}
     </Web3Context.Provider>

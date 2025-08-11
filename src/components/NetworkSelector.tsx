@@ -49,7 +49,7 @@ export const NetworkDropdown: React.FC<RedirectingProp> = ({
         <button onClick={toggleDropdown} className="flex items-center justify-between w-fit gap-2 px-2 py-2 bg-transparent  border border-gray-700 rounded-md text-white">
           {chain && <div className="flex items-center gap-3">
             {Network[chain].logo}
-            <span>WMTX</span>
+            <span>WOMOX</span>
           </div>}
           <ChevronDown className={clsx("w-5 h-5 transition-transform", isOpen && "transform rotate-180")} />
         </button>

@@ -68,12 +68,12 @@ export const WalletSelectionDialog: React.FC<WalletSelectionDialogProps> = ({
                 <div className="text-xs text-white/70 mb-2">Supported Networks:</div>
                 <div className="space-y-1">
                   <div className="flex items-center gap-2 text-xs">
-                    <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                    <span>Sepolia Testnet (Testing)</span>
+                    <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                    <span>World Mobile Chain Testnet (Default) — WOMOX</span>
                   </div>
                   <div className="flex items-center gap-2 text-xs">
-                    <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                    <span>World Mobile Chain (Production)</span>
+                    <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                    <span>Sepolia Testnet (Legacy)</span>
                   </div>
                 </div>
               </div>

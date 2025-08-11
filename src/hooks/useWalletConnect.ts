@@ -2,7 +2,8 @@
 import { useState, useEffect } from "react";
 import { Web3State } from "@/types/blockchain";
 import { useAccount, useConnect, useDisconnect, useConfig } from "wagmi";
-import { sepolia } from "wagmi/chains";
+const WMC_CHAIN_ID = 323432; // World Mobile Chain Testnet
+const WMC_RPC_URL = "https://worldmobile-testnet.g.alchemy.com/v2/DzZUBKUFFmr_PE7VxyaRMlAZGUujAfyB";
 import { ethers } from "ethers";
 import { toast } from "sonner";
 import {
@@ -34,13 +35,13 @@ export const useWalletConnect = () => {
         connected: true,
       });
 
-      // Check if we're on Sepolia, if not prompt to switch
-      if (chainId && chainId !== sepolia.id) {
+      // Check if we're on World Mobile Chain testnet, if not prompt to switch
+      if (chainId && chainId !== WMC_CHAIN_ID) {
         toast.warning("Wrong network detected", {
-          description: "Please switch to Sepolia test network",
+          description: "Please switch to World Mobile Chain testnet",
           action: {
             label: "Switch",
-            onClick: () => switchToSepolia(),
+            onClick: () => switchToWMC(),
           },
         });
       }
@@ -72,17 +73,17 @@ export const useWalletConnect = () => {
             chainId: decimalChainId,
           }));
           
-          // Check if new chain is Sepolia
-          if (decimalChainId !== sepolia.id) {
+          // Check if new chain is World Mobile Chain testnet
+          if (decimalChainId !== WMC_CHAIN_ID) {
             toast.warning("Wrong network detected", {
-              description: "Please switch to Sepolia test network",
+              description: "Please switch to World Mobile Chain testnet",
               action: {
                 label: "Switch",
-                onClick: () => switchToSepolia(),
+                onClick: () => switchToWMC(),
               },
             });
           } else {
-            toast.success("Connected to Sepolia test network");
+            toast.success("Connected to World Mobile Chain testnet");
           }
         });
       }
@@ -98,17 +99,15 @@ export const useWalletConnect = () => {
     };
   }, []);
 
-  // Switch to Sepolia network
-  const switchToSepolia = async () => {
+  // Switch to World Mobile Chain testnet
+  const switchToWMC = async () => {
     try {
-      // In Wagmi v2, we don't have switchNetworkAsync readily available
-      // We'll use the native window.ethereum method
       if (window.ethereum) {
         await window.ethereum.request({
           method: "wallet_switchEthereumChain",
-          params: [{ chainId: `0x${sepolia.id.toString(16)}` }],
+          params: [{ chainId: `0x${WMC_CHAIN_ID.toString(16)}` }],
         });
-        toast.success("Switched to Sepolia test network");
+        toast.success("Switched to World Mobile Chain testnet");
       }
     } catch (error: any) {
       console.error("Failed to switch network:", error);
@@ -120,21 +119,20 @@ export const useWalletConnect = () => {
             method: "wallet_addEthereumChain",
             params: [
               {
-                chainId: `0x${sepolia.id.toString(16)}`,
-                chainName: "Sepolia Test Network",
+                chainId: `0x${WMC_CHAIN_ID.toString(16)}`,
+                chainName: "World Mobile Chain Testnet",
                 nativeCurrency: {
-                  name: "Sepolia ETH",
-                  symbol: "ETH",
+                  name: "WOMOX",
+                  symbol: "WOMOX",
                   decimals: 18,
                 },
-                rpcUrls: ["https://rpc.sepolia.org"],
-                blockExplorerUrls: ["https://sepolia.etherscan.io"],
+                rpcUrls: [WMC_RPC_URL],
               },
             ],
           });
         } catch (addError) {
-          console.error("Failed to add Sepolia network:", addError);
-          toast.error("Failed to add Sepolia network to wallet");
+          console.error("Failed to add WMC testnet:", addError);
+          toast.error("Failed to add WMC testnet to wallet");
         }
       } else {
         toast.error("Failed to switch network");
@@ -153,9 +151,9 @@ export const useWalletConnect = () => {
         if (evmWalletState) {
           setWeb3State(evmWalletState);
           
-          // Check if we need to switch to Sepolia
-          if (evmWalletState.chainId !== sepolia.id) {
-            await switchToSepolia();
+          // Check if we need to switch to World Mobile Chain testnet
+          if (evmWalletState.chainId !== WMC_CHAIN_ID) {
+            await switchToWMC();
           }
         }
       }
@@ -197,6 +195,6 @@ export const useWalletConnect = () => {
     provider,
     connect,
     disconnect,
-    switchToSepolia,
+    switchToWMC,
   };
 };

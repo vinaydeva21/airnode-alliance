@@ -25,7 +25,7 @@ import {
 } from "./wallet/WalletData";
 import { useWeb3 } from "@/contexts/Web3Context";
 import { Badge } from "@/components/ui/badge";
-import { sepolia } from "wagmi/chains";
+const WMC_CHAIN_ID = 323432;
 
 interface WalletConnectProps {
   className?: string;
@@ -33,7 +33,7 @@ interface WalletConnectProps {
 }
 
 const WalletConnect: React.FC<WalletConnectProps> = ({ className = "", onAdminLogin }) => {
-  const { web3State, connect, disconnect, switchToSepolia } = useWeb3();
+  const { web3State, connect, disconnect, switchToWMC } = useWeb3();
   const { openConnectModal } = useConnectModal();
   const [stakeDialogOpen, setStakeDialogOpen] = useState(false);
   const [transactionHistoryOpen, setTransactionHistoryOpen] = useState(false);
@@ -75,7 +75,7 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "", onAdminLo
     handleConnect("metamask");
   };
 
-  const isOnCorrectNetwork = web3State.chainId === sepolia.id;
+  const isOnCorrectNetwork = web3State.chainId === WMC_CHAIN_ID;
 
   return (
     <div className={className}>
@@ -120,10 +120,10 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "", onAdminLo
             <Badge 
               variant="outline" 
               className="bg-yellow-500/20 text-yellow-600 border-yellow-500/50 flex items-center gap-1 cursor-pointer hover:bg-yellow-500/30"
-              onClick={switchToSepolia}
+              onClick={switchToWMC}
             >
               <AlertCircle size={12} className="mr-1" />
-              Switch to Sepolia
+              Switch to WMC Testnet
             </Badge>
           )}
           <WalletDropdownMenu
