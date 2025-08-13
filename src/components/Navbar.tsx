@@ -7,8 +7,8 @@ import { NetworkDropdown } from "./NetworkSelector";
 
 interface RedirectingProp {
   setIsRedirecting: (value: boolean) => void;
-  chain: "WMC" | "Cardano";
-  setChain: (value: "WMC" | "Cardano") => void;
+  chain: "Base" | "Cardano";
+  setChain: (value: "Base" | "Cardano") => void;
 }
 const Navbar = (props: RedirectingProp) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

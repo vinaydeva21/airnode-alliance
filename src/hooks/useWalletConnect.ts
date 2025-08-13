@@ -2,8 +2,7 @@
 import { useState, useEffect } from "react";
 import { Web3State } from "@/types/blockchain";
 import { useAccount, useConnect, useDisconnect, useConfig } from "wagmi";
-const WMC_CHAIN_ID = 323432; // World Mobile Chain Testnet
-const WMC_RPC_URL = "https://worldmobile-testnet.g.alchemy.com/v2/DzZUBKUFFmr_PE7VxyaRMlAZGUujAfyB";
+const BASE_CHAIN_ID = 8453; // Base Mainnet
 import { ethers } from "ethers";
 import { toast } from "sonner";
 import {
@@ -35,13 +34,13 @@ export const useWalletConnect = () => {
         connected: true,
       });
 
-      // Check if we're on World Mobile Chain testnet, if not prompt to switch
-      if (chainId && chainId !== WMC_CHAIN_ID) {
+      // Check if we're on Base network, if not prompt to switch
+      if (chainId && chainId !== BASE_CHAIN_ID) {
         toast.warning("Wrong network detected", {
-          description: "Please switch to World Mobile Chain testnet",
+          description: "Please switch to Base network",
           action: {
             label: "Switch",
-            onClick: () => switchToWMC(),
+            onClick: () => switchToBase(),
           },
         });
       }
@@ -73,17 +72,17 @@ export const useWalletConnect = () => {
             chainId: decimalChainId,
           }));
           
-          // Check if new chain is World Mobile Chain testnet
-          if (decimalChainId !== WMC_CHAIN_ID) {
+          // Check if new chain is Base network
+          if (decimalChainId !== BASE_CHAIN_ID) {
             toast.warning("Wrong network detected", {
-              description: "Please switch to World Mobile Chain testnet",
+              description: "Please switch to Base network",
               action: {
                 label: "Switch",
-                onClick: () => switchToWMC(),
+                onClick: () => switchToBase(),
               },
             });
           } else {
-            toast.success("Connected to World Mobile Chain testnet");
+            toast.success("Connected to Base network");
           }
         });
       }
@@ -99,44 +98,19 @@ export const useWalletConnect = () => {
     };
   }, []);
 
-  // Switch to World Mobile Chain testnet
-  const switchToWMC = async () => {
+  // Switch to Base network
+  const switchToBase = async () => {
     try {
       if (window.ethereum) {
         await window.ethereum.request({
           method: "wallet_switchEthereumChain",
-          params: [{ chainId: `0x${WMC_CHAIN_ID.toString(16)}` }],
+          params: [{ chainId: `0x${BASE_CHAIN_ID.toString(16)}` }],
         });
-        toast.success("Switched to World Mobile Chain testnet");
+        toast.success("Switched to Base network");
       }
     } catch (error: any) {
       console.error("Failed to switch network:", error);
-      
-      // If the chain hasn't been added to MetaMask, add it
-      if (error.code === 4902 && window.ethereum) {
-        try {
-          await window.ethereum.request({
-            method: "wallet_addEthereumChain",
-            params: [
-              {
-                chainId: `0x${WMC_CHAIN_ID.toString(16)}`,
-                chainName: "World Mobile Chain Testnet",
-                nativeCurrency: {
-                  name: "WOMOX",
-                  symbol: "WOMOX",
-                  decimals: 18,
-                },
-                rpcUrls: [WMC_RPC_URL],
-              },
-            ],
-          });
-        } catch (addError) {
-          console.error("Failed to add WMC testnet:", addError);
-          toast.error("Failed to add WMC testnet to wallet");
-        }
-      } else {
-        toast.error("Failed to switch network");
-      }
+      toast.error("Failed to switch network");
     }
   };
 
@@ -151,9 +125,9 @@ export const useWalletConnect = () => {
         if (evmWalletState) {
           setWeb3State(evmWalletState);
           
-          // Check if we need to switch to World Mobile Chain testnet
-          if (evmWalletState.chainId !== WMC_CHAIN_ID) {
-            await switchToWMC();
+          // Check if we need to switch to Base network
+          if (evmWalletState.chainId !== BASE_CHAIN_ID) {
+            await switchToBase();
           }
         }
       }
@@ -195,6 +169,6 @@ export const useWalletConnect = () => {
     provider,
     connect,
     disconnect,
-    switchToWMC,
+    switchToBase,
   };
 };

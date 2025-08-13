@@ -5,13 +5,13 @@ import { Button } from "./ui/button";
 import { useState } from "react";
 type NetworkType = {
   id: string;
-  name: "Cardano" | "WMC";
+  name: "Cardano" | "Base";
   logo: React.ReactNode;
 };
 interface RedirectingProp {
   setIsRedirecting: (value: boolean) => void;
-  chain: "WMC" | "Cardano";
-  setChain: (value: "WMC" | "Cardano") => void;
+  chain: "Base" | "Cardano";
+  setChain: (value: "Base" | "Cardano") => void;
 }
 const Network: {
   [key: string]: NetworkType;
@@ -21,10 +21,10 @@ const Network: {
     name: "Cardano",
     logo: <img src="/cardano.webp" alt="Cardano Logo" className="w-6 h-6" />
   },
-  "WMC": {
-    id: "wmc",
-    name: "WMC",
-    logo: <img alt="WMC Logo" className="w-6 h-6" src="https://imgs.search.brave.com/kXH8Z5WXis9UzBpv6GgG08AZ8Dei-V7psLqw6EdG0yk/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93ZWIt/Y21zLWNkbi51cGhv/bGQud29ybGQvaW1h/Z2VzL1o4aXExeHNB/SEpXb21KLXZfV01U/WEAyeC5wbmc_YXV0/bz1mb3JtYXQsY29t/cHJlc3M" />
+  "Base": {
+    id: "base",
+    name: "Base",
+    logo: <img alt="Base Logo" className="w-6 h-6" src="https://altcoinsbox.com/wp-content/uploads/2023/02/base-logo.png" />
   }
 };
 export const NetworkDropdown: React.FC<RedirectingProp> = ({
@@ -49,7 +49,7 @@ export const NetworkDropdown: React.FC<RedirectingProp> = ({
         <button onClick={toggleDropdown} className="flex items-center justify-between w-fit gap-2 px-2 py-2 bg-transparent  border border-gray-700 rounded-md text-white">
           {chain && <div className="flex items-center gap-3">
             {Network[chain].logo}
-            <span>WOMOX</span>
+            <span>WMTx</span>
           </div>}
           <ChevronDown className={clsx("w-5 h-5 transition-transform", isOpen && "transform rotate-180")} />
         </button>

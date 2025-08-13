@@ -8,7 +8,7 @@ export interface Web3ContextType {
   contracts: ContractInteractions | null;
   connect: (walletId: string) => Promise<void>;
   disconnect: () => void;
-  switchToWMC: () => Promise<void>;
+  switchToBase: () => Promise<void>;
 }
 
 export interface WalletProviderProps {
