@@ -25,7 +25,7 @@ import {
 } from "./wallet/WalletData";
 import { useWeb3 } from "@/contexts/Web3Context";
 import { Badge } from "@/components/ui/badge";
-const WMC_CHAIN_ID = 323432;
+const BASE_CHAIN_ID = 8453;
 
 interface WalletConnectProps {
   className?: string;
@@ -33,7 +33,7 @@ interface WalletConnectProps {
 }
 
 const WalletConnect: React.FC<WalletConnectProps> = ({ className = "", onAdminLogin }) => {
-  const { web3State, connect, disconnect, switchToWMC } = useWeb3();
+  const { web3State, connect, disconnect, switchToBase } = useWeb3();
   const { openConnectModal } = useConnectModal();
   const [stakeDialogOpen, setStakeDialogOpen] = useState(false);
   const [transactionHistoryOpen, setTransactionHistoryOpen] = useState(false);
@@ -75,7 +75,7 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "", onAdminLo
     handleConnect("metamask");
   };
 
-  const isOnCorrectNetwork = web3State.chainId === WMC_CHAIN_ID;
+  const isOnCorrectNetwork = web3State.chainId === BASE_CHAIN_ID;
 
   return (
     <div className={className}>
@@ -120,10 +120,10 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ className = "", onAdminLo
             <Badge 
               variant="outline" 
               className="bg-yellow-500/20 text-yellow-600 border-yellow-500/50 flex items-center gap-1 cursor-pointer hover:bg-yellow-500/30"
-              onClick={switchToWMC}
+              onClick={switchToBase}
             >
               <AlertCircle size={12} className="mr-1" />
-              Switch to WMC Testnet
+              Switch to Base Network
             </Badge>
           )}
           <WalletDropdownMenu

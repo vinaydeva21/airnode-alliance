@@ -20,7 +20,7 @@ const queryClient = new QueryClient();
 
 const App = () => {
   const [isRedirecting, setIsRedirecting] = useState(false);
-  const [chain, setChain] = useState<"WMC" | "Cardano">("WMC");
+  const [chain, setChain] = useState<"Base" | "Cardano">("Base");
   return (
     <QueryClientProvider client={queryClient}>
       <RainbowKitWrapper projectId="0b7502f59a16b5cc689348f2c3bc8c26">

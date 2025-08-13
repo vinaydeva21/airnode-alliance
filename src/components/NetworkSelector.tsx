@@ -21,7 +21,7 @@ const Network: {
     name: "Cardano",
     logo: <img src="/cardano.webp" alt="Cardano Logo" className="w-6 h-6" />
   },
-  "Base": {
+  Base: {
     id: "base",
     name: "Base",
     logo: <img alt="Base Logo" className="w-6 h-6" src="https://altcoinsbox.com/wp-content/uploads/2023/02/base-logo.png" />

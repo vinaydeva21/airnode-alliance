@@ -449,5 +449,13 @@ export const contractConfig = {
         "type": "function"
       }
     ]
+  },
+  airNodeFractionalization: {
+    address: "", // Will be updated after deployment
+    abi: [] // Will be populated after deployment
+  },
+  airNodeMarketplace: {
+    address: "", // Will be updated after deployment
+    abi: [] // Will be populated after deployment
   }
 };

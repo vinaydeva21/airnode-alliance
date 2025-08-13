@@ -57,7 +57,7 @@ const HomePage = () => {
 
   return (
     <NetworkBackground>
-      <Navbar setIsRedirecting={() => {}} chain="WMC" setChain={() => {}} />
+      <Navbar setIsRedirecting={() => {}} chain="Base" setChain={() => {}} />
 
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4">
@@ -141,7 +141,7 @@ const HomePage = () => {
                 Secured by Blockchain
               </h3>
               <p className="text-white/70">
-                All transactions and ownership records are secured on the WMC blockchain.
+                All transactions and ownership records are secured on the Base blockchain.
               </p>
             </div>
           </div>
